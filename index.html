@@ -7,7 +7,7 @@
 <meta name="description" content="Short, story-driven games where you work one real day in a real job: engineering, product, security, UX, data science and copywriting."/>
 <meta name="theme-color" content="#0e1116"/>
 <meta property="og:title" content="Chronicles — a day in the job, played out"/>
-<meta property="og:description" content="Six short games. One office, one deadline, and the decisions the job is actually made of."/>
+<meta property="og:description" content="Six short games. Two workplaces, one deadline, and the decisions the job is actually made of."/>
 <meta property="og:type" content="website"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
@@ -32,7 +32,7 @@
       radial-gradient(760px 460px at 92% 4%, rgba(240,128,60,.07), transparent 60%);
     background-repeat:no-repeat;
   }
-  .wrap{max-width:980px;margin:0 auto;padding:0 20px}
+  .wrap{max-width:1140px;margin:0 auto;padding:0 20px}
   h1,h2,h3{font-family:"Space Grotesk",sans-serif;letter-spacing:-.022em;margin:0}
   a{color:inherit}
 
@@ -46,7 +46,7 @@
   }
   .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);flex:none}
   h1{font-size:clamp(34px,7vw,56px);font-weight:700;line-height:1.05;margin:20px 0 0}
-  h1 .soft{color:var(--dim);display:block;font-weight:600;font-size:.52em;letter-spacing:-.01em;margin-top:14px;line-height:1.35;max-width:20ch}
+  h1 .soft{color:var(--dim);display:block;font-weight:600;font-size:.52em;letter-spacing:-.01em;margin-top:14px;line-height:1.35;max-width:34ch}
   .lede{color:var(--mute);font-size:clamp(16px,2.2vw,18px);max-width:62ch;margin:22px 0 0}
   .lede b{color:var(--ink);font-weight:500}
 
@@ -66,9 +66,10 @@
   h2{font-size:19px;font-weight:600}
   .sec-head .note{font-size:13.5px;color:var(--dim)}
 
-  .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;list-style:none;padding:0;margin:0}
+  .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;list-style:none;padding:0;margin:0}
   .grid>li{display:flex}
-  @media (max-width:720px){ .grid{grid-template-columns:1fr} }
+  @media (max-width:980px){ .grid{grid-template-columns:repeat(2,minmax(0,1fr))} }
+  @media (max-width:660px){ .grid{grid-template-columns:1fr} }
 
   .card{
     position:relative;display:flex;flex-direction:column;flex:1;
@@ -85,11 +86,16 @@
     border-color:var(--line2);background:var(--panel);transform:translateY(-2px);outline:none;
   }
   .card:focus-visible{box-shadow:0 0 0 2px var(--tone,var(--accent))}
+  .card .head{display:flex;align-items:baseline;gap:10px}
   .card .field{
     font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;
     color:var(--tone,var(--accent));font-weight:500;
   }
-  .card h3{font-size:22px;font-weight:600;margin:9px 0 0}
+  .card .where{
+    margin-left:auto;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--dim);white-space:nowrap;
+  }
+  .card h3{font-size:20px;font-weight:600;margin:9px 0 0}
   .card .blurb{color:var(--mute);font-size:14.5px;margin:10px 0 0;flex:1}
   .card .meta{
     display:flex;align-items:center;gap:10px;flex-wrap:wrap;
@@ -129,11 +135,11 @@
 <div class="wrap">
 
   <header>
-    <span class="eyebrow"><span class="dot"></span>Meridian &middot; nine in the morning</span>
+    <span class="eyebrow"><span class="dot"></span>Nine in the morning &middot; day one</span>
     <h1>Chronicles
-      <span class="soft">One office, one deadline, and the decisions the job is actually made of.</span>
+      <span class="soft">Two workplaces, one deadline, and the decisions the job is actually made of.</span>
     </h1>
-    <p class="lede">Six short games where you work a <b>real day in a real job</b>. Walk the floor, talk to the people who have already made up their minds, and make the calls yourself. Everything closes at five, whether you are finished or not.</p>
+    <p class="lede">Nine short games where you work a <b>real day in a real job</b>. Five of them at Meridian, a product company; four at the agency across town. Walk the floor, talk to the people who have already made up their minds, and make the calls yourself. Everything closes at five, whether you are finished or not.</p>
     <ul class="facts">
       <li><b>20–40 min</b> a run</li>
       <li><b>No install</b> — opens in the browser</li>
@@ -147,51 +153,72 @@
   <section>
     <div class="sec-head">
       <h2>Pick a job</h2>
-      <span class="note">Six tracks &middot; same office, different chair</span>
+      <span class="note">Nine tracks &middot; two offices, one clock</span>
     </div>
 
     <ul class="grid">
 
       <li><a class="card" style="--tone:#58a6ff" href="games/engineering-chronicles.html">
-        <span class="field">Software Engineering</span>
+        <span class="head"><span class="field">Software Engineering</span><span class="where">Meridian</span></span>
         <h3>Engineering Chronicles</h3>
         <p class="blurb">A one-line ticket, a two-thousand-line file, and an incident at twenty to twelve.</p>
         <span class="meta">The new engineer <i class="sep"></i> 10 lessons <span class="go">Play</span></span>
       </a></li>
 
       <li><a class="card" style="--tone:#a78bfa" href="games/product-chronicles.html">
-        <span class="field">Product Management</span>
+        <span class="head"><span class="field">Product Management</span><span class="where">Meridian</span></span>
         <h3>Product Chronicles</h3>
         <p class="blurb">Forty-one requests, two squads, one quarter, and a hundred and eighty thousand pounds with a date attached.</p>
         <span class="meta">The new product manager <i class="sep"></i> 9 lessons <span class="go">Play</span></span>
       </a></li>
 
       <li><a class="card" style="--tone:#f0803c" href="games/security-chronicles.html">
-        <span class="field">Security</span>
+        <span class="head"><span class="field">Security</span><span class="where">Meridian</span></span>
         <h3>Security Chronicles</h3>
         <p class="blurb">Eleven findings, a questionnaire nobody reads, and one token making forty thousand requests.</p>
         <span class="meta">The new security engineer <i class="sep"></i> 11 lessons <span class="go">Play</span></span>
       </a></li>
 
       <li><a class="card" style="--tone:#f472b6" href="games/ux-chronicles.html">
-        <span class="field">UX Design</span>
+        <span class="head"><span class="field">UX Design</span><span class="where">Meridian</span></span>
         <h3>UX Chronicles</h3>
         <p class="blurb">Sixty-one per cent abandon the flow, three people have theories, and nobody has watched anyone use it.</p>
         <span class="meta">The new designer <i class="sep"></i> 10 lessons <span class="go">Play</span></span>
       </a></li>
 
       <li><a class="card" style="--tone:#3fb950" href="games/data-chronicles.html">
-        <span class="field">Data Science</span>
+        <span class="head"><span class="field">Data Science</span><span class="where">Meridian</span></span>
         <h3>Data Chronicles</h3>
         <p class="blurb">Churn is up four points, everyone already knows why, and the board meets Thursday.</p>
         <span class="meta">The new analyst <i class="sep"></i> 10 lessons <span class="go">Play</span></span>
       </a></li>
 
-      <li><a class="card" style="--tone:#e3b341" href="games/copywriter-rpg.html">
-        <span class="field">Copywriting</span>
-        <h3>Copywriter RPG</h3>
+      <li><a class="card" style="--tone:#e3b341" href="games/copywriter-chronicles.html">
+        <span class="head"><span class="field">Copywriting</span><span class="where">The agency</span></span>
+        <h3>Copywriter Chronicles</h3>
         <p class="blurb">Six briefs, one crisis, and a client who changes their mind at four in the afternoon.</p>
-        <span class="meta">The new copywriter <i class="sep"></i> 6 levels <span class="go">Play</span></span>
+        <span class="meta">The new writer <i class="sep"></i> 9 lessons <span class="go">Play</span></span>
+      </a></li>
+
+      <li><a class="card" style="--tone:#2dd4bf" href="games/account-chronicles.html">
+        <span class="head"><span class="field">Account Management</span><span class="where">The agency</span></span>
+        <h3>Account Chronicles</h3>
+        <p class="blurb">A client who wants the wrong thing, an agency that has to build it, and you in between.</p>
+        <span class="meta">The new account manager <i class="sep"></i> 9 lessons <span class="go">Play</span></span>
+      </a></li>
+
+      <li><a class="card" style="--tone:#f87171" href="games/brand-chronicles.html">
+        <span class="head"><span class="field">Brand Strategy</span><span class="where">The agency</span></span>
+        <h3>Brand Chronicles</h3>
+        <p class="blurb">Positioning, architecture, and the discipline of saying no.</p>
+        <span class="meta">The new strategist <i class="sep"></i> 9 lessons <span class="go">Play</span></span>
+      </a></li>
+
+      <li><a class="card" style="--tone:#7dd3fc" href="games/design-chronicles.html">
+        <span class="head"><span class="field">Design Fundamentals</span><span class="where">The agency</span></span>
+        <h3>Design Chronicles</h3>
+        <p class="blurb">Hierarchy, type, grid, and work that survives production.</p>
+        <span class="meta">The new designer <i class="sep"></i> 9 lessons <span class="go">Play</span></span>
       </a></li>
 
     </ul>
