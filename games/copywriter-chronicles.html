@@ -78,14 +78,32 @@
   .lesson span{font-size:11px;color:#d8a33c;display:block;margin:3px 0 6px;
     text-transform:uppercase;letter-spacing:.06em}
   .lesson p{margin:0;font-size:14px;line-height:1.65;color:#c8c1b3}
-  .trackcard{border:1px solid #3d352c;border-radius:10px;padding:14px 16px;margin:0 0 10px;opacity:.6}
+  .trackcard{display:block;border:1px solid #3d352c;border-radius:10px;padding:14px 16px;
+    margin:0 0 10px;opacity:.6;text-decoration:none;color:inherit}
   .trackcard.live{opacity:1;border-color:#3d352c;cursor:pointer}
-  .trackcard.live:hover{border-color:#d8a33c}
+  .trackcard.live:hover,.trackcard.live:focus-visible{border-color:#d8a33c;outline:none}
+  .trackcard.away em{color:#d8a33c}
   .trackcard.picked{border-color:#d8a33c;background:#241f19}
   .trackcard b{font-family:"Space Grotesk",sans-serif;font-size:16px}
   .trackcard em{font-style:normal;font-size:11px;color:#9a9285;margin-left:10px;
     text-transform:uppercase;letter-spacing:.06em}
   .trackcard p{margin:6px 0 0;font-size:13px;line-height:1.6;color:#9a9285}
+  /* floor map -- the six rooms sit in a 3x2 grid and every neighbour is a door */
+  .objrow{display:flex;align-items:stretch;gap:10px;margin:0 0 12px;flex-wrap:wrap}
+  .objrow #obj{flex:1 1 220px;display:flex;align-items:center;margin:0}
+  .map{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;padding:5px;
+    border:1px solid #3d352c;background:#211d19;border-radius:7px;flex:0 0 auto}
+  .mcell{display:flex;align-items:center;justify-content:center;text-align:center;
+    min-width:58px;min-height:23px;padding:3px 8px;border-radius:4px;
+    border:1px solid #3d352c;background:#141210;color:#9a9285;
+    font-size:9.5px;line-height:1.15;letter-spacing:.02em}
+  .mcell.goal{color:#e08265;border-color:#e08265}
+  .mcell.here{color:#1a1815;background:#d8a33c;border-color:#d8a33c;font-weight:600}
+  .mcell.here.goal{border-color:#e08265}
+  @media (max-width:560px){
+    .map{width:100%}
+    .mcell{min-width:0;font-size:10.5px;min-height:28px}
+  }
   #certCanvas{width:100%;height:auto;border-radius:8px}
   .certbtns{display:flex;gap:10px;margin-top:16px}
   .certbtns button{flex:1;margin:0}
@@ -110,7 +128,10 @@
       <button id="folioBtn">Portfolio (<span id="folioCount">0</span>)</button>
     </div>
   </div>
-  <div id="obj" style="margin:0 0 12px"></div>
+  <div class="objrow">
+    <div id="obj"></div>
+    <div id="map" class="map" aria-label="Floor map"></div>
+  </div>
   <div class="stage">
     <canvas id="c" width="1600" height="960" role="img" aria-label="Agency floor"></canvas>
   </div>
@@ -160,7 +181,7 @@
 
 <div class="veil" id="tracksScreen" style="display:none"><div class="inner">
   <h3>Choose another track</h3>
-  <p class="lede small">Same agency, same six rooms, same people — different job, different briefs, different lessons.</p>
+  <p class="lede small">Engineering, product, security, UX and data science run at Meridian, a product company. The other four share an agency — same engine, different job, different lessons.</p>
   <div id="tracksBody"></div>
   <button id="backTracks" class="link">Back to menu</button>
 </div></div>
@@ -1124,6 +1145,74 @@ function interact(){
   if(n) talkTo(n[0]);
 }
 
+
+/* ---- camera -------------------------------------------------------------
+   The room is 800x480 world units drawn into a fixed 1600x960 canvas that CSS
+   stretches to the column width. On a phone that lands at roughly 0.45 CSS px
+   per world unit, which renders a 9px nameplate at about 4px -- unreadable.
+   So on a narrow viewport we zoom in and follow the player, and size the
+   nameplate from the resulting scale so it never falls below ~10 CSS px. At
+   desktop widths the zoom resolves to 1 and the frame is drawn exactly as it
+   always was.                                                               */
+function camZoom(cssW){
+  if(!cssW) return 1;
+  if(cssW>=820) return 1;   /* .wrap caps the canvas at ~868 CSS px */
+  if(cssW<=420) return 2;
+  return 1+(820-cssW)/400;
+}
+function camera(){
+  const cssW=C.getBoundingClientRect().width||W*S;
+  const z=camZoom(cssW), vw=W/z, vh=H/z;
+  const clamp=function(v,lo,hi){ return v<lo?lo:(v>hi?hi:v); };
+  return {
+    z:z,
+    x:clamp(G.px-vw/2,0,Math.max(0,W-vw)),
+    y:clamp(G.py-vh/2,0,Math.max(0,H-vh)),
+    /* nameplate in world units, sized to land near 10 CSS px once zoomed.
+       Unzoomed it stays at the 9 it has always been, so desktop is untouched. */
+    nf:z===1?9:clamp(10/((cssW*z)/W),9,16)
+  };
+}
+
+/* ---- floor map ----------------------------------------------------------
+   Every orthogonal neighbour in this grid is a real door, so the grid is the
+   map. The goal cell is worked out from the objective line: find a character
+   it names and show the room they are standing in, falling back to a room it
+   names outright. Nothing per-track to keep in step with the script.        */
+const MAP_GRID=[['lobby','servicing','creative'],['breakroom','studio','meeting']];
+const MAP_IDS=MAP_GRID[0].concat(MAP_GRID[1]);
+
+function goalRoom(){
+  const txt=(TRACK&&TRACK.objectives?TRACK.objectives[G.step]:'')||'';
+  if(!txt) return null;
+  for(let i=0;i<MAP_IDS.length;i++){
+    const occ=occupants(MAP_IDS[i])||[];
+    for(let j=0;j<occ.length;j++){
+      const ch=CAST[occ[j][0]];
+      if(ch&&ch.name&&txt.indexOf(ch.name)>=0) return MAP_IDS[i];
+    }
+  }
+  for(let i=0;i<MAP_IDS.length;i++){
+    const nm=ROOMS[MAP_IDS[i]]&&ROOMS[MAP_IDS[i]].name;
+    if(nm&&txt.indexOf(nm)>=0) return MAP_IDS[i];
+  }
+  return null;
+}
+
+let mapKey='';
+function paintMap(force){
+  const goal=goalRoom(), k=G.room+'|'+goal;
+  if(!force&&k===mapKey) return;
+  mapKey=k;
+  $('map').innerHTML=MAP_GRID.map(function(row){
+    return row.map(function(id){
+      const cls='mcell'+(id===G.room?' here':'')+(id===goal?' goal':'');
+      const nm=(ROOMS[id]&&ROOMS[id].name)||id;
+      return '<div class="'+cls+'">'+nm+'</div>';
+    }).join('');
+  }).join('');
+}
+
 /* ---- frame -------------------------------------------------------------- */
 let last=performance.now();
 function frame(){
@@ -1132,9 +1221,11 @@ function frame(){
   cur=G.room;
   step(dt);
 
-  const b=baked();
+  const b=baked(), cam=camera();
   X=LIVE; X.setTransform(1,0,0,1,0,0); X.clearRect(0,0,C.width,C.height);
+  X.scale(cam.z,cam.z); X.translate(-cam.x*S,-cam.y*S);
   X.drawImage(b.canvas,0,0); X.scale(S,S);
+  paintMap();
 
   const cast=occupants(G.room).map(function(n){ return {k:n[0],x:n[1],y:n[2],dir:n[3]}; });
   cast.push({k:'player',x:G.px,y:G.py,dir:G.dir,me:true});
@@ -1144,16 +1235,16 @@ function frame(){
   cast.forEach(function(n){
     person(n.x,n.y,n.k,n.dir,t,n.me?{walking:G.walking,phase:G.phase}:{});
     if(n.me) return;
-    const ch=CAST[n.k];
-    X.font='500 9px "DM Sans", Inter, sans-serif'; X.textAlign='center';
-    const w=X.measureText(ch.name).width+12;
-    X.globalAlpha=.85; rr(n.x-w/2,n.y+6,w,12,3,'#1a1815'); X.globalAlpha=1;
-    rr(n.x-w/2,n.y+6,2.5,12,1,ch.accent);
-    X.fillStyle='#f2ece0'; X.fillText(ch.name,n.x+1.2,n.y+15);
+    const ch=CAST[n.k], nf=cam.nf, k=nf/9;
+    X.font='500 '+nf.toFixed(1)+'px "DM Sans", Inter, sans-serif'; X.textAlign='center';
+    const w=X.measureText(ch.name).width+12*k, h=12*k;
+    X.globalAlpha=.85; rr(n.x-w/2,n.y+6,w,h,3*k,'#1a1815'); X.globalAlpha=1;
+    rr(n.x-w/2,n.y+6,2.5*k,h,1,ch.accent);
+    X.fillStyle='#f2ece0'; X.fillText(ch.name,n.x+1.2,n.y+6+9*k);
     if(near&&near[0]===n.k&&!DLG){
-      X.globalAlpha=.92; rr(n.x-9,n.y-62,18,16,4,P.mustard); X.globalAlpha=1;
-      X.fillStyle='#1a1815'; X.font='600 10px "Space Grotesk", sans-serif';
-      X.fillText('E',n.x,n.y-51);
+      X.globalAlpha=.92; rr(n.x-9*k,n.y-62,18*k,16*k,4*k,P.mustard); X.globalAlpha=1;
+      X.fillStyle='#1a1815'; X.font='600 '+(10*k).toFixed(1)+'px "Space Grotesk", sans-serif';
+      X.fillText('E',n.x,n.y-62+11.5*k);
     }
     X.textAlign='left';
   });
@@ -1600,6 +1691,16 @@ CAST.p_c={name:'You', role:'The new one', where:'Lobby',
    doors, dialogue, portfolio and certificate are shared by all of them.     */
 /* Any track not compiled into this build still shows in the picker. */
 const TRACK_STUBS={
+  engineering:{id:'engineering',name:'Software Engineering',title:'Engineering Chronicles',
+    blurb:'A one-line ticket, a two-thousand-line file, and an incident at twenty to twelve.'},
+  product:{id:'product',name:'Product Management',title:'Product Chronicles',
+    blurb:'Forty-one requests, two squads, one quarter, and a hundred and eighty thousand pounds with a date attached.'},
+  security:{id:'security',name:'Security',title:'Security Chronicles',
+    blurb:'Eleven findings, a questionnaire nobody reads, and one token making forty thousand requests.'},
+  ux:{id:'ux',name:'UX Design',title:'UX Chronicles',
+    blurb:'Sixty-one per cent abandon the flow, three people have theories, and nobody has watched anyone use it.'},
+  data:{id:'data',name:'Data Science',title:'Data Chronicles',
+    blurb:'Churn is up four points, everyone already knows why, and the board meets Thursday.'},
   copywriting:{id:'copywriting',name:'Copywriting',title:'Copywriter Chronicles',
     blurb:'Six briefs, one crisis, and a client who changes their mind at four in the afternoon.'},
   account:{id:'account',name:'Account Management',title:'Account Chronicles',
@@ -1616,7 +1717,18 @@ Object.keys(TRACK_STUBS).forEach(function(id){
     : Object.assign({},TRACK_STUBS[id],{live:false});
 });
 
-const TRACK_ORDER=['copywriting','account','brand','design'];
+const TRACK_ORDER=['engineering','product','security','ux','data','copywriting','account','brand','design'];
+const TRACK_FILES={
+  engineering:'engineering-chronicles.html',
+  product:'product-chronicles.html',
+  security:'security-chronicles.html',
+  ux:'ux-chronicles.html',
+  data:'data-chronicles.html',
+  copywriting:'copywriter-chronicles.html',
+  account:'account-chronicles.html',
+  brand:'brand-chronicles.html',
+  design:'design-chronicles.html',
+};
 const FIRST_LIVE=TRACK_ORDER.filter(function(id){ return TRACKS[id].live; })[0]||'copywriting';
 let TRACK=TRACKS[FIRST_LIVE];
 let pendingTrack=FIRST_LIVE;
@@ -1695,13 +1807,19 @@ function paintLessons(){
 
 /* ---- track picker ------------------------------------------------------- */
 function paintTracks(){
+  /* The track compiled into this build is played in place; every other one is
+     its own file next to this one, so it is a link rather than a dead card. */
   $('tracksBody').innerHTML=TRACK_ORDER.map(function(id){
     const T=TRACKS[id]; if(!T) return '';
-    const tag=T.live?(pendingTrack===id?'Selected':'Play this'):'Separate build';
-    return '<div class="trackcard'+(T.live?' live':'')+(pendingTrack===id?' on':'')+
-      '" data-id="'+id+'"><b>'+T.name+'</b><em>'+tag+'</em><p>'+T.blurb+'</p></div>';
+    const body='<b>'+T.name+'</b><em>'+(T.live?(pendingTrack===id?'Selected':'Play this')
+      :'Open')+'</em><p>'+T.blurb+'</p>';
+    if(T.live) return '<div class="trackcard live'+(pendingTrack===id?' on':'')+
+      '" data-id="'+id+'">'+body+'</div>';
+    const href=TRACK_FILES[id];
+    return href?'<a class="trackcard live away" href="'+href+'">'+body+'</a>'
+               :'<div class="trackcard">'+body+'</div>';
   }).join('');
-  [].forEach.call($('tracksBody').querySelectorAll('.trackcard.live'),function(el){
+  [].forEach.call($('tracksBody').querySelectorAll('.trackcard.live[data-id]'),function(el){
     el.onclick=function(){
       loadTrack(el.getAttribute('data-id'));
       paintMenu(); paintTracks();
