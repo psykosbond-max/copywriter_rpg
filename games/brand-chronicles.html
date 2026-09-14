@@ -88,6 +88,21 @@
   .trackcard em{font-style:normal;font-size:11px;color:#9a9285;margin-left:10px;
     text-transform:uppercase;letter-spacing:.06em}
   .trackcard p{margin:6px 0 0;font-size:13px;line-height:1.6;color:#9a9285}
+  /* first-run coaching, and the spotlight it puts on the two things it names */
+  #coach{display:none;margin:0 0 10px;padding:11px 13px;border-radius:9px;
+    border:1px solid #d8a33c;background:#211d19;color:#9a9285;font-size:12.5px;line-height:1.45}
+  #coach.on{display:block}
+  #coach p{margin:0 0 7px;display:flex;gap:9px;align-items:flex-start}
+  #coach p>span{flex:1;min-width:0}
+  #coach p>b.n{flex:0 0 17px;height:17px;border-radius:50%;background:#d8a33c;
+    color:#1a1815;font-size:10.5px;font-weight:600;display:flex;align-items:center;
+    justify-content:center;margin-top:1px}
+  #coach span b{color:#f2ece0;font-weight:600}
+  #coach button{margin:2px 0 0;padding:6px 15px;border-radius:7px;cursor:pointer;
+    border:1px solid #d8a33c;background:#d8a33c;color:#1a1815;
+    font-family:inherit;font-size:12.5px;font-weight:600}
+  .objrow.spot #obj,.objrow.spot .map{border-color:#d8a33c}
+  #dlg.spot .opts button{border-color:#d8a33c}
   /* floor map -- the six rooms sit in a 3x2 grid and every neighbour is a door */
   .objrow{display:flex;align-items:stretch;gap:10px;margin:0 0 12px;flex-wrap:wrap}
   .objrow #obj{flex:1 1 220px;display:flex;align-items:center;margin:0}
@@ -96,7 +111,11 @@
   .mcell{display:flex;align-items:center;justify-content:center;text-align:center;
     min-width:58px;min-height:23px;padding:3px 8px;border-radius:4px;
     border:1px solid #3d352c;background:#141210;color:#9a9285;
-    font-size:9.5px;line-height:1.15;letter-spacing:.02em}
+    font-size:9.5px;line-height:1.15;letter-spacing:.02em;
+    font-family:inherit;cursor:pointer;appearance:none;-webkit-appearance:none}
+  .mcell:hover,.mcell:focus-visible{color:#1a1815;background:#d8a33c;
+    border-color:#d8a33c;outline:none}
+  .mcell.going{border-color:#d8a33c;border-style:dashed}
   .mcell.goal{color:#e08265;border-color:#e08265}
   .mcell.here{color:#1a1815;background:#d8a33c;border-color:#d8a33c;font-weight:600}
   .mcell.here.goal{border-color:#e08265}
@@ -131,6 +150,14 @@
   <div class="objrow">
     <div id="obj"></div>
     <div id="map" class="map" aria-label="Floor map"></div>
+  </div>
+  <div id="coach">
+    <p><b class="n">1</b><span><b>Read the line above.</b> That is your objective &mdash;
+      who to find, and which room. The map next to it shows where you are; tap any
+      room to walk there.</span></p>
+    <p><b class="n">2</b><span><b>Then answer in the box below the floor.</b> Nothing
+      moves until you tap one of its options &mdash; that is how the day starts.</span></p>
+    <button id="coachGo" type="button">Got it</button>
   </div>
   <div class="stage">
     <canvas id="c" width="1600" height="960" role="img" aria-label="Agency floor"></canvas>
@@ -977,6 +1004,7 @@ let DLG=null;
 const $=id=>document.getElementById(id);
 
 function say(speaker,text,options){
+  cancelTravel();
   DLG={speaker:speaker,text:text,options:options&&options.length?options:[{label:'Continue',go:closeDlg}]};
   paintDlg();
 }
@@ -992,7 +1020,7 @@ function paintDlg(){
   const wrap=el.querySelector('.opts');
   DLG.options.forEach(function(o){
     const b=document.createElement('button');
-    b.textContent=o.label; b.onclick=function(){ o.go(); };
+    b.textContent=o.label; b.onclick=function(){ hideCoach(); o.go(); };
     wrap.appendChild(b);
   });
 }
@@ -1107,15 +1135,21 @@ function step(dt){
   if(k['ArrowDown']||k['s']||t.down) dy+=1;
   if(k['ArrowLeft']||k['a']||t.left) dx-=1;
   if(k['ArrowRight']||k['d']||t.right) dx+=1;
+  let sp=SPEED, manual=!!(dx||dy);
+  if(manual) cancelTravel();       /* a key or the d-pad always wins */
+  else if(G.travel){
+    const v=travelVector();
+    if(v){ dx=v.x; dy=v.y; sp=Math.min(TRAVEL_SPEED,v.d); }
+  }
   G.walking=!!(dx||dy);
   if(!G.walking) return;
-  if(dx&&dy){ dx*=0.7071; dy*=0.7071; }
+  if(manual&&dx&&dy){ dx*=0.7071; dy*=0.7071; }  /* travel vectors are already unit */
   if(Math.abs(dx)>Math.abs(dy)) G.dir=dx<0?'left':'right'; else G.dir=dy<0?'up':'down';
   G.phase+=dt*0.013;
 
   const coll=baked().coll;
-  let nx=Math.max(FX+10,Math.min(FX+FW-10,G.px+dx*SPEED));
-  let ny=Math.max(FY+26,Math.min(FY+FH-6,G.py+dy*SPEED));
+  let nx=Math.max(FX+10,Math.min(FX+FW-10,G.px+dx*sp));
+  let ny=Math.max(FY+26,Math.min(FY+FH-6,G.py+dy*sp));
   /* If we are somehow already inside geometry, let the player walk out rather
      than wedging them there forever. */
   const stuck=blocked(G.px,G.py,coll);
@@ -1124,6 +1158,7 @@ function step(dt){
 
   const d=doorAt(G.px,G.py);
   if(d) enterRoom(d.to,d.toSide);
+  travelWatch(dt);
 }
 
 /* ---- who is standing next to me ----------------------------------------- */
@@ -1146,6 +1181,212 @@ function interact(){
 }
 
 
+/* ---- first-run coaching -------------------------------------------------
+   Two things are not obvious on the first run: the objective is at the top,
+   and nothing happens until you answer in the dialogue box. Say both, spotlight
+   both, and get out of the way at the first tap.                            */
+function showCoach(){
+  const c=$('coach'); if(!c) return;
+  c.classList.add('on');
+  const row=document.querySelector('.objrow');
+  if(row) row.classList.add('spot');
+  $('dlg').classList.add('spot');
+}
+function hideCoach(){
+  const c=$('coach'); if(!c||!c.classList.contains('on')) return;
+  c.classList.remove('on');
+  const row=document.querySelector('.objrow');
+  if(row) row.classList.remove('spot');
+  $('dlg').classList.remove('spot');
+}
+
+/* ---- getting there ------------------------------------------------------
+   Tapping a room on the map walks you to it, rather than making you drive the
+   d-pad across the whole floor -- which on a phone is most of the work of
+   playing. Rooms are routed breadth-first over the door graph; inside each
+   room an A* on a coarse grid steers around the furniture so the walk reads as
+   a walk; and the last leg finishes beside whoever is standing there, which is
+   almost always why the room was tapped. Any key or d-pad press hands control
+   straight back to the player.                                              */
+const CELL=10, TRAVEL_SPEED=SPEED*3;
+
+function roomRoute(from,to){
+  if(from===to) return [];
+  const prev={}, seen={}; seen[from]=1;
+  const q=[from];
+  while(q.length){
+    const r=q.shift(), list=DOORS[r]||[];
+    for(let i=0;i<list.length;i++){
+      const n=list[i].to;
+      if(seen[n]) continue;
+      seen[n]=1; prev[n]=[r,list[i]];
+      if(n===to){
+        const hops=[]; let c=to;
+        while(c!==from){ hops.unshift(prev[c][1]); c=prev[c][0]; }
+        return hops;
+      }
+      q.push(n);
+    }
+  }
+  return null;
+}
+
+/* The point just inside a doorway that doorAt() will accept. */
+function doorPoint(d){
+  if(d.side==='left')  return {x:FX+10,    y:d.at};
+  if(d.side==='right') return {x:FX+FW-10, y:d.at};
+  if(d.side==='top')   return {x:d.at,     y:FY+26};
+  return {x:d.at, y:FY+FH-6};
+}
+
+function clearLine(a,b,coll){
+  const n=Math.ceil(Math.hypot(b.x-a.x,b.y-a.y)/4);
+  for(let i=1;i<n;i++){
+    if(blocked(a.x+(b.x-a.x)*i/n, a.y+(b.y-a.y)*i/n, coll)) return false;
+  }
+  return true;
+}
+
+/* Drop the grid's staircase corners wherever a straight line will do. */
+function smoothPath(pts,coll){
+  if(pts.length<3) return pts;
+  const out=[pts[0]];
+  let i=0;
+  while(i<pts.length-1){
+    let j=pts.length-1;
+    while(j>i+1&&!clearLine(pts[i],pts[j],coll)) j--;
+    out.push(pts[j]); i=j;
+  }
+  return out;
+}
+
+function findPath(sx,sy,tx,ty){
+  const coll=baked().coll;
+  const X0=FX+10, Y0=FY+26, X1=FX+FW-10, Y1=FY+FH-6;
+  const cols=Math.floor((X1-X0)/CELL)+1, rows=Math.floor((Y1-Y0)/CELL)+1;
+  const wx=function(i){ return X0+i*CELL; }, wy=function(j){ return Y0+j*CELL; };
+  const ci=function(x){ return Math.max(0,Math.min(cols-1,Math.round((x-X0)/CELL))); };
+  const cj=function(y){ return Math.max(0,Math.min(rows-1,Math.round((y-Y0)/CELL))); };
+  const N=cols*rows, free=new Uint8Array(N);
+  for(let j=0;j<rows;j++) for(let i=0;i<cols;i++)
+    free[j*cols+i]=blocked(wx(i),wy(j),coll)?0:1;
+
+  /* A doorway or a character can sit half inside geometry; start from, and aim
+     at, the nearest cell that is actually standable. */
+  const nearestFree=function(k){
+    if(free[k]) return k;
+    const ki=k%cols, kj=(k/cols)|0;
+    let best=-1, bd=Infinity;
+    for(let j=0;j<rows;j++) for(let i=0;i<cols;i++){
+      const c=j*cols+i; if(!free[c]) continue;
+      const d=(i-ki)*(i-ki)+(j-kj)*(j-kj);
+      if(d<bd){ bd=d; best=c; }
+    }
+    return best;
+  };
+  const s=nearestFree(cj(sy)*cols+ci(sx)), t=nearestFree(cj(ty)*cols+ci(tx));
+  if(s<0||t<0) return null;
+  if(s===t) return [{x:tx,y:ty}];
+
+  const g=new Float32Array(N).fill(Infinity);
+  const f=new Float32Array(N).fill(Infinity);
+  const from=new Int32Array(N).fill(-1);
+  const open=[s], inOpen=new Uint8Array(N);
+  const ti=t%cols, tj=(t/cols)|0;
+  const h=function(k){ return Math.hypot(k%cols-ti, ((k/cols)|0)-tj); };
+  g[s]=0; f[s]=h(s); inOpen[s]=1;
+  let found=false;
+  while(open.length){
+    let bi=0;
+    for(let i=1;i<open.length;i++) if(f[open[i]]<f[open[bi]]) bi=i;
+    const c=open.splice(bi,1)[0]; inOpen[c]=0;
+    if(c===t){ found=true; break; }
+    const cI=c%cols, cJ=(c/cols)|0;
+    for(let dj=-1;dj<=1;dj++) for(let di=-1;di<=1;di++){
+      if(!di&&!dj) continue;
+      const ni=cI+di, nj=cJ+dj;
+      if(ni<0||nj<0||ni>=cols||nj>=rows) continue;
+      const nk=nj*cols+ni;
+      if(!free[nk]) continue;
+      /* no squeezing diagonally between two blocked cells */
+      if(di&&dj&&(!free[cJ*cols+ni]||!free[nj*cols+cI])) continue;
+      const ng=g[c]+(di&&dj?1.4142:1);
+      if(ng<g[nk]){
+        g[nk]=ng; f[nk]=ng+h(nk); from[nk]=c;
+        if(!inOpen[nk]){ open.push(nk); inOpen[nk]=1; }
+      }
+    }
+  }
+  if(!found) return null;
+  const pts=[]; let c=t;
+  while(c!==-1&&c!==s){ pts.unshift({x:wx(c%cols),y:wy((c/cols)|0)}); c=from[c]; }
+  pts.push({x:tx,y:ty});
+  return smoothPath(pts,coll);
+}
+
+function travelTo(id){
+  if(!G.started||DLG||!ROOMS[id]||id===G.room) return;
+  G.travel={to:id,path:null,pi:0,room:null,stall:0,tries:0};
+  paintMap(true);
+}
+function cancelTravel(){
+  if(!G.travel) return;
+  G.travel=null; paintMap(true);
+}
+
+/* Where this leg of the journey ends: the next doorway, or -- once we are in
+   the room that was tapped -- a spot beside whoever is standing in it. */
+function travelGoal(){
+  if(G.room===G.travel.to){
+    const occ=occupants(G.room)||[];
+    if(!occ.length) return null;
+    const txt=(TRACK&&TRACK.objectives?TRACK.objectives[G.step]:'')||'';
+    let pick=occ[0];
+    for(let i=0;i<occ.length;i++){
+      const ch=CAST[occ[i][0]];
+      if(ch&&ch.name&&txt.indexOf(ch.name)>=0){ pick=occ[i]; break; }
+    }
+    return {x:pick[1],y:pick[2]+26};
+  }
+  const hops=roomRoute(G.room,G.travel.to);
+  return hops&&hops.length?doorPoint(hops[0]):null;
+}
+
+/* A unit vector toward the next waypoint, or null when the journey is over. */
+function travelVector(){
+  const T=G.travel;
+  if(T.room!==G.room){ T.room=G.room; T.path=null; }
+  if(!T.path){
+    const goal=travelGoal();
+    if(!goal){ cancelTravel(); return null; }
+    T.path=findPath(G.px,G.py,goal.x,goal.y); T.pi=0;
+    if(!T.path||!T.path.length){ cancelTravel(); return null; }
+  }
+  while(T.pi<T.path.length){
+    const w=T.path[T.pi], dx=w.x-G.px, dy=w.y-G.py;
+    const d=Math.hypot(dx,dy);
+    if(d<0.6){ T.pi++; continue; }
+    /* d rides along so the last stride is exact: stopping even 3px short of a
+       doorway leaves the player against the wall and doorAt() never fires. */
+    return {x:dx/d,y:dy/d,d:d};
+  }
+  cancelTravel();
+  return null;
+}
+
+/* Walked into something the path did not know about: replan, then give up
+   rather than shuffle on the spot forever. */
+function travelWatch(dt){
+  const T=G.travel; if(!T) return;
+  const moved=Math.hypot(G.px-(T.lx==null?G.px:T.lx), G.py-(T.ly==null?G.py:T.ly));
+  T.lx=G.px; T.ly=G.py;
+  T.stall=moved<0.4?T.stall+dt:0;
+  if(T.stall>800){
+    T.stall=0; T.path=null; T.tries++;
+    if(T.tries>2) cancelTravel();
+  }
+}
+
 /* ---- camera -------------------------------------------------------------
    The room is 800x480 world units drawn into a fixed 1600x960 canvas that CSS
    stretches to the column width. On a phone that lands at roughly 0.45 CSS px
@@ -1157,8 +1398,8 @@ function interact(){
 function camZoom(cssW){
   if(!cssW) return 1;
   if(cssW>=820) return 1;   /* .wrap caps the canvas at ~868 CSS px */
-  if(cssW<=420) return 2;
-  return 1+(820-cssW)/400;
+  if(cssW<=420) return 1.4;
+  return 1+(820-cssW)/1000;
 }
 function camera(){
   const cssW=C.getBoundingClientRect().width||W*S;
@@ -1201,14 +1442,15 @@ function goalRoom(){
 
 let mapKey='';
 function paintMap(force){
-  const goal=goalRoom(), k=G.room+'|'+goal;
+  const goal=goalRoom(), k=G.room+'|'+goal+'|'+(G.travel?G.travel.to:'');
   if(!force&&k===mapKey) return;
   mapKey=k;
   $('map').innerHTML=MAP_GRID.map(function(row){
     return row.map(function(id){
-      const cls='mcell'+(id===G.room?' here':'')+(id===goal?' goal':'');
+      const cls='mcell'+(id===G.room?' here':'')+(id===goal?' goal':'')
+        +(G.travel&&G.travel.to===id?' going':'');
       const nm=(ROOMS[id]&&ROOMS[id].name)||id;
-      return '<div class="'+cls+'">'+nm+'</div>';
+      return '<button type="button" class="'+cls+'" data-room="'+id+'">'+nm+'</button>';
     }).join('');
   }).join('');
 }
@@ -1275,6 +1517,11 @@ document.addEventListener('keyup',function(e){
 });
 $('t_act').addEventListener('click',function(e){ e.preventDefault(); interact(); });
 $('folioBtn').onclick=openFolio;
+$('map').addEventListener('click',function(e){
+  const b=e.target.closest('.mcell');
+  if(b) travelTo(b.getAttribute('data-room'));
+});
+$('coachGo').onclick=hideCoach;
 
 /* boot happens at the end of the front end, once TRACK exists */
 
@@ -1637,7 +1884,9 @@ $('avGo').onclick=function(){
   loadTrack(pendingTrack);
   G.started=true;
   G.room='lobby'; cur='lobby'; G.px=400; G.py=392; G.dir='up';
+  cancelTravel();
   say('', TRACK.opening.text, [{label:TRACK.opening.label, go:closeDlg}]);
+  showCoach();
 };
 
 /* ---- lessons ------------------------------------------------------------ */
