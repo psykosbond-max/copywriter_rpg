@@ -1,0 +1,14 @@
+{
+  "name": "chronicles",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Short story-driven games about doing a real job. One engine, two worlds, nine tracks.",
+  "type": "module",
+  "scripts": {
+    "check": "node tools/check.mjs",
+    "new": "node tools/new-track.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.47.0"
+  }
+}

@@ -139,7 +139,7 @@
     <h1>Chronicles
       <span class="soft">Two workplaces, one deadline, and the decisions the job is actually made of.</span>
     </h1>
-    <p class="lede">Nine short games where you work a <b>real day in a real job</b>. Five of them at Meridian, a product company; four at the agency across town. Walk the floor, talk to the people who have already made up their minds, and make the calls yourself. Everything closes at five, whether you are finished or not.</p>
+    <p class="lede" id="lede"><span id="ledeCount">Nine short games</span> where you work a <b>real day in a real job</b>. <span id="ledeSplit">Five of them at Meridian, a product company; four at the agency across town.</span> Walk the floor, talk to the people who have already made up their minds, and make the calls yourself. Everything closes at five, whether you are finished or not.</p>
     <ul class="facts">
       <li><b>20–40 min</b> a run</li>
       <li><b>No install</b> — opens in the browser</li>
@@ -153,74 +153,21 @@
   <section>
     <div class="sec-head">
       <h2>Pick a job</h2>
-      <span class="note">Nine tracks &middot; two offices, one clock</span>
+      <span class="note" id="gridNote">Nine tracks &middot; two offices, one clock</span>
     </div>
 
-    <ul class="grid">
-
-      <li><a class="card" style="--tone:#58a6ff" href="games/engineering-chronicles.html">
-        <span class="head"><span class="field">Software Engineering</span><span class="where">Meridian</span></span>
-        <h3>Engineering Chronicles</h3>
-        <p class="blurb">A one-line ticket, a two-thousand-line file, and an incident at twenty to twelve.</p>
-        <span class="meta">The new engineer <i class="sep"></i> 10 lessons <span class="go">Play</span></span>
-      </a></li>
-
-      <li><a class="card" style="--tone:#a78bfa" href="games/product-chronicles.html">
-        <span class="head"><span class="field">Product Management</span><span class="where">Meridian</span></span>
-        <h3>Product Chronicles</h3>
-        <p class="blurb">Forty-one requests, two squads, one quarter, and a hundred and eighty thousand pounds with a date attached.</p>
-        <span class="meta">The new product manager <i class="sep"></i> 9 lessons <span class="go">Play</span></span>
-      </a></li>
-
-      <li><a class="card" style="--tone:#f0803c" href="games/security-chronicles.html">
-        <span class="head"><span class="field">Security</span><span class="where">Meridian</span></span>
-        <h3>Security Chronicles</h3>
-        <p class="blurb">Eleven findings, a questionnaire nobody reads, and one token making forty thousand requests.</p>
-        <span class="meta">The new security engineer <i class="sep"></i> 11 lessons <span class="go">Play</span></span>
-      </a></li>
-
-      <li><a class="card" style="--tone:#f472b6" href="games/ux-chronicles.html">
-        <span class="head"><span class="field">UX Design</span><span class="where">Meridian</span></span>
-        <h3>UX Chronicles</h3>
-        <p class="blurb">Sixty-one per cent abandon the flow, three people have theories, and nobody has watched anyone use it.</p>
-        <span class="meta">The new designer <i class="sep"></i> 10 lessons <span class="go">Play</span></span>
-      </a></li>
-
-      <li><a class="card" style="--tone:#3fb950" href="games/data-chronicles.html">
-        <span class="head"><span class="field">Data Science</span><span class="where">Meridian</span></span>
-        <h3>Data Chronicles</h3>
-        <p class="blurb">Churn is up four points, everyone already knows why, and the board meets Thursday.</p>
-        <span class="meta">The new analyst <i class="sep"></i> 10 lessons <span class="go">Play</span></span>
-      </a></li>
-
-      <li><a class="card" style="--tone:#e3b341" href="games/copywriter-chronicles.html">
-        <span class="head"><span class="field">Copywriting</span><span class="where">The agency</span></span>
-        <h3>Copywriter Chronicles</h3>
-        <p class="blurb">Six briefs, one crisis, and a client who changes their mind at four in the afternoon.</p>
-        <span class="meta">The new writer <i class="sep"></i> 9 lessons <span class="go">Play</span></span>
-      </a></li>
-
-      <li><a class="card" style="--tone:#2dd4bf" href="games/account-chronicles.html">
-        <span class="head"><span class="field">Account Management</span><span class="where">The agency</span></span>
-        <h3>Account Chronicles</h3>
-        <p class="blurb">A client who wants the wrong thing, an agency that has to build it, and you in between.</p>
-        <span class="meta">The new account manager <i class="sep"></i> 9 lessons <span class="go">Play</span></span>
-      </a></li>
-
-      <li><a class="card" style="--tone:#f87171" href="games/brand-chronicles.html">
-        <span class="head"><span class="field">Brand Strategy</span><span class="where">The agency</span></span>
-        <h3>Brand Chronicles</h3>
-        <p class="blurb">Positioning, architecture, and the discipline of saying no.</p>
-        <span class="meta">The new strategist <i class="sep"></i> 9 lessons <span class="go">Play</span></span>
-      </a></li>
-
-      <li><a class="card" style="--tone:#7dd3fc" href="games/design-chronicles.html">
-        <span class="head"><span class="field">Design Fundamentals</span><span class="where">The agency</span></span>
-        <h3>Design Chronicles</h3>
-        <p class="blurb">Hierarchy, type, grid, and work that survives production.</p>
-        <span class="meta">The new designer <i class="sep"></i> 9 lessons <span class="go">Play</span></span>
-      </a></li>
-
+    <ul class="grid" id="grid">
+      <noscript>
+        <li><a class="card" href="games/engineering-chronicles.html"><span class="head"><span class="field">Software Engineering</span></span><h3>Engineering Chronicles</h3></a></li>
+        <li><a class="card" href="games/product-chronicles.html"><span class="head"><span class="field">Product Management</span></span><h3>Product Chronicles</h3></a></li>
+        <li><a class="card" href="games/security-chronicles.html"><span class="head"><span class="field">Security</span></span><h3>Security Chronicles</h3></a></li>
+        <li><a class="card" href="games/ux-chronicles.html"><span class="head"><span class="field">UX Design</span></span><h3>UX Chronicles</h3></a></li>
+        <li><a class="card" href="games/data-chronicles.html"><span class="head"><span class="field">Data Science</span></span><h3>Data Chronicles</h3></a></li>
+        <li><a class="card" href="games/copywriter-chronicles.html"><span class="head"><span class="field">Copywriting</span></span><h3>Copywriter Chronicles</h3></a></li>
+        <li><a class="card" href="games/account-chronicles.html"><span class="head"><span class="field">Account Management</span></span><h3>Account Chronicles</h3></a></li>
+        <li><a class="card" href="games/brand-chronicles.html"><span class="head"><span class="field">Brand Strategy</span></span><h3>Brand Chronicles</h3></a></li>
+        <li><a class="card" href="games/design-chronicles.html"><span class="head"><span class="field">Design Fundamentals</span></span><h3>Design Chronicles</h3></a></li>
+      </noscript>
     </ul>
   </section>
 
@@ -254,5 +201,46 @@
   </footer>
 
 </div>
+<script src="catalogue.js"></script>
+<script>
+/* Cards come from catalogue.js — the same list the games' track picker reads —
+   so adding a track there puts it here too. The <noscript> block above keeps a
+   plain list of links for anyone without JavaScript. */
+(function(){
+  var esc = function(t){ return String(t).replace(/[&<>"]/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); };
+  document.getElementById('grid').innerHTML = (window.CATALOGUE||[]).map(function(e){
+    return '<li><a class="card" style="--tone:' + esc(e.tone) + '" href="games/' + esc(e.file) + '">'
+      + '<span class="head"><span class="field">' + esc(e.name) + '</span>'
+      + '<span class="where">' + esc(e.setting) + '</span></span>'
+      + '<h3>' + esc(e.title) + '</h3>'
+      + '<p class="blurb">' + esc(e.blurb) + '</p>'
+      + '<span class="meta">' + esc(e.role) + ' <i class="sep"></i> '
+      + e.lessons + ' lessons <span class="go">Play</span></span></a></li>';
+  }).join('');
+  var n = (window.CATALOGUE||[]).length;
+  var words = ['no','one','two','three','four','five','six','seven','eight','nine','ten',
+               'eleven','twelve'];
+  var worlds = {};
+  (window.CATALOGUE||[]).forEach(function(e){ worlds[e.world] = 1; });
+  var w = Object.keys(worlds).length;
+  var byWorld = {};
+  (window.CATALOGUE||[]).forEach(function(e){
+    (byWorld[e.setting] = byWorld[e.setting] || []).push(e);
+  });
+  var cnt = document.getElementById('ledeCount');
+  if (cnt) cnt.textContent = (words[n] || n) + ' short games';
+  var split = document.getElementById('ledeSplit');
+  if (split) {
+    var parts = Object.keys(byWorld).map(function(k){
+      return (words[byWorld[k].length] || byWorld[k].length) + ' at ' + k;
+    });
+    split.textContent = parts.join('; ').replace(/^./, function(c){ return c.toUpperCase(); }) + '.';
+  }
+  var note = document.getElementById('gridNote');
+  if (note) note.textContent = (words[n] || n) + ' tracks \u00b7 '
+    + (words[w] || w) + (w === 1 ? ' office' : ' offices') + ', one clock';
+})();
+</script>
 </body>
 </html>

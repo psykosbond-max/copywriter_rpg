@@ -1,0 +1,132 @@
+/* Chronicles — one stylesheet for every game.
+   Colours are custom properties; each world sets its own values, so a
+   change to any rule here lands in all nine games and both colourways. */
+
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:"DM Sans",Inter,system-ui,sans-serif;overscroll-behavior:none}
+  .wrap{max-width:900px;margin:0 auto;padding:18px 16px 40px;position:relative}
+  h1{font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:20px;margin:0;letter-spacing:-.02em}
+  .top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:0 0 12px}
+  .hud{display:flex;align-items:center;gap:10px}
+  #obj{font-size:13px;color:var(--mute);border:1px solid var(--line);background:var(--panel);
+    border-radius:7px;padding:7px 12px;line-height:1.3}
+  #clock{display:none;font-family:ui-monospace,Menlo,monospace;font-size:15px;color:var(--onAccent);
+    background:var(--accent);border-radius:7px;padding:7px 11px;font-weight:600}
+  #clock.urgent{background:var(--warn);color:var(--ink)}
+  #folioBtn{background:var(--panel);color:var(--mute);border:1px solid var(--line);border-radius:7px;
+    padding:7px 12px;font-family:inherit;font-size:13px;cursor:pointer}
+  #folioBtn:hover{border-color:var(--accent);color:var(--ink)}
+  .stage{position:relative}
+  canvas{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:12px;background:var(--bg)}
+  /* dialogue */
+  #dlg{display:none;margin:14px 0 0;background:var(--panel2);border:1px solid var(--line);
+    border-radius:12px;padding:16px 18px}
+  #dlg .who{font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:14px;
+    display:flex;align-items:center;gap:9px;margin:0 0 8px}
+  #dlg .who em{font-style:normal;font-weight:400;font-size:12px;color:var(--mute)}
+  #dlg .dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+  #dlg p{margin:0 0 14px;font-size:15px;line-height:1.65;max-width:66ch;color:var(--ink2)}
+  #dlg .opts{display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+  #dlg .opts button{font-family:inherit;font-size:14px;text-align:left;line-height:1.45;
+    background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:8px;
+    padding:10px 14px;cursor:pointer;transition:.13s;width:100%}
+  #dlg .opts button:hover{border-color:var(--accent);background:var(--line2)}
+  /* title + portfolio */
+  .veil{position:fixed;inset:0;background:var(--veil);display:flex;
+    align-items:center;justify-content:center;padding:24px;z-index:20}
+  .veil .inner{max-width:520px;width:100%;background:var(--panel2);border:1px solid var(--line);
+    border-radius:14px;padding:26px 28px;max-height:80vh;overflow:auto}
+  .veil h2{font-family:"Space Grotesk",sans-serif;font-size:25px;margin:0 0 10px;letter-spacing:-.02em}
+  .veil h3{font-family:"Space Grotesk",sans-serif;font-size:18px;margin:0 0 14px}
+  .veil p{font-size:14px;line-height:1.7;color:var(--mute);margin:0 0 8px}
+  .veil button{margin-top:18px;font-family:inherit;font-size:14px;background:var(--accent);
+    color:var(--onAccent);border:0;border-radius:8px;padding:11px 20px;cursor:pointer;font-weight:500}
+  .pf{border-top:1px solid var(--line);padding:11px 0}
+  .pf b{font-family:"Space Grotesk",sans-serif;font-size:14px;display:block}
+  .pf span{font-size:12px;color:var(--mute);display:block;margin:2px 0 5px}
+  .pf i{font-style:normal;font-size:14px;color:var(--accent)}
+  .empty{font-style:italic}
+  .veil .inner.center{text-align:center}
+  .veil .inner.wide{max-width:880px}
+  .lede{font-size:15px;line-height:1.6;margin:0 0 22px}
+  .lede.small{font-size:13px;margin-bottom:18px}
+  .hintline{font-size:12px;color:var(--mute2);margin:10px 0 0}
+  .veil button.primary{background:var(--accent);color:var(--onAccent)}
+  .veil button.ghost{background:transparent;color:var(--ink2);border:1px solid var(--line)}
+  .veil button.link{background:none;border:0;color:var(--mute);font-size:13px;padding:8px;margin-top:10px}
+  .veil button.link:hover{color:var(--accent)}
+  .veil .inner.center button.primary,.veil .inner.center button.ghost{display:block;width:100%;margin:9px 0 0}
+  .veil button:disabled{opacity:.4;cursor:not-allowed}
+  #nameInput{width:100%;font-family:inherit;font-size:17px;background:var(--bg);color:var(--ink);
+    border:1px solid var(--line);border-radius:8px;padding:13px 15px;margin-top:6px}
+  #nameInput:focus{outline:none;border-color:var(--accent)}
+  .avrow{display:flex;gap:12px;margin:6px 0 4px;justify-content:center}
+  .avcard{flex:1;background:var(--bg);border:2px solid var(--line);border-radius:11px;
+    padding:6px;cursor:pointer;transition:.13s;line-height:0}
+  .avcard:hover{border-color:var(--mute2)}
+  .avcard.on{border-color:var(--accent);background:var(--panel3)}
+  .avcard canvas{width:100%;height:auto}
+  .lesson{border-top:1px solid var(--line);padding:13px 0}
+  .lesson b{font-family:"Space Grotesk",sans-serif;font-size:15px;display:block}
+  .lesson span{font-size:11px;color:var(--accent);display:block;margin:3px 0 6px;
+    text-transform:uppercase;letter-spacing:.06em}
+  .lesson p{margin:0;font-size:14px;line-height:1.65;color:var(--ink3)}
+  .trackcard{display:block;border:1px solid var(--line);border-radius:10px;padding:14px 16px;
+    margin:0 0 10px;opacity:.6;text-decoration:none;color:inherit}
+  .trackcard.live{opacity:1;border-color:var(--line);cursor:pointer}
+  .trackcard.live:hover,.trackcard.live:focus-visible{border-color:var(--accent);outline:none}
+  .trackcard.away em{color:var(--accent)}
+  .trackcard.picked{border-color:var(--accent);background:var(--panel3)}
+  .trackcard b{font-family:"Space Grotesk",sans-serif;font-size:16px}
+  .trackcard em{font-style:normal;font-size:11px;color:var(--mute);margin-left:10px;
+    text-transform:uppercase;letter-spacing:.06em}
+  .trackcard p{margin:6px 0 0;font-size:13px;line-height:1.6;color:var(--mute)}
+  /* first-run coaching, and the spotlight it puts on the two things it names */
+  #coach{display:none;margin:0 0 10px;padding:11px 13px;border-radius:9px;
+    border:1px solid var(--accent);background:var(--panel);color:var(--mute);font-size:12.5px;line-height:1.45}
+  #coach.on{display:block}
+  #coach p{margin:0 0 7px;display:flex;gap:9px;align-items:flex-start}
+  #coach p>span{flex:1;min-width:0}
+  #coach p>b.n{flex:0 0 17px;height:17px;border-radius:50%;background:var(--accent);
+    color:var(--onAccent);font-size:10.5px;font-weight:600;display:flex;align-items:center;
+    justify-content:center;margin-top:1px}
+  #coach span b{color:var(--paper);font-weight:600}
+  #coach button{margin:2px 0 0;padding:6px 15px;border-radius:7px;cursor:pointer;
+    border:1px solid var(--accent);background:var(--accent);color:var(--onAccent);
+    font-family:inherit;font-size:12.5px;font-weight:600}
+  .objrow.spot #obj,.objrow.spot .map{border-color:var(--accent)}
+  #dlg.spot .opts button{border-color:var(--accent)}
+  /* floor map -- the six rooms sit in a 3x2 grid and every neighbour is a door */
+  .objrow{display:flex;align-items:stretch;gap:10px;margin:0 0 12px;flex-wrap:wrap}
+  .objrow #obj{flex:1 1 220px;display:flex;align-items:center;margin:0}
+  .map{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;padding:5px;
+    border:1px solid var(--line);background:var(--panel);border-radius:7px;flex:0 0 auto}
+  .mcell{display:flex;align-items:center;justify-content:center;text-align:center;
+    min-width:58px;min-height:23px;padding:3px 8px;border-radius:4px;
+    border:1px solid var(--line);background:var(--bg);color:var(--mute);
+    font-size:9.5px;line-height:1.15;letter-spacing:.02em;
+    font-family:inherit;cursor:pointer;appearance:none;-webkit-appearance:none}
+  .mcell:hover,.mcell:focus-visible{color:var(--onAccent);background:var(--accent);
+    border-color:var(--accent);outline:none}
+  .mcell.going{border-color:var(--accent);border-style:dashed}
+  .mcell.goal{color:var(--warn);border-color:var(--warn)}
+  .mcell.here{color:var(--onAccent);background:var(--accent);border-color:var(--accent);font-weight:600}
+  .mcell.here.goal{border-color:var(--warn)}
+  @media (max-width:560px){
+    .map{width:100%}
+    .mcell{min-width:0;font-size:10.5px;min-height:28px}
+  }
+  #certCanvas{width:100%;height:auto;border-radius:8px}
+  .certbtns{display:flex;gap:10px;margin-top:16px}
+  .certbtns button{flex:1;margin:0}
+  /* touch */
+  .pad{display:none;margin:14px 0 0;justify-content:space-between;align-items:center;gap:20px}
+  .dpad{display:grid;grid-template-columns:repeat(3,54px);grid-template-rows:repeat(3,54px);gap:5px}
+  .pad button{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:10px;
+    font-size:19px;font-family:inherit;cursor:pointer;user-select:none}
+  #t_up{grid-area:1/2}#t_left{grid-area:2/1}#t_right{grid-area:2/3}#t_down{grid-area:3/2}
+  #t_act{width:78px;height:78px;border-radius:50%;background:var(--accent);color:var(--onAccent);
+    border:0;font-weight:600;font-size:15px}
+  .keys{font-size:12px;color:var(--mute2);margin:14px 0 0}
+  @media (hover:none) and (pointer:coarse){ .pad{display:flex} .keys{display:none} }

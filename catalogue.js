@@ -1,0 +1,42 @@
+/* The catalogue — every game in one list.
+   The landing page builds its cards from this, and each game's "Choose another
+   track" picker builds its list from it, so a new track added here shows up in
+   both without touching either. Order is the order they appear. */
+window.CATALOGUE=[
+  { id:'engineering', name:"Software Engineering", title:"Engineering Chronicles",
+    world:'meridian', setting:"Meridian", file:'engineering-chronicles.html',
+    tone:'#58a6ff', role:"The new engineer", lessons:10,
+    blurb:"A one-line ticket, a two-thousand-line file, and an incident at twenty to twelve." },
+  { id:'product', name:"Product Management", title:"Product Chronicles",
+    world:'meridian', setting:"Meridian", file:'product-chronicles.html',
+    tone:'#a78bfa', role:"The new product manager", lessons:9,
+    blurb:"Forty-one requests, two squads, one quarter, and a hundred and eighty thousand pounds with a date attached." },
+  { id:'security', name:"Security", title:"Security Chronicles",
+    world:'meridian', setting:"Meridian", file:'security-chronicles.html',
+    tone:'#f0803c', role:"The new security engineer", lessons:11,
+    blurb:"Eleven findings, a questionnaire nobody reads, and one token making forty thousand requests." },
+  { id:'ux', name:"UX Design", title:"UX Chronicles",
+    world:'meridian', setting:"Meridian", file:'ux-chronicles.html',
+    tone:'#f472b6', role:"The new designer", lessons:10,
+    blurb:"Sixty-one per cent abandon the flow, three people have theories, and nobody has watched anyone use it." },
+  { id:'data', name:"Data Science", title:"Data Chronicles",
+    world:'meridian', setting:"Meridian", file:'data-chronicles.html',
+    tone:'#3fb950', role:"The new analyst", lessons:10,
+    blurb:"Churn is up four points, everyone already knows why, and the board meets Thursday." },
+  { id:'copywriting', name:"Copywriting", title:"Copywriter Chronicles",
+    world:'agency', setting:"The agency", file:'copywriter-chronicles.html',
+    tone:'#e3b341', role:"The new writer", lessons:9,
+    blurb:"Six briefs, one crisis, and a client who changes their mind at four in the afternoon." },
+  { id:'account', name:"Account Management", title:"Account Chronicles",
+    world:'agency', setting:"The agency", file:'account-chronicles.html',
+    tone:'#2dd4bf', role:"The new account manager", lessons:9,
+    blurb:"A client who wants the wrong thing, an agency that has to build it, and you in between." },
+  { id:'brand', name:"Brand Strategy", title:"Brand Chronicles",
+    world:'agency', setting:"The agency", file:'brand-chronicles.html',
+    tone:'#f87171', role:"The new strategist", lessons:9,
+    blurb:"Positioning, architecture, and the discipline of saying no." },
+  { id:'design', name:"Design Fundamentals", title:"Design Chronicles",
+    world:'agency', setting:"The agency", file:'design-chronicles.html',
+    tone:'#7dd3fc', role:"The new designer", lessons:9,
+    blurb:"Hierarchy, type, grid, and work that survives production." }
+];
