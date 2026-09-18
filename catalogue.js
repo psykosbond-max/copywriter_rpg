@@ -38,5 +38,17 @@ window.CATALOGUE=[
   { id:'design', name:"Design Fundamentals", title:"Design Chronicles",
     world:'agency', setting:"The agency", file:'design-chronicles.html',
     tone:'#7dd3fc', role:"The new designer", lessons:9,
-    blurb:"Hierarchy, type, grid, and work that survives production." }
+    blurb:"Hierarchy, type, grid, and work that survives production." },
+  { id:'digital', name:"Digital Marketing", title:"Digital Marketing Chronicles",
+    world:'agency', setting:"The agency", file:'digital-chronicles.html',
+    tone:'#22d3ee', role:"The new performance marketer", lessons:10,
+    blurb:"Thirty-eight thousand a month, a return of six to one, and nobody has ever switched it off to check." },
+  { id:'influencer', name:"Influencer Marketing", title:"Influencer Chronicles",
+    world:'agency', setting:"The agency", file:'influencer-chronicles.html',
+    tone:'#fb923c', role:"The new partnerships manager", lessons:10,
+    blurb:"Two point one million followers, nought point four per cent of them listening, and a product for children who scratch until they bleed." },
+  { id:'ai', name:"AI in Marketing", title:"AI Chronicles",
+    world:'agency', setting:"The agency", file:'ai-chronicles.html',
+    tone:'#c084fc', role:"The new AI lead", lessons:10,
+    blurb:"A board that has heard the word, a forty per cent cut already written down, and nineteen drafts that quietly invented the cover." }
 ];

@@ -73,8 +73,9 @@ Then open `tracks/finance.js` and write the day. A track owns five things:
 
 ## Checking your work
 
-    npm install        once, for the checker
-    npm run check      every game
+    npm install        once, for the tools
+    npm run check      every game is well formed
+    npm run play       every game can actually be finished
     npm run check -- security
 
 It drives a real browser and reports, per game: whether it boots without
@@ -86,6 +87,12 @@ it works in CI as-is.
 
 An objective with no room is reported as a note, not a failure — some lines
 genuinely have no destination ("Think. Now.").
+
+`npm run play` is the one that catches an unfinishable track. It starts a run and
+plays it through: at each step it tries every character until one has something to
+say, and every answer until the day moves on, and it only passes when the run
+reaches the certificate. A step key that never fires, a character nobody thinks to
+ask, or a branch that leads nowhere will all pass `check` and fail `play`.
 
 ## Adding a world
 

@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "check": "node tools/check.mjs",
-    "new": "node tools/new-track.mjs"
+    "new": "node tools/new-track.mjs",
+    "play": "node tools/play.mjs"
   },
   "devDependencies": {
     "playwright": "^1.47.0"

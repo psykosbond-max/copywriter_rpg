@@ -229,11 +229,16 @@
     (byWorld[e.setting] = byWorld[e.setting] || []).push(e);
   });
   var cnt = document.getElementById('ledeCount');
-  if (cnt) cnt.textContent = (words[n] || n) + ' short games';
+  if (cnt) {
+    var c = (words[n] || String(n)) + ' short games';
+    cnt.textContent = c.charAt(0).toUpperCase() + c.slice(1);   // it opens the sentence
+  }
   var split = document.getElementById('ledeSplit');
   if (split) {
     var parts = Object.keys(byWorld).map(function(k){
-      return (words[byWorld[k].length] || byWorld[k].length) + ' at ' + k;
+      // "The agency" is a name at the start of a sentence and a phrase inside one
+      var where = k.replace(/^The /, 'the ');
+      return (words[byWorld[k].length] || byWorld[k].length) + ' at ' + where;
     });
     split.textContent = parts.join('; ').replace(/^./, function(c){ return c.toUpperCase(); }) + '.';
   }
