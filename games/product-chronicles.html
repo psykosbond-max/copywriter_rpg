@@ -38,6 +38,12 @@
     background:#1a1f27;color:#e6edf3;border:1px solid #2c3440;border-radius:8px;
     padding:10px 14px;cursor:pointer;transition:.13s;width:100%}
   #dlg .opts button:hover{border-color:#58a6ff;background:#20262f}
+  #dlg p .jt{color:#58a6ff;font-weight:600}
+  #dlg .def{display:block;border-left:2px solid #58a6ff;padding:1px 0 1px 13px}
+  #dlg .def b{display:block;font-family:"Space Grotesk",sans-serif;font-size:12px;
+    letter-spacing:.09em;text-transform:uppercase;color:#58a6ff;margin:0 0 6px}
+  .lesson.gl b{font-size:14px;text-transform:uppercase;letter-spacing:.06em;
+    color:#58a6ff;margin-bottom:5px}
   /* title + portfolio */
   .veil{position:fixed;inset:0;background:rgba(9,12,16,.94);display:flex;
     align-items:center;justify-content:center;padding:24px;z-index:20}
@@ -1317,7 +1323,8 @@ const G={
   started:false, room:'lobby', step:'first_brief',
   px:400, py:392, dir:'up', walking:false, phase:0, playerName:'',
   portfolio:[], deadline:0, deadlineEnd:0, bought:false,
-  keys:{}, touch:{up:false,down:false,left:false,right:false}
+  keys:{}, touch:{up:false,down:false,left:false,right:false},
+  termsSeen:{}, termsLearned:[], termLine:null, termAsking:false, termCount:0
 };
 
 /* ---- where everyone is, by step ---------------------------------------- */
@@ -1326,7 +1333,61 @@ const G={
 let DLG=null;
 const $=id=>document.getElementById(id);
 
+/* ---- jargon checks ------------------------------------------------------
+   Every one of these jobs has words a newcomer has not met, and being quietly
+   lost is how somebody stops playing. So the first time a term comes up in
+   conversation, whoever is speaking stops and asks. One tap if you know it; a
+   plain sentence if you do not, and then the scene carries on exactly where it
+   paused. Four rules keep it out of the way: never the same term twice in a
+   run, never more than one per line, never while a deadline clock is running,
+   and never over narration -- people explain things, the narrator does not.
+   Every term is also listed under What this teaches, for anything waved
+   through at the time.                                                      */
+const TERM_ASK=[
+  'Quick one before I go on \u2014 do you know what <b class="jt">%s</b> means?',
+  'Hang on. Do you know what <b class="jt">%s</b> means?',
+  'Before I carry on \u2014 do you know what <b class="jt">%s</b> means?'
+];
+function termName(e){ return (e.l||e.t).replace(/^(?:a|an|the) /,''); }
+function termMatch(text){
+  const gl=(TRACK&&TRACK.glossary)||[];
+  const plain=String(text).replace(/<[^>]*>/g,'');
+  let best=null, bestAt=1e9, bestLen=0;
+  for(let i=0;i<gl.length;i++){
+    const e=gl[i];
+    if(G.termsSeen[e.t]) continue;
+    if(!e.re) e.re=new RegExp('(?:^|[^A-Za-z0-9])('+(e.m||e.t)+')(?:s|es)?(?![A-Za-z0-9])','i');
+    const m=e.re.exec(plain);
+    if(!m) continue;
+    const at=m.index+(m[0].length-m[1].length-(m[2]?m[2].length:0));
+    if(at<bestAt||(at===bestAt&&m[1].length>bestLen)){ best=e; bestAt=at; bestLen=m[1].length; }
+  }
+  return best;
+}
+/* True when a check was opened instead of the line, and the line is now
+   waiting behind it. */
+function termCheck(speaker,text,options){
+  if(!speaker||G.termAsking||G.deadlineEnd) return false;
+  if(G.termLine===text) return false;
+  const e=termMatch(text);
+  if(!e) return false;
+  G.termsSeen[e.t]=1; G.termLine=text; G.termAsking=true;
+  const resume=function(){ G.termAsking=false; say(speaker,text,options); };
+  rawSay(speaker, TERM_ASK[(G.termCount++)%TERM_ASK.length].replace('%s',termName(e)), [
+    {label:'Yes, I know that one', go:resume},
+    {label:'No \u2014 explain it', go:function(){
+      G.termsLearned.push(e.t);
+      rawSay(speaker,'<span class="def"><b>'+termName(e)+'</b>'+e.d+'</span>',
+        [{label:'Got it \u2014 carry on', go:resume}]);
+    }}
+  ]);
+  return true;
+}
 function say(speaker,text,options){
+  if(termCheck(speaker,text,options)) return;
+  rawSay(speaker,text,options);
+}
+function rawSay(speaker,text,options){
   cancelTravel();
   DLG={speaker:speaker,text:text,options:options&&options.length?options:[{label:'Continue',go:closeDlg}]};
   paintDlg();
@@ -1897,54 +1958,54 @@ function pmScript(key){
 
   /* ---------- the quarter ---------- */
   if(key==='kate'&&s==='pm_brief')
-    return say('kate',`Nadia, head of product. Forty-one open feature requests, two squads, one quarter. Sales have promised three things, support have escalated two, the CEO mentioned a dashboard in an all-hands and everyone heard it as a commitment. You own next quarter's roadmap and it goes out at five.`,
+    return say('kate',`Hi — Nadia, head of product. Welcome aboard. Forty-one open feature requests, two squads, one quarter. Sales have promised three things, support have escalated two, and the CEO mentioned a dashboard in an all-hands that everyone heard as a commitment. You own next quarter's roadmap, and it goes out at five.`,
       [{label:'And who decides what goes in?',go:function(){
-        say('kate',`You do, which is the part nobody warns you about. Not by having taste — by being able to show the reasoning when six people disagree with it. Theo's in the kitchen with the request log. Start with what's actually being asked, because the list you've been handed is wrong.`,
+        say('kate',`You do — and that's the part nobody warns you about. Not by having good taste, but by being able to show your reasoning when six people disagree with it. Theo's in the kitchen with the request log. Start with what's actually being asked, because the list you've been handed is wrong.`,
           [{label:'On my way.',go:function(){ advance('requests'); }}]);
       }}]);
 
   /* ---------- 1. what is actually being asked ---------- */
   if(key==='dan'&&s==='requests'){
     return choose('dan',
-      `Theo, support. Your top request is the calendar sync — thirty-eight tickets. Second is bulk reschedule, at nine. That's the list everyone's been quoting at you all week.`,
+      `Theo, support. Good to meet you. Your top request is calendar sync — thirty-eight tickets. Second is bulk reschedule, at nine. That's the list everyone's been quoting at you all week.`,
       [
        {label:`Thirty-eight to nine is a clear signal — calendar sync goes first.`,ok:false,
-        note:`Thirty-eight tickets, and I should tell you now, they're from four accounts. One of them raises a ticket every time it reoccurs. Again.`},
-       {label:`Count distinct accounts rather than tickets, check what each one was trying to achieve, and look at which requests are workarounds for something already broken.`,ok:true},
+        note:`Thirty-eight tickets, yes. And I should mention: they're from four accounts. One of them raises a ticket every single time it happens. Want to try another?`},
+       {label:`Count distinct accounts rather than tickets, check what each one was actually trying to do, and look at which requests are workarounds for something already broken.`,ok:true},
        {label:`Requests are a biased sample of loud customers — ignore the log and prioritise from strategy.`,ok:false,
-        note:`Biased, yes. Useless, no. You've just thrown away the only direct evidence you have because it isn't clean. Again.`}
+        note:`Biased, yes. Useless, no. You've just thrown away the only direct evidence you've got because it isn't tidy. Try again?`}
       ],function(){
         filed('Demand analysis','Meridian Q3','Counted by account not ticket; six of nine bulk-reschedule requests were an onboarding bug');
-        advance('outcome','dan',`There you are. Calendar sync is four accounts, one of them very energetic. And six of the nine bulk-reschedule ones were people fixing a mess our own onboarding import made — so that's a bug, not a feature. Ravi's read your roadmap, by the way. He has views.`);
+        advance('outcome','dan',`There you go. Calendar sync is four accounts, one of them very energetic. And six of the nine bulk-reschedule ones were people cleaning up a mess our own onboarding import made — so that's a bug, not a feature. Ravi's read your roadmap, by the way. He has views.`);
       });
   }
 
   /* ---------- 2. outcomes, not features ---------- */
   if(key==='mike'&&s==='outcome'){
     return choose('mike',
-      `Ravi, tech lead. Your roadmap is fourteen feature names with months next to them. "Calendar sync — July." What happens in August when we learn the sync isn't what people needed?`,
+      `Ravi, tech lead. So your roadmap is fourteen feature names with months next to them. Calendar sync — July. What happens in August when we find out the sync isn't what people needed?`,
       [
-       {label:`We amend the roadmap and communicate the change — plans change, everyone understands that.`,ok:false,
-        note:`Everyone says that and nobody means it. You've published fourteen promises, so every change is now a broken one and you'll defend the list instead of the goal. Again.`},
-       {label:`Write each item as the outcome it is meant to produce, with a number and a date on the outcome rather than the implementation, and let the squad choose the how.`,ok:true},
+       {label:`We amend the roadmap and communicate the change — plans change, everyone gets that.`,ok:false,
+        note:`Everyone says that and nobody means it. You've published fourteen promises, so every change is now a broken one, and you'll end up defending the list instead of the goal. Try again?`},
+       {label:`Write each item as the outcome it's meant to produce, with a number and a date on the outcome rather than the build — and let the squad work out how.`,ok:true},
        {label:`Add engineering estimates to each feature so the dates are more credible.`,ok:false,
-        note:`More precise promises about the wrong unit. A confident date on a feature nobody has validated is worse than a vague one. Again.`}
+        note:`More precise promises about the wrong thing. A confident date on a feature nobody's validated is worse than a vague one. Have another go?`}
       ],function(){
         filed('Roadmap reframed','Meridian Q3','Outcomes with numbers, not fourteen feature names with months');
-        advance('capacity','mike',`Better. "Cut onboarding drop-off from 38% to 25% by end of August" survives us learning something; "calendar sync — July" doesn't. It also tells my squad what to do when the obvious approach fails, which is most weeks. Jen's in Ops. She's done the arithmetic on your plan.`);
+        advance('capacity','mike',`Better. Cut onboarding drop-off from 38% to 25% by end of August survives us learning something. Calendar sync — July doesn't. It also tells my squad what to do when the obvious approach fails, which is most weeks. Jen's in Ops — she's done the arithmetic on your plan.`);
       });
   }
 
   /* ---------- 3. capacity ---------- */
   if(key==='jenny'&&s==='capacity'){
     return choose('jenny',
-      `Jen, engineering manager. Your plan assumes two squads of four for thirteen weeks on new work. Reality: oncall takes one person a week out permanently, we carry about twenty per cent bug and support load, there's a fortnight of leave booked in August, and one of mine is on a hiring panel. What do you do with the plan?`,
+      `Jen, engineering manager. So your plan assumes two squads of four, thirteen weeks, all on new work. Reality: oncall takes one person out permanently, we carry about twenty per cent bug and support load, there's a fortnight of leave booked in August, and one of mine is on a hiring panel. What do you do with the plan?`,
       [
        {label:`Keep the fourteen items and reprioritise in-quarter as things slip — that way we aim high.`,ok:false,
-        note:`Aiming high with someone else's hours. Everything ships at sixty per cent done, nothing gets finished, and in October we'll have fourteen half-features and no outcome. Again.`},
-       {label:`Plan against realistic capacity — roughly sixty per cent of nominal — keep an explicit buffer for the unplanned, and say out loud which items are dropping as a result.`,ok:true},
-       {label:`Ask the team to protect the roadmap work and push the support load to next quarter.`,ok:false,
-        note:`The support load is customers with broken things. You can defer it into a bigger pile, not out of existence. Again.`}
+        note:`Aiming high with someone else's hours. Everything ships at sixty per cent done, nothing gets finished, and in October we've got fourteen half-features and no outcome. Try again?`},
+       {label:`Plan against realistic capacity — roughly sixty per cent of nominal — keep an explicit buffer for the unplanned, and say out loud which items drop as a result.`,ok:true},
+       {label:`Ask the team to protect the roadmap work and push support load to next quarter.`,ok:false,
+        note:`The support load is customers with broken things. You can defer it into a bigger pile, not out of existence. Have another go?`}
       ],function(){
         filed('Capacity plan','Meridian Q3','Planned at realistic capacity with named drops and a buffer');
         advance('slicing','jenny',`Thank you. Six items, not fourteen, and you've written down which eight aren't happening — which is the difference between a plan and a wish list. The uncomfortable bit is telling people, and you've just volunteered. Ravi's got the big one to scope.`);
@@ -1954,71 +2015,71 @@ function pmScript(key){
   /* ---------- 4. slicing ---------- */
   if(key==='mike'&&s==='slicing'){
     return choose('mike',
-      `The integration piece. Nine weeks, three providers, two-way sync, OAuth for each one. That's the whole quarter for one squad and we learn nothing until week nine. Cut it.`,
+      `The integration piece. Nine weeks, three providers, two-way sync, OAuth for each. That's a whole quarter for one squad, and we learn nothing until week nine. Cut it down.`,
       [
        {label:`Build the backend sync engine first, then the UI in the second half — the hard part gets de-risked early.`,ok:false,
-        note:`Nine weeks of layers and nobody can use any of it until the last one lands. That's the same risk with a project plan stapled to it. Again.`},
-       {label:`Ship one provider, one direction, and a manual connect step — end to end, in two weeks, to real accounts — then decide the rest from what happens.`,ok:true},
-       {label:`Cut the third provider and the two-way sync, and ship the remaining scope in six weeks.`,ok:false,
-        note:`Smaller, still six weeks before anyone touches it. Trimming scope is not the same as getting something in front of a customer. Again.`}
+        note:`Nine weeks of layers, and nobody can use any of it until the last one lands. Same risk, with a project plan stapled to it. Try again?`},
+       {label:`Ship one provider, one direction, and a manual connect step — end to end, in two weeks, to real accounts. Then decide the rest from what happens.`,ok:true},
+       {label:`Cut the third provider and the two-way sync, and ship what's left in six weeks.`,ok:false,
+        note:`Smaller, and still six weeks before anyone touches it. Trimming scope isn't the same as getting something in front of a customer. Have another go?`}
       ],function(){
         filed('Scope slice','Meridian Q3','One provider, one direction, manual auth — end to end in two weeks');
-        advance('tradeoff','mike',`Yes. Thin and vertical, not thick and horizontal — a slice a real account can use tells you in a fortnight what nine weeks of design review can't. Jen's got your next problem: two things and one slot.`);
+        advance('tradeoff','mike',`Yes. Thin and vertical, not thick and horizontal. A slice a real account can use tells you in a fortnight what nine weeks of design review can't. Jen's got your next problem: two things, one slot.`);
       });
   }
 
   /* ---------- 5. the trade-off ---------- */
   if(key==='jenny'&&s==='tradeoff'){
     return choose('jenny',
-      `One slot left this quarter. Option A: the calendar sync — four accounts, one of them our loudest, about eleven thousand a year between them, asked for in every call. Option B: the onboarding import bug — hits thirty-eight per cent of new signups in their first week, we lose an estimated one in six of them, nobody has ever raised a ticket about it because they just leave.`,
+      `One slot left this quarter. Option A: calendar sync — four accounts, one of them our loudest, about eleven thousand a year between them, asked for on every call. Option B: the onboarding import bug — hits thirty-eight per cent of new signups in their first week, and we reckon we lose one in six of them. Nobody's ever raised a ticket about it, because they just leave.`,
       [
-       {label:`A. The revenue is known and named, and the four accounts will churn if we keep saying no.`,ok:false,
-        note:`Eleven thousand you can see against an unknown number of signups you can't, and you picked the one with a face attached. That's not a decision, it's the availability heuristic with a spreadsheet. Again.`},
-       {label:`B — the onboarding bug affects far more people and costs us silently — and write down the size of both, what B is expected to move, and what the four accounts get instead.`,ok:true},
+       {label:`A. The revenue is known and named, and those four accounts will churn if we keep saying no.`,ok:false,
+        note:`Eleven thousand you can see, against an unknown number of signups you can't — and you picked the one with a face attached. That's not a decision, that's the availability heuristic with a spreadsheet. Try again?`},
+       {label:`B. The onboarding bug affects far more people and costs us silently. And write down the size of both, what B is expected to move, and what those four accounts get instead.`,ok:true},
        {label:`Split the slot and do a reduced version of both.`,ok:false,
-        note:`Two half things, neither finished, and now both sets of people are annoyed. The slot is one slot. Again.`}
+        note:`Two half things, neither finished, and now both sets of people are annoyed. The slot is one slot. Have another go?`}
       ],function(){
         filed('Prioritisation call','Meridian Q3','Onboarding bug over calendar sync, with both sizes and the reasoning written down');
-        advance('saying_no','jenny',`Right. The people who leave never file a ticket, so a request log will always over-weight the customers you already have. Writing the reasoning down is the bit that saves you in October when someone asks why sync slipped. Speaking of which — Ravi wants an answer about his own idea.`);
+        advance('saying_no','jenny',`Right. The people who leave never file a ticket, so a request log will always over-weight the customers you already have. And writing the reasoning down is the bit that saves you in October when someone asks why sync slipped. Speaking of which — Ravi wants an answer about his own idea.`);
       });
   }
 
   /* ---------- 6. saying no ---------- */
   if(key==='mike'&&s==='saying_no'){
     return choose('mike',
-      `Right, mine. The plugin API. I've wanted it for a year, I think it's how we stop building integrations one at a time forever, and it's not on your six. What do you say to me?`,
+      `Right, mine then. The plugin API. I've wanted it for a year, I think it's how we stop building integrations one at a time forever, and it's not on your six. What do you say to me?`,
       [
        {label:`"It's on the backlog — we'll look at it next quarter."`,ok:false,
-        note:`So that's a no in a costume. I'll ask again in October, you'll say the same thing, and by January I'll have stopped bringing you ideas. Say the actual word. Again.`},
-       {label:`"No, not this quarter — it lost to the onboarding bug because that's 38% of new signups. What would change it: evidence that integrations are the reason accounts don't convert, or a second customer asking for the API itself."`,ok:true},
-       {label:`"Good idea, let's get it in" — and then let it slide down the list quietly.`,ok:false,
-        note:`You've bought a fortnight of peace with your credibility. I'll find out, and then nothing you tell me about the roadmap will mean anything. Again.`}
+        note:`So that's a no in a costume. I'll ask again in October, you'll say the same thing, and by January I'll have stopped bringing you ideas. Say the actual word. Try again?`},
+       {label:`"No, not this quarter — it lost to the onboarding bug, because that's 38% of new signups. What would change it: evidence that integrations are why accounts don't convert, or a second customer asking for the API itself."`,ok:true},
+       {label:`"Good idea, let's get it in" — and then let it slide quietly down the list.`,ok:false,
+        note:`You've bought a fortnight of peace with your credibility. I'll find out, and then nothing you tell me about the roadmap will mean anything. Have another go?`}
       ],function(){
         filed('Roadmap decision','Meridian Q3','Plugin API declined with the reason, what it lost to, and what would change it');
-        advance('stakeholder','mike',`That I can work with. "No, because X, and here's what would change my mind" is a decision — "it's on the backlog" is a filing cabinet where ideas go to die and everyone knows it. Gareth's in the war room, and he's brought a contract.`);
+        advance('stakeholder','mike',`That I can work with. No, because X, and here's what would change my mind is a decision. It's on the backlog is a filing cabinet where ideas go to die, and everyone knows it. Gareth's in the war room, and he's brought a contract.`);
       });
   }
 
   /* ---------- 7. the commitment ---------- */
   if(key==='owen'&&s==='stakeholder'){
     return choose('owen',
-      `Gareth, sales. Northfield Health. Hundred and eighty thousand, three-year term, signature ready — conditional on single sign-on being live by March. Their security questionnaire has it as a hard requirement. I need it on the roadmap with that date and I need it today.`,
+      `Gareth, sales. Northfield Health. Hundred and eighty thousand, three-year term, signature ready — conditional on single sign-on being live by March. Their security questionnaire has it as a hard requirement. I need it on the roadmap with that date, and I need it today.`,
       [
        {label:`"For a hundred and eighty thousand? Put it down for March, I'll make it work."`,ok:false,
-        note:`(You've committed nine weeks of a squad you already spent, to a date you invented, for a requirement you haven't read. In March you'll break it, and it will be your name on the slip. Again.)`},
-       {label:`"Before I commit a date — can I speak to their IT lead about what specifically blocks sign-off? And has this come up in other enterprise deals, or just this one?"`,ok:true},
+        note:`(You've just committed nine weeks of a squad you already spent, to a date you invented, for a requirement you haven't read. In March you'll break it, and it'll be your name on the slip. Want another go?)`},
+       {label:`"Before I commit to a date — can I speak to their IT lead about what specifically blocks sign-off? And has this come up in other enterprise deals, or just this one?"`,ok:true},
        {label:`"We can't commit to that. The quarter's planned and SSO is a nine-week build."`,ok:false,
-        note:`Then I lose the deal and you own that too. You haven't found out whether they need SSO or something SSO happens to include. Again.`}
+        note:`Then I lose the deal, and you own that too. You still haven't found out whether they need SSO, or something SSO happens to include. Try again?`}
       ],function(){
         say('owen',`...Fine. I'll get you their IT lead. And it's come up in nine of the last twelve enterprise conversations, if that helps.`,
           [{label:'That changes what it is.',go:function(){
             say('owen',`How so? It's still one deal in front of me.`,
               [{label:'Nine of twelve is a pattern, not a favour.',go:function(){
-                say('owen',`Right — I've had their IT lead on the phone. She says the blocker isn't the login at all. It's leavers. When a nurse leaves they need the account deactivated centrally within a day and they can't prove that today. SSO was just how their template asks for it.`,
+                say('owen',`Right — I've had their IT lead on the phone. She says the blocker isn't the login at all. It's leavers. When a nurse leaves, they need the account deactivated centrally within a day, and they can't prove that today. SSO was just how their template asks for it.`,
                   [{label:'That is not nine weeks of work.',go:function(){
                     filed('Requirement translated','Meridian Q3','SSO request was central offboarding; and it is a pattern across nine of twelve deals');
                     startClock(90);
-                    say('kate',`It's about two weeks, and the roadmap publishes in ninety seconds — after which Gareth sends the addendum with whatever we've written in it. Ravi's on the floor. Go.`,
+                    say('kate',`That's about two weeks. And the roadmap publishes in ninety seconds, after which Gareth sends the addendum with whatever we've written in it. Ravi's on the floor. Go.`,
                       [{label:'Go.',go:function(){ G.step='crisis_fix'; paintHUD(); closeDlg(); }}]);
                   }}]);
               }}]);
@@ -2027,24 +2088,24 @@ function pmScript(key){
   }
 
   if(key==='mike'&&s==='crisis_fix'){
-    return choose('mike',`Ninety seconds. What goes in the roadmap and what goes in the contract?`,[
-      {label:`Commit SSO for March — nine of twelve deals want it, so it's clearly the right call.`,ok:false,
-       note:`Nine of twelve want it written on a form. One of twelve has told us what they actually need. Commit the nine weeks on that evidence and you've learned nothing from the last five minutes. Again.`},
-      {label:`Commit the deactivation API this quarter with a date, put SSO on the roadmap as the next quarter's candidate with no date and the discovery attached, and let the addendum say exactly that.`,ok:true},
-      {label:`Commit both — deactivation now and SSO by March — so the deal is safe either way.`,ok:false,
-       note:`You've protected the deal by promising the thing you just established nobody had asked for, out of capacity you don't have. Again.`}
+    return choose('mike',`Ninety seconds. What goes in the roadmap, and what goes in the contract?`,[
+      {label:`Commit SSO for March — nine of twelve deals want it, so it's clearly right.`,ok:false,
+       note:`Nine of twelve want it written on a form. One of twelve has told us what they actually need. Commit nine weeks on that evidence and you've learned nothing from the last five minutes. Try again?`},
+      {label:`Commit the deactivation API this quarter with a date. Put SSO on the roadmap as next quarter's candidate, no date, with the discovery attached. And let the addendum say exactly that.`,ok:true},
+      {label:`Commit both — deactivation now and SSO by March — so the deal's safe either way.`,ok:false,
+       note:`You've protected the deal by promising the thing you just established nobody asked for, out of capacity you haven't got. Have another go?`}
     ],function(){
-      advance('crisis_show','mike',`Published with eleven seconds to spare. Two weeks committed with a date, nine weeks named without one, and the reasoning underneath both. Go and tell Gareth before he sends the old version.`);
+      advance('crisis_show','mike',`Published, eleven seconds to spare. Two weeks committed with a date, nine weeks named without one, and the reasoning under both. Go and tell Gareth before he sends the old version.`);
     });
   }
 
   if(key==='owen'&&s==='crisis_show'){
     stopClock();
-    return say('owen',`So I go back with deactivation in three weeks, and SSO as a "candidate, next quarter". They'll ask about the date.`,
+    return say('owen',`So I go back with deactivation in three weeks, and SSO as a candidate for next quarter. They'll ask about the date.`,
       [{label:'And you can tell them the truth about why there isn\u2019t one.',go:function(){
         say('owen',`Which is a better call than the one where I promise March and ring them in February. I've closed eleven of these. You're the first product person who asked me to put them on the phone instead of just saying no.`,
           [{label:'...',go:function(){
-            say('kate',`That is the job. Not the roadmap tool, not the framework — that. Someone hands you a date and a requirement, and you go and find out which of the two is real. Six pieces of work, eight things you said no to in writing, and a publish deadline you didn't miss. You're a product manager now.`,
+            say('kate',`That's the job. Not the roadmap tool, not the framework — that. Someone hands you a date and a requirement, and you go and find out which of the two is real. Six pieces of work, eight things you said no to in writing, and a publish deadline you didn't miss. You're a product manager now.`,
               [{label:'Thank you.',go:function(){ G.step='complete'; paintHUD(); closeDlg(); openCertificate(); }}]);
           }}]);
       }}]);
@@ -2053,31 +2114,77 @@ function pmScript(key){
   /* ---------- Sam: hints ---------- */
   if(key==='alex'){
     const h={
-      pm_brief:`Nadia's in Product. Ask who decides, and what you have to be able to show.`,
-      requests:`Thirty-eight tickets is not thirty-eight customers. Ask Theo how many accounts.`,
+      pm_brief:`Nadia's in Product. Ask who decides, and what you need to be able to show.`,
+      requests:`Thirty-eight tickets isn't thirty-eight customers. Ask Theo how many accounts.`,
       outcome:`If the roadmap names the solution, you can't change the solution.`,
       capacity:`Oncall, bugs, leave, hiring. Nobody gets thirteen clean weeks.`,
       slicing:`What could one real account use in a fortnight?`,
       tradeoff:`The people who leave never file a ticket. Count them anyway.`,
-      saying_no:`"It's on the backlog" is a no that costs you the relationship as well.`,
-      stakeholder:`He's brought you a date and a requirement. One of them is negotiable and one isn't real.`,
+      saying_no:`It's on the backlog is a no that costs you the relationship too.`,
+      stakeholder:`He's brought you a date and a requirement. One's negotiable, one isn't real.`,
       crisis_fix:`Commit what you know, name what you don't, and don't invent a date.`,
       crisis_show:`Go and tell him before the addendum goes out.`,
-      complete:`You put eight noes in writing and still have a sales director on side. Pub?`
+      complete:`You put eight noes in writing and still have sales on side. Pub?`
     };
-    return say('alex', h[s] || `Stuck? Ask what decision this changes, and what you'd have to show to defend it in October.`);
+    return say('alex', h[s] || `Stuck? Ask what decision this changes, and what you'd need to show to defend it in October.`);
   }
 
   const idle={
-    kate:`Nothing new — go and finish the quarter.`,
-    mike:`Bring it back when it's a slice somebody can use.`,
-    jenny:`Bring me a plan that fits in the hours we've actually got.`,
+    kate:`Nothing new from me — go and finish the quarter.`,
+    mike:`Come back when it's a slice somebody can actually use.`,
+    jenny:`Bring me a plan that fits the hours we've really got.`,
     dan:`Kettle's on. Four accounts, thirty-eight tickets, remember.`,
     owen:`I'll wait. Signature's ready, mind.`
   };
   say(key, idle[key] || `...`);
 }
 
+const TRACK_GLOSSARY=[
+  {t:"roadmap",l:"a roadmap",m:"roadmap",
+   d:"The public plan for what a product team will work on next, and roughly when. Everyone reads it as a set of promises, whatever you call it."},
+  {t:"squad",l:"a squad",m:"squad",
+   d:"A small standing team — a few engineers with a designer and a product person — that owns one part of the product."},
+  {t:"escalate",l:"an escalation",m:"escalat(?:e|ed|es|ion)",
+   d:"Support passing a problem up to the team that can actually change the product. Two escalations means two problems somebody has already given up solving."},
+  {t:"all-hands",l:"an all-hands",m:"all-hands",
+   d:"The meeting where the whole company is in the room. Anything said there is heard as a decision, whether it was one or not."},
+  {t:"request log",l:"the request log",m:"request log|ticket log",
+   d:"The running list of everything customers have asked for. Real evidence, and a biased sample — it only contains the people who bothered to write in."},
+  {t:"signal",l:"a signal",m:"signal",
+   d:"Evidence strong enough to act on, as opposed to noise. Thirty-eight tickets from four accounts is much less signal than it looks."},
+  {t:"validate",l:"validating an idea",m:"validat(?:e|ed|es|ion)",
+   d:"Checking a belief against the world before you spend a quarter on it — by watching, asking or shipping something small."},
+  {t:"discovery",l:"discovery",m:"discovery",
+   d:"The work of finding out what is actually needed — talking to customers, digging into data — before anyone designs a solution."},
+  {t:"capacity",l:"capacity",m:"capacity",
+   d:"How much work a team can really do in a stretch of time, once on-call, bugs, leave and interviews have taken their share. Usually about sixty per cent of the headline number."},
+  {t:"oncall",l:"being on call",m:"oncall|on-call|on call",
+   d:"Taking the pager for a week, so that when something breaks at three in the morning somebody answers. It takes that person out of planned work."},
+  {t:"drop-off",l:"drop-off",m:"drop-off|drop off",
+   d:"The share of people who start something and never finish it. Thirty-eight per cent drop-off in the first week is a leak, not a rounding error."},
+  {t:"churn",l:"churn",m:"churn",
+   d:"Customers leaving. Four accounts threatening to churn is a number with faces attached, which is exactly why it gets over-weighted."},
+  {t:"backlog",l:"the backlog",m:"backlog",
+   d:"The long list of everything not being worked on. “It’s on the backlog” is usually a no that nobody has said out loud."},
+  {t:"slice",l:"a thin slice",m:"thin(?: and vertical)?|vertical slice|slice",
+   d:"One narrow path through a feature, built end to end so a real customer can use it — rather than every layer half-built and nothing usable."},
+  {t:"de-risk",l:"de-risking",m:"de-risk(?:ed|ing)?",
+   d:"Doing the frightening part first, so that if it goes wrong you find out in week two rather than week nine."},
+  {t:"oauth",l:"OAuth",m:"OAuth",
+   d:"The standard “sign in with” handshake that lets your product act on someone’s behalf in another service, without holding their password."},
+  {t:"two-way sync",l:"two-way sync",m:"two-way sync",
+   d:"Keeping two systems matching in both directions at once. Roughly four times the work of one direction, because you must decide who wins every clash."},
+  {t:"sso",l:"SSO",m:"SSO|single sign-on",
+   d:"Single sign-on: staff log in once with their work account and reach everything, instead of holding a password for each tool. Enterprise buyers ask for it by name."},
+  {t:"questionnaire",l:"a security questionnaire",m:"security questionnaire|questionnaire",
+   d:"A long list of security questions a customer sends before they will sign. Often filled in from a template, so what is written is not always what they need."},
+  {t:"api",l:"an API",m:"API",
+   d:"The doorway one piece of software uses to talk to another. A plugin API lets other people build integrations instead of you building them one at a time forever."},
+  {t:"availability heuristic",l:"the availability heuristic",m:"availability heuristic",
+   d:"The habit of judging something as important because an example of it is vivid and close to hand — the loud customer you can name, over the many you cannot."},
+  {t:"addendum",l:"an addendum",m:"addendum",
+   d:"A short document added to a contract that changes or adds to what was agreed. Whatever it says, you now have to deliver."}
+];
 TRACK_DEFS.product={
   id:'product', name:'Product Management', title:'Product Chronicles',
   blurb:'Forty-one requests, two squads, one quarter, and a hundred and eighty thousand pounds with a date attached.',
@@ -2085,13 +2192,14 @@ TRACK_DEFS.product={
   roles:{mike:'Tech Lead', kate:'Head of Product', jenny:'Engineering Manager',
          alex:'Senior PM', dan:'Support Lead',
          owen:'Sales Director', player:'The new product manager'},
+  glossary:TRACK_GLOSSARY,
   script:function(key){ return pmScript(key); },
   occupants:function(room){ return pmOccupants(room); },
   objectives:OBJ_PM,
-  opening:{text:`Nine in the morning at Meridian. Forty-one open requests, two squads, three things sales have already promised, and a roadmap that publishes at five o'clock whether it is right or not.`,
+  opening:{text:`Nine in the morning at Meridian. Forty-one open requests, two squads, three things sales have already promised, and a roadmap that publishes at five o'clock whether it's right or not.`,
            label:'Find Nadia.'},
   certTitle:'PRODUCT CHRONICLES',
-  timeUp:{who:'kate',line:`Published. Gareth's addendum went out with the old wording, so we've committed March for something nobody asked for. Finish it anyway — missing a deadline is survivable; not knowing what you would have written is not.`},
+  timeUp:{who:'kate',line:`Published. Gareth's addendum went out with the old wording, so we've committed March for something nobody asked for. Finish it anyway — missing a deadline you survive; not knowing what you'd have written, you don't.`},
   certBody:['planned a quarter at Meridian — demand counted properly, outcomes instead of',
             'features, honest capacity, a two-week slice and eight documented noes — and',
             'turned a hundred-and-eighty-thousand-pound date into the requirement underneath it.'],
@@ -2099,20 +2207,20 @@ TRACK_DEFS.product={
     {t:'Count accounts, not tickets', c:'Demand',
      l:'Thirty-eight requests were four customers, one of them energetic. And some requests are workarounds for a bug you could just fix.'},
     {t:'A roadmap of features is a list of promises', c:'Roadmap',
-     l:'Write the outcome and the number, not the implementation and the month. Then learning something new is progress rather than a broken commitment.'},
+     l:'Write the outcome and the number, not the build and the month. Then learning something new is progress, rather than a broken commitment.'},
     {t:'Nobody gets thirteen clean weeks', c:'Capacity',
-     l:'Oncall, support load, leave, hiring panels. Plan against roughly sixty per cent of nominal and say out loud what drops because of it.'},
-    {t:'Slice vertically', c:'Scoping',
+     l:'Oncall, support load, leave, hiring panels. Plan against roughly sixty per cent of nominal, and say out loud what drops because of it.'},
+    {t:'Slice it vertically', c:'Scoping',
      l:'One provider, one direction, a manual step, in front of a real account in a fortnight. Backend-then-frontend is nine weeks of learning nothing.'},
     {t:'The people who leave never file a ticket', c:'Prioritisation',
-     l:'A request log over-weights the customers you already have. The silent cost is usually bigger and always harder to argue for.'},
+     l:'A request log over-weights the customers you already have. The silent cost is usually bigger, and always harder to argue for.'},
     {t:'Write down the size of both options', c:'Prioritisation',
-     l:'The decision will be questioned in October by someone who wasn\u2019t there. The reasoning is the artefact, not the ranking.'},
-    {t:'"It\u2019s on the backlog" is a no that also costs you the relationship', c:'Saying no',
-     l:'Say no, say what it lost to, and say what would change your mind. Silent deprioritisation spends your credibility instead of your nerve.'},
+     l:'In October someone who wasn’t there will question the decision. The reasoning is what you keep, not the ranking.'},
+    {t:'It’s on the backlog is a no that costs you the relationship', c:'Saying no',
+     l:'Say no, say what it lost to, and say what would change your mind. Quietly deprioritising spends your credibility instead of your nerve.'},
     {t:'A date is not a requirement', c:'Stakeholders',
-     l:'Ask to speak to the person who has to sign off, and ask whether it is one deal or a pattern. Those are two different answers.'},
-    {t:'Commit what you know, name what you don\u2019t', c:'Commitment',
+     l:'Ask to speak to the person who has to sign it off, and ask whether it’s one deal or a pattern. Those are two different answers.'},
+    {t:'Commit what you know, name what you don’t', c:'Commitment',
      l:'A dated promise you invented is worse than an undated candidate with the discovery attached. You only get to break it once.'}
   ]
 };
@@ -2193,6 +2301,8 @@ function loadTrack(id){
   pendingTrack=TRACK.id;
   if(TRACK.roles) for(const k in TRACK.roles){ if(CAST[k]) CAST[k].role=TRACK.roles[k]; }
   G.step=TRACK.first; G.portfolio=[]; G.bought=false; stopClock(); paintHUD();
+  G.termsSeen={}; G.termsLearned=[]; G.termLine=null;
+  G.termAsking=false; G.termCount=0;
 }
 
 /* ---- screens ------------------------------------------------------------ */
@@ -2257,9 +2367,17 @@ $('avGo').onclick=function(){
 /* ---- lessons ------------------------------------------------------------ */
 function paintLessons(){
   $('lessonsTitle').textContent='What '+TRACK.name.toLowerCase()+' teaches';
-  $('lessonsBody').innerHTML=(TRACK.lessons||[]).map(function(L){
+  let rows=(TRACK.lessons||[]).map(function(L){
     return '<div class="lesson"><b>'+L.t+'</b><span>'+L.c+'</span><p>'+L.l+'</p></div>';
   }).join('');
+  const gl=TRACK.glossary||[];
+  if(gl.length) rows+='<div class="lesson"><b>The words, plainly</b><span>Jargon</span>'+
+    '<p>Every term the day uses. While you play, the first time one of them comes up, '+
+    'whoever said it stops and asks whether you know it.</p></div>'+
+    gl.map(function(e){
+      return '<div class="lesson gl"><b>'+termName(e)+'</b><p>'+e.d+'</p></div>';
+    }).join('');
+  $('lessonsBody').innerHTML=rows;
 }
 
 /* ---- track picker ------------------------------------------------------- */

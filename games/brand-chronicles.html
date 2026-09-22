@@ -38,6 +38,12 @@
     background:#211d19;color:#f2ece0;border:1px solid #3d352c;border-radius:8px;
     padding:10px 14px;cursor:pointer;transition:.13s;width:100%}
   #dlg .opts button:hover{border-color:#d8a33c;background:#282320}
+  #dlg p .jt{color:#d8a33c;font-weight:600}
+  #dlg .def{display:block;border-left:2px solid #d8a33c;padding:1px 0 1px 13px}
+  #dlg .def b{display:block;font-family:"Space Grotesk",sans-serif;font-size:12px;
+    letter-spacing:.09em;text-transform:uppercase;color:#d8a33c;margin:0 0 6px}
+  .lesson.gl b{font-size:14px;text-transform:uppercase;letter-spacing:.06em;
+    color:#d8a33c;margin-bottom:5px}
   /* title + portfolio */
   .veil{position:fixed;inset:0;background:rgba(15,13,11,.93);display:flex;
     align-items:center;justify-content:center;padding:24px;z-index:20}
@@ -994,7 +1000,8 @@ const G={
   started:false, room:'lobby', step:'first_brief',
   px:400, py:392, dir:'up', walking:false, phase:0, playerName:'',
   portfolio:[], deadline:0, deadlineEnd:0, bought:false,
-  keys:{}, touch:{up:false,down:false,left:false,right:false}
+  keys:{}, touch:{up:false,down:false,left:false,right:false},
+  termsSeen:{}, termsLearned:[], termLine:null, termAsking:false, termCount:0
 };
 
 /* ---- where everyone is, by step ---------------------------------------- */
@@ -1003,7 +1010,61 @@ const G={
 let DLG=null;
 const $=id=>document.getElementById(id);
 
+/* ---- jargon checks ------------------------------------------------------
+   Every one of these jobs has words a newcomer has not met, and being quietly
+   lost is how somebody stops playing. So the first time a term comes up in
+   conversation, whoever is speaking stops and asks. One tap if you know it; a
+   plain sentence if you do not, and then the scene carries on exactly where it
+   paused. Four rules keep it out of the way: never the same term twice in a
+   run, never more than one per line, never while a deadline clock is running,
+   and never over narration -- people explain things, the narrator does not.
+   Every term is also listed under What this teaches, for anything waved
+   through at the time.                                                      */
+const TERM_ASK=[
+  'Quick one before I go on \u2014 do you know what <b class="jt">%s</b> means?',
+  'Hang on. Do you know what <b class="jt">%s</b> means?',
+  'Before I carry on \u2014 do you know what <b class="jt">%s</b> means?'
+];
+function termName(e){ return (e.l||e.t).replace(/^(?:a|an|the) /,''); }
+function termMatch(text){
+  const gl=(TRACK&&TRACK.glossary)||[];
+  const plain=String(text).replace(/<[^>]*>/g,'');
+  let best=null, bestAt=1e9, bestLen=0;
+  for(let i=0;i<gl.length;i++){
+    const e=gl[i];
+    if(G.termsSeen[e.t]) continue;
+    if(!e.re) e.re=new RegExp('(?:^|[^A-Za-z0-9])('+(e.m||e.t)+')(?:s|es)?(?![A-Za-z0-9])','i');
+    const m=e.re.exec(plain);
+    if(!m) continue;
+    const at=m.index+(m[0].length-m[1].length-(m[2]?m[2].length:0));
+    if(at<bestAt||(at===bestAt&&m[1].length>bestLen)){ best=e; bestAt=at; bestLen=m[1].length; }
+  }
+  return best;
+}
+/* True when a check was opened instead of the line, and the line is now
+   waiting behind it. */
+function termCheck(speaker,text,options){
+  if(!speaker||G.termAsking||G.deadlineEnd) return false;
+  if(G.termLine===text) return false;
+  const e=termMatch(text);
+  if(!e) return false;
+  G.termsSeen[e.t]=1; G.termLine=text; G.termAsking=true;
+  const resume=function(){ G.termAsking=false; say(speaker,text,options); };
+  rawSay(speaker, TERM_ASK[(G.termCount++)%TERM_ASK.length].replace('%s',termName(e)), [
+    {label:'Yes, I know that one', go:resume},
+    {label:'No \u2014 explain it', go:function(){
+      G.termsLearned.push(e.t);
+      rawSay(speaker,'<span class="def"><b>'+termName(e)+'</b>'+e.d+'</span>',
+        [{label:'Got it \u2014 carry on', go:resume}]);
+    }}
+  ]);
+  return true;
+}
 function say(speaker,text,options){
+  if(termCheck(speaker,text,options)) return;
+  rawSay(speaker,text,options);
+}
+function rawSay(speaker,text,options){
   cancelTravel();
   DLG={speaker:speaker,text:text,options:options&&options.length?options:[{label:'Continue',go:closeDlg}]};
   paintDlg();
@@ -1573,18 +1634,18 @@ function brandScript(key){
   /* ---------- 1. what the client actually wants ---------- */
   if(key==='nadia'&&s==='client_ambition'){
     return choose('nadia',
-      `Nadia Fairhurst. My grandfather opened the first shop in 1961, we've got fourteen now, and last year was the first one we didn't grow. I want a rebrand. New look, new logo, the lot.`,
+      `Nadia Fairhurst — hello. My grandfather opened the first shop in 1961, we've got fourteen now, and last year was the first one we didn't grow. I want a rebrand. New look, new logo, the lot.`,
       [
        {label:`"A refresh could really modernise you — let's look at the identity."`,ok:false,
-        note:`So you'd change the sign.  (She asked for a new logo because that is the only lever she knows the name of. A new logo on an unchanged business is an expensive apology. Again.)`},
+        note:`So you'd change the sign.  (She asked for a new logo because it's the only lever she knows the name of. A new logo on an unchanged business is an expensive apology. Want to try again?)`},
        {label:`"Before we touch the logo — who's stopped coming, and where are they going instead?"`,ok:true},
        {label:`"Rebrands rarely fix a sales problem."`,ok:false,
-        note:`Then what am I paying you for?  (Correct, and useless. You've diagnosed nothing and closed the conversation. Again.)`}
+        note:`Then what am I paying you for?  (Correct, and no use to anyone. You've diagnosed nothing and closed the conversation. Try again?)`}
       ],function(){
-        say('nadia',`...Thirty-somethings. They're not going to another butcher, they're going to the supermarket and to those recipe boxes. They'd say we're for people who know what to ask for. Which we are. That's rather the problem, isn't it.`,
+        say('nadia',`...Thirty-somethings, mostly. They're not going to another butcher — they're going to the supermarket, and to those recipe boxes. They'd say we're for people who know what to ask for. Which we are. That's rather the problem, isn't it.`,
           [{label:'That is the problem.',go:function(){
             filed('Diagnosis','Marrow','Not a logo problem \u2014 expertise reading as a test');
-            advance('positioning','nadia',`Nobody has ever asked me who stopped coming. They ask what colour I want the bags.`);
+            advance('positioning','nadia',`Nobody's ever asked me who stopped coming. They ask what colour I want the bags.`);
           }}]);
       });
   }
@@ -1592,29 +1653,29 @@ function brandScript(key){
   /* ---------- 2. positioning ---------- */
   if(key==='kate'&&s==='positioning'){
     return choose('kate',
-      `Right. Fourteen shops, expertise that intimidates the people they need, supermarkets cheaper and recipe boxes easier. Give me a position. And remember a position you can't be excluded from isn't one.`,
+      `Right. Fourteen shops, expertise that intimidates the very people they need, supermarkets cheaper and recipe boxes easier. Give me a position. And remember — a position you can't be excluded from isn't one.`,
       [
        {label:`"Quality meat, expertly sourced, for everyone."`,ok:false,
-        note:`Who is that not for? Nobody. Which means it's not a position, it's a description, and every butcher in the country could put it on a window. Again.`},
+        note:`Who is that not for? Nobody. Which makes it a description, not a position, and every butcher in the country could put it in a window. Try again?`},
        {label:`"The butcher for people who don't know what to ask for — expertise that does the deciding, not the judging."`,ok:true},
        {label:`"The anti-supermarket. Real meat, real people, no plastic."`,ok:false,
-        note:`You've positioned against a competitor instead of for a customer, so the moment the supermarket improves you've got nothing left. And it flatters the people who already shop there. Again.`}
+        note:`You've positioned against a competitor instead of for a customer — so the moment the supermarket improves, you've got nothing left. And it flatters the people who already shop there. Have another go?`}
       ],function(){
         filed('Positioning','Marrow','Expertise that decides for you, rather than judging you');
-        advance('insight','kate',`That one costs them something — it turns their proudest asset into a service instead of a test, and it will annoy their oldest customers. That is how you know it is a position. Now go and find out if it is true. Dan has been in four of the shops.`);
+        advance('insight','kate',`That one costs them something. It turns their proudest asset into a service instead of a test, and it'll annoy their oldest customers. That's how you know it's a position. Now go and find out whether it's true — Dan's been in four of the shops.`);
       });
   }
 
   /* ---------- 3. insight, not observation ---------- */
   if(key==='dan'&&s==='insight'){
     return choose('dan',
-      `Four shops, three Saturdays. Here's what I've got: people queue outside rather than come in when it's busy. They rehearse the order under their breath. Two walked out when the man in front asked for something in French. Which of those is your insight?`,
+      `Four shops, three Saturdays. Here's what I've got. People queue outside rather than come in when it's busy. They rehearse the order under their breath. And two walked out when the man in front asked for something in French. Which of those is your insight?`,
       [
        {label:`"Customers find butchers intimidating."`,ok:false,
-        note:`That's the observation you walked in with. An insight tells you something you could act on tomorrow. That one just tells you people are shy. Again.`},
+        note:`That's the observation you walked in with. An insight tells you something you could act on tomorrow. That one just tells you people are shy. Try again?`},
        {label:`"The queue is the shop window, and right now it's showing them a test they might fail."`,ok:true},
        {label:`"They need clearer signage and price labelling."`,ok:false,
-        note:`That's a solution, and a small one. You've skipped the thinking and gone straight to a to-do list. Again.`}
+        note:`That's a solution, and a small one. You've skipped the thinking and gone straight to a to-do list. Have another go?`}
       ],function(){
         filed('Insight','Marrow','The queue is the shop window — and it is showing a test');
         advance('architecture','dan',`That's the one. Nobody's frightened of meat. They're frightened of being watched not knowing. Jenny will want to know what this means for the sub-brand — go on.`);
@@ -1624,13 +1685,13 @@ function brandScript(key){
   /* ---------- 4. architecture ---------- */
   if(key==='jenny'&&s==='architecture'){
     return choose('jenny',
-      `Before I design anything — they bought Pickett's, the deli chain, two years ago. Six shops, own name, own customers, slightly posher. What happens to it?`,
+      `Before I design anything — they bought Pickett's, the deli chain, two years ago. Six shops, own name, own customers, slightly posher. So what happens to it?`,
       [
        {label:`"Rebrand it as Marrow. One name, one system, simpler for everyone."`,ok:false,
-        note:`Simpler for me. Not for the six shops full of people who chose Pickett's precisely because it wasn't a butcher. You'd save on artwork and lose a customer base. Again.`},
+        note:`Simpler for me. Not for the six shops full of people who chose Pickett's precisely because it wasn't a butcher. You'd save on artwork and lose a customer base. Try again?`},
        {label:`"Keep Pickett's, endorsed by Marrow. Different jobs, different customers, one guarantee behind both."`,ok:true},
        {label:`"Leave them completely separate. Don't confuse anyone."`,ok:false,
-        note:`Then you've paid for an acquisition and got nothing from it. No transfer of trust in either direction. Again.`}
+        note:`Then you've paid for an acquisition and got nothing from it. No transfer of trust in either direction. Have another go?`}
       ],function(){
         filed('Brand architecture','Marrow','Endorsed — Pickett\u2019s keeps its name, Marrow stands behind it');
         advance('brief_creative','jenny',`Endorsed. That I can build — one guarantee mark, two personalities, and I don't have to make a deli look like a butcher. Mike's waiting.`);
@@ -1640,13 +1701,13 @@ function brandScript(key){
   /* ---------- 5. strategy a creative can use ---------- */
   if(key==='mike'&&s==='brief_creative'){
     return choose('mike',
-      `Strategy is only worth anything if someone can make something out of it. So: what am I actually making?`,
+      `Strategy's only worth anything if someone can make something out of it. So: what am I actually making?`,
       [
        {label:`"A campaign that communicates warmth, expertise and accessibility."`,ok:false,
-        note:`Three adjectives, no idea. Warmth, expertise and accessibility is a description of about eight thousand brands. Give me the tension. Again.`},
+        note:`Three adjectives, no idea. Warmth, expertise and accessibility describes about eight thousand brands. Give me the tension. Try again?`},
        {label:`"Work where Marrow does the knowing so the customer doesn't have to — the butcher answers the question you were too embarrassed to ask."`,ok:true},
        {label:`"Something that makes younger people feel welcome in the shop."`,ok:false,
-        note:`That's the goal, not the idea. You've handed me the brief's outcome and kept the thinking to yourself. Again.`}
+        note:`That's the goal, not the idea. You've handed me the brief's outcome and kept the thinking to yourself. Have another go?`}
       ],function(){
         filed('Creative platform','Marrow','Marrow does the knowing, so you don\u2019t have to');
         advance('present_brand','mike',`Now there's something to make. There's a mechanic in it — the question you were too embarrassed to ask — and I can run that anywhere. Go and sell it.`);
@@ -1657,29 +1718,29 @@ function brandScript(key){
   if(key==='nadia'&&s==='present_brand'){
     return say('nadia',`Go on then. Convince me to change what my grandfather built.`,
       [{label:'Present the strategy.',go:function(){
-        say('nadia',`"Marrow does the knowing, so you don't have to." And Pickett's keeps its name with us behind it. I'll be honest, I came in wanting a new logo and you've sold me a different shop. I like it. I —`,
+        say('nadia',`I'll be honest — I came in wanting a new logo and you've sold me a different shop. I like it. I —`,
           [{label:'(her phone buzzes)',go:function(){
             startClock(120);
-            say('nadia',`That's my daughter. She's sent me a link. Fletcher's — the chain out of Leeds — launched this morning. Their line is "No silly questions." Same idea. Same week. They've got fifty shops to our fourteen and they've beaten us to it.`,
+            say('nadia',`That's my daughter. She's sent me a link. Fletcher's — the chain out of Leeds — launched this morning. Their line is No silly questions. Same idea, same week. They've got fifty shops to our fourteen, and they've beaten us to it.`,
               [{label:'Think.',go:function(){ G.step='crisis_salvage'; paintHUD(); brandCrisis(); }}]);
           }}]);
       }}]);
   }
   if(key==='kate'&&s==='present_brand')
-    return say('kate',`(She is letting you present. That is the test.)`);
+    return say('kate',`(She's letting you present. That's the test.)`);
   if((key==='nadia'||key==='kate')&&s==='crisis_salvage') return brandCrisis();
 
   /* ---------- Alex: hints ---------- */
   if(key==='alex'){
     const h={
       client_ambition:`She's in the lobby. Whatever she says she wants changed, ask what stopped working first.`,
-      positioning:`Kate will ask who it excludes. If the answer is nobody, go back and think again.`,
+      positioning:`Kate will ask who it excludes. If the answer's nobody, go back and think again.`,
       insight:`An observation tells you what happened. An insight tells you what to do about it.`,
-      architecture:`Sub-brands are a trust question, not a tidiness question. Who is borrowing credibility from whom?`,
+      architecture:`Sub-brands are a trust question, not a tidiness question. Who's borrowing credibility from whom?`,
       brief_creative:`Mike can't make an adjective. Give him a tension he can build something around.`,
       present_brand:`You're asking her to change something her grandfather started. Say that out loud before she does.`,
       crisis_salvage:`Same idea isn't the same brand. What can they say that Fletcher's can't?`,
-      complete:`First strategy and it survived contact with a competitor. Drink?`
+      complete:`First strategy, and it survived contact with a competitor. Drink?`
     };
     return say('alex', h[s] || `Stuck? Tell me the position and I'll tell you who it excludes.`);
   }
@@ -1688,7 +1749,7 @@ function brandScript(key){
     kate:`Come back when you've got something I can argue with.`,
     mike:`Bring me a tension, not a mood board.`,
     jenny:`Tell me the architecture and I'll tell you if I can build it.`,
-    dan:`Kettle's on. I've been in the shops, when you want to know what's actually happening.`,
+    dan:`Kettle's on. I've been in the shops, whenever you want to know what's actually happening.`,
     nadia:`I'll wait. Fourteen shops won't run themselves, mind.`
   };
   say(key, idle[key] || `...`);
@@ -1697,22 +1758,58 @@ function brandScript(key){
 function brandCrisis(){
   choose('nadia',`Well? Do we start again?`,[
     {label:`"Let's differentiate on tone — we'll own it better than they do."`,ok:false,
-     note:`Better is not different. You're proposing we spend two years out-executing a chain with fifty shops on their own idea. Again.`},
+     note:`Better isn't different. You're proposing we spend two years out-executing a chain with fifty shops, on their own idea. Try again?`},
     {label:`"They've got the line. We've got the shops your family has run for sixty years — no silly questions is a promise; a butcher who has known your mother's order since 1994 is proof. We keep the strategy and we prove it where they can't."`,ok:true},
     {label:`"We move to the Pickett's positioning instead and lead with the deli."`,ok:false,
-     note:`You've abandoned a true position because someone else said something similar, and led with the smaller business. Fletcher's would have won by press release. Again.`}
+     note:`You've abandoned a true position because someone else said something similar — and led with the smaller business. Fletcher's would have won by press release. Have another go?`}
   ],function(){
     stopClock();
     G.portfolio[G.portfolio.length-1]={title:'Creative platform (defended)',client:'Marrow',
       line:'Marrow does the knowing — and sixty years is the proof Fletcher\u2019s cannot buy'};
     say('nadia',`...They can say it. We can show it. That's not the same thing.`,
       [{label:'No, it is not.',go:function(){
-        say('kate',`That is the job. Not the line — that. A competitor says your idea out loud and you work out in ninety seconds what they cannot prove. Strategies do not die because someone copies them. They die because the person holding them panics.`,
+        say('kate',`That's the job. Not the line — that. A competitor says your idea out loud, and you work out in ninety seconds what they can't prove. Strategies don't die because someone copies them. They die because the person holding them panics.`,
           [{label:'Thank you.',go:function(){ G.step='complete'; paintHUD(); closeDlg(); openCertificate(); }}]);
       }}]);
   });
 }
 
+const TRACK_GLOSSARY=[
+  {t:"rebrand",l:"a rebrand",m:"rebrand",
+   d:"Changing what a business stands for, usually along with how it looks. Clients often ask for one when they mean “fewer people are coming in”."},
+  {t:"refresh",l:"a refresh",m:"refresh",
+   d:"A lighter update to how a brand looks, keeping what it stands for. Cheaper than a rebrand and useless if the problem is the strategy."},
+  {t:"identity",l:"an identity",m:"identity",
+   d:"The visible kit of a brand — logo, type, colour, the lot. The part everyone can see, and the part that changes least about a business."},
+  {t:"position",l:"a position",m:"position(?:ing|s)?",
+   d:"The one thing you want to be chosen for, and the customers you are willing to lose to have it. If nobody is excluded, it is a description."},
+  {t:"insight",l:"an insight",m:"insight",
+   d:"Something true about people that tells you what to do. “Customers find butchers intimidating” is an observation; what to do about the queue is an insight."},
+  {t:"observation",l:"an observation",m:"observation",
+   d:"Something you noticed. Useful raw material, and not yet an answer — it tells you what happened, not what to change."},
+  {t:"sub-brand",l:"a sub-brand",m:"sub-brand",
+   d:"A brand that sits under a bigger one with its own name and customers, like a deli chain owned by a butcher."},
+  {t:"brand architecture",l:"brand architecture",m:"brand architecture|architecture",
+   d:"How a company’s brands relate: one name over everything, separate names, or one endorsing another. A question about trust, not tidiness."},
+  {t:"endorsed",l:"an endorsed brand",m:"endorsed(?: by)?|endorsement",
+   d:"A brand that keeps its own name and personality but carries a bigger name behind it as a guarantee — “Pickett’s, by Marrow”."},
+  {t:"equity",l:"brand equity",m:"brand equity|equity|transfer of trust",
+   d:"The value built up in what people already believe about a name. Two brands can lend it to each other, or waste it."},
+  {t:"mechanic",l:"a mechanic",m:"mechanic",
+   d:"A repeatable device an idea runs on — “the question you were too embarrassed to ask” — rather than a mood. It is what lets a campaign keep going."},
+  {t:"tension",l:"a tension",m:"tension",
+   d:"The push and pull inside an idea — expertise that intimidates the people who need it. Adjectives give a maker nothing; a tension gives them something to build."},
+  {t:"mood board",l:"a mood board",m:"mood board",
+   d:"A collage of images setting a feeling. Handy later, and no substitute for a decision about what the brand is for."},
+  {t:"differentiate",l:"differentiation",m:"differentiat(?:e|ed|ion|ing)",
+   d:"Being chosen for something others are not offering. Doing the same thing better is not it — that is a fight you win only by outspending."},
+  {t:"line",l:"a line",m:"line",
+   d:"The short public sentence a brand runs with — “No silly questions”. Somebody else can say your line; they cannot necessarily prove it."},
+  {t:"campaign",l:"a campaign",m:"campaign",
+   d:"A run of work over time that all comes from one idea, rather than a single advert."},
+  {t:"brief",l:"a brief",m:"brief",
+   d:"The written statement of what the work has to do. Handing over the outcome you want is not one — the thinking is the bit that is missing."}
+];
 TRACK_DEFS.brand={
   id:'brand', name:'Brand Strategy', title:'Brand Chronicles',
   blurb:'Positioning, architecture, and the discipline of saying no.',
@@ -1720,35 +1817,36 @@ TRACK_DEFS.brand={
   roles:{kate:'Strategy Director', alex:'Strategist', mike:'Creative Director',
          jenny:'Design & Production', dan:'Studio & everything else',
          nadia:'Managing Director, Marrow', player:'The new strategist'},
+  glossary:TRACK_GLOSSARY,
   script:function(key){ return brandScript(key); },
   occupants:function(room){ return brandOccupants(room); },
   objectives:OBJ_BRAND,
-  opening:{text:`Nine in the morning. There is a woman in the lobby who has been running fourteen butchers' shops since before you were born, and she has come to be told what is wrong with them.`,
+  opening:{text:`Nine in the morning. There's a woman in the lobby who's been running fourteen butchers' shops since before you were born, and she's come to be told what's wrong with them.`,
            label:'Go over.'},
   certTitle:'BRAND CHRONICLES',
-  timeUp:{who:'kate',line:`Time. She has gone back to Leeds thinking we had no answer, which is worse than having a bad one. Work it out anyway — the next competitor will be along shortly.`},
+  timeUp:{who:'kate',line:`Time's gone. She's gone back to Leeds thinking we had no answer, which is worse than having a bad one. Work it out anyway — the next competitor will be along shortly.`},
   certBody:['built the Marrow strategy from the ground up — found the position, the insight,',
             'the architecture and the platform, and held all four when a competitor',
             'launched the same idea the morning of the presentation.'],
   lessons:[
     {t:'A brief is not a diagnosis', c:'Marrow',
      l:'Clients name the lever they know the name of. A new logo on an unchanged business is an expensive apology — find out what stopped working first.'},
-    {t:'A position excludes', c:'Positioning',
-     l:'If nobody is excluded by it, it is a description, not a position. A real one costs you something and annoys somebody.'},
-    {t:'Do not position against a competitor', c:'Positioning',
-     l:'Define yourself by a customer, not a rival. Position against a competitor and you have nothing the day they improve.'},
-    {t:'Observation is not insight', c:'The shop floor',
-     l:'An observation tells you what happened. An insight tells you what to do tomorrow. If it does not change a decision, it is a fact you have dressed up.'},
+    {t:'A position excludes somebody', c:'Positioning',
+     l:'If nobody’s excluded by it, it’s a description, not a position. A real one costs you something and annoys someone.'},
+    {t:'Don’t position against a competitor', c:'Positioning',
+     l:'Define yourself by a customer, not a rival. Position against a competitor and you’ve got nothing the day they improve.'},
+    {t:'An observation isn’t an insight', c:'The shop floor',
+     l:'An observation tells you what happened. An insight tells you what to do tomorrow. If it doesn’t change a decision, it’s a fact you’ve dressed up.'},
     {t:'Go and look', c:'The shop floor',
-     l:'The insight was outside the shop, in the queue, on a Saturday. It was not in the data and it was never going to be.'},
+     l:'The insight was outside the shop, in the queue, on a Saturday. It wasn’t in the data, and it never was going to be.'},
     {t:'Architecture is a trust question', c:'Pickett\u2019s',
-     l:'Ask who borrows credibility from whom. Consolidating everything is tidy for the agency and expensive for the client.'},
+     l:'Ask who borrows credibility from whom. Rolling everything into one name is tidy for the agency and expensive for the client.'},
     {t:'Strategy has to be makeable', c:'Briefing creative',
-     l:'Three adjectives is not a strategy. Hand over a tension someone can build work around, or you have kept the thinking to yourself.'},
-    {t:'Better is not different', c:'The competitor launch',
+     l:'Three adjectives isn’t a strategy. Hand over a tension someone can build work around, or you’ve kept the thinking to yourself.'},
+    {t:'Better isn’t different', c:'The competitor launch',
      l:'Out-executing someone on their own idea is a two-year plan that needs a bigger budget than yours.'},
-    {t:'Copied is not lost', c:'The competitor launch',
-     l:'When someone says your idea first, find what they cannot prove. Strategies rarely die from imitation — they die because the person holding them panics.'}
+    {t:'Copied isn’t lost', c:'The competitor launch',
+     l:'When someone says your idea first, find what they can’t prove. Strategies rarely die from imitation — they die because the person holding them panics.'}
   ]
 };
 
@@ -1828,6 +1926,8 @@ function loadTrack(id){
   pendingTrack=TRACK.id;
   if(TRACK.roles) for(const k in TRACK.roles){ if(CAST[k]) CAST[k].role=TRACK.roles[k]; }
   G.step=TRACK.first; G.portfolio=[]; G.bought=false; stopClock(); paintHUD();
+  G.termsSeen={}; G.termsLearned=[]; G.termLine=null;
+  G.termAsking=false; G.termCount=0;
 }
 
 /* ---- screens ------------------------------------------------------------ */
@@ -1892,9 +1992,17 @@ $('avGo').onclick=function(){
 /* ---- lessons ------------------------------------------------------------ */
 function paintLessons(){
   $('lessonsTitle').textContent='What '+TRACK.name.toLowerCase()+' teaches';
-  $('lessonsBody').innerHTML=(TRACK.lessons||[]).map(function(L){
+  let rows=(TRACK.lessons||[]).map(function(L){
     return '<div class="lesson"><b>'+L.t+'</b><span>'+L.c+'</span><p>'+L.l+'</p></div>';
   }).join('');
+  const gl=TRACK.glossary||[];
+  if(gl.length) rows+='<div class="lesson"><b>The words, plainly</b><span>Jargon</span>'+
+    '<p>Every term the day uses. While you play, the first time one of them comes up, '+
+    'whoever said it stops and asks whether you know it.</p></div>'+
+    gl.map(function(e){
+      return '<div class="lesson gl"><b>'+termName(e)+'</b><p>'+e.d+'</p></div>';
+    }).join('');
+  $('lessonsBody').innerHTML=rows;
 }
 
 /* ---- track picker ------------------------------------------------------- */
