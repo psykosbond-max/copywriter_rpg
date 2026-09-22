@@ -214,7 +214,7 @@
 
 <div class="veil" id="tracksScreen" style="display:none"><div class="inner">
   <h3>Choose another track</h3>
-  <p class="lede small">Engineering, product, security, UX and data science run at Meridian, a product company. Copywriting, account management, brand and design share an agency across town. Electrical, mechanical and chemical engineering are at Hallam Works, which builds the pump skids and control panels — same engine, different job, different lessons.</p>
+  <p class="lede small">Engineering, product, security, UX and data science run at Meridian, a product company. Copywriting, account management, brand and design share an agency across town. Electrical, mechanical and chemical engineering are at Hallam Works, which builds the pump skids and control panels. Consulting is at Calder and Hale, on somebody else's problem — same engine, different job, different lessons.</p>
   <div id="tracksBody"></div>
   <button id="backTracks" class="link">Back to menu</button>
 </div></div>
@@ -1934,7 +1934,9 @@ const TRACK_STUBS={
   mechanical:{id:'mechanical',name:'Mechanical Engineering',title:'Mechanical Chronicles',
     blurb:'Three impellers in eight months, a frame that cracked at a sharp corner, and a lorry at the gate.'},
   chemical:{id:'chemical',name:'Chemical Engineering',title:'Chemical Chronicles',
-    blurb:'Four per cent of a tanker missing, two chemicals on one coupling, and a client who wants to double the dose.'}
+    blurb:'Four per cent of a tanker missing, two chemicals on one coupling, and a client who wants to double the dose.'},
+  consulting:{id:'consulting',name:'Consulting',title:'Consulting Chronicles',
+    blurb:'A benchmark nobody needs, three numbers that disagree, and a sentence the client wants taken out.'}
 };
 const TRACKS={};
 Object.keys(TRACK_STUBS).forEach(function(id){
@@ -1944,7 +1946,7 @@ Object.keys(TRACK_STUBS).forEach(function(id){
 });
 
 const TRACK_ORDER=['engineering','product','security','ux','data','copywriting','account','brand','design',
-  'electrical','mechanical','chemical'];
+  'electrical','mechanical','chemical','consulting'];
 const TRACK_FILES={
   engineering:'engineering-chronicles.html',
   product:'product-chronicles.html',
@@ -1955,6 +1957,7 @@ const TRACK_FILES={
   account:'account-chronicles.html',
   brand:'brand-chronicles.html',
   design:'design-chronicles.html',
+  consulting:'consulting-chronicles.html',
   electrical:'electrical-chronicles.html',
   mechanical:'mechanical-chronicles.html',
   chemical:'chemical-chronicles.html',

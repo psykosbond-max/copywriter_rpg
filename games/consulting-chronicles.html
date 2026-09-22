@@ -3,128 +3,128 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
-<title>Account Chronicles</title>
+<title>Consulting Chronicles</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  html,body{margin:0;background:#141210;color:#f2ece0;
+  html,body{margin:0;background:#0e1116;color:#e6edf3;
     font-family:"DM Sans",Inter,system-ui,sans-serif;overscroll-behavior:none}
   .wrap{max-width:900px;margin:0 auto;padding:18px 16px 40px;position:relative}
   h1{font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:20px;margin:0;letter-spacing:-.02em}
   .top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:0 0 12px}
   .hud{display:flex;align-items:center;gap:10px}
-  #obj{font-size:13px;color:#9a9285;border:1px solid #3d352c;background:#211d19;
+  #obj{font-size:13px;color:#8b97a6;border:1px solid #2c3440;background:#1a1f27;
     border-radius:7px;padding:7px 12px;line-height:1.3}
-  #clock{display:none;font-family:ui-monospace,Menlo,monospace;font-size:15px;color:#1a1815;
-    background:#d8a33c;border-radius:7px;padding:7px 11px;font-weight:600}
-  #clock.urgent{background:#e08265;color:#f2ece0}
-  #folioBtn{background:#211d19;color:#9a9285;border:1px solid #3d352c;border-radius:7px;
+  #clock{display:none;font-family:ui-monospace,Menlo,monospace;font-size:15px;color:#0b0f14;
+    background:#58a6ff;border-radius:7px;padding:7px 11px;font-weight:600}
+  #clock.urgent{background:#f0803c;color:#e6edf3}
+  #folioBtn{background:#1a1f27;color:#8b97a6;border:1px solid #2c3440;border-radius:7px;
     padding:7px 12px;font-family:inherit;font-size:13px;cursor:pointer}
-  #folioBtn:hover{border-color:#d8a33c;color:#f2ece0}
+  #folioBtn:hover{border-color:#58a6ff;color:#e6edf3}
   .stage{position:relative}
-  canvas{display:block;width:100%;height:auto;border:1px solid #3d352c;border-radius:12px;background:#141210}
+  canvas{display:block;width:100%;height:auto;border:1px solid #2c3440;border-radius:12px;background:#0e1116}
   /* dialogue */
-  #dlg{display:none;margin:14px 0 0;background:#1c1916;border:1px solid #3d352c;
+  #dlg{display:none;margin:14px 0 0;background:#161b22;border:1px solid #2c3440;
     border-radius:12px;padding:16px 18px}
   #dlg .who{font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:14px;
     display:flex;align-items:center;gap:9px;margin:0 0 8px}
-  #dlg .who em{font-style:normal;font-weight:400;font-size:12px;color:#9a9285}
+  #dlg .who em{font-style:normal;font-weight:400;font-size:12px;color:#8b97a6}
   #dlg .dot{width:9px;height:9px;border-radius:50%;display:inline-block}
-  #dlg p{margin:0 0 14px;font-size:15px;line-height:1.65;max-width:66ch;color:#e7e0d2}
+  #dlg p{margin:0 0 14px;font-size:15px;line-height:1.65;max-width:66ch;color:#dbe3ec}
   #dlg .opts{display:flex;flex-direction:column;gap:8px;align-items:flex-start}
   #dlg .opts button{font-family:inherit;font-size:14px;text-align:left;line-height:1.45;
-    background:#211d19;color:#f2ece0;border:1px solid #3d352c;border-radius:8px;
+    background:#1a1f27;color:#e6edf3;border:1px solid #2c3440;border-radius:8px;
     padding:10px 14px;cursor:pointer;transition:.13s;width:100%}
-  #dlg .opts button:hover{border-color:#d8a33c;background:#282320}
-  #dlg p .jt{color:#d8a33c;font-weight:600}
-  #dlg .def{display:block;border-left:2px solid #d8a33c;padding:1px 0 1px 13px}
+  #dlg .opts button:hover{border-color:#58a6ff;background:#20262f}
+  #dlg p .jt{color:#58a6ff;font-weight:600}
+  #dlg .def{display:block;border-left:2px solid #58a6ff;padding:1px 0 1px 13px}
   #dlg .def b{display:block;font-family:"Space Grotesk",sans-serif;font-size:12px;
-    letter-spacing:.09em;text-transform:uppercase;color:#d8a33c;margin:0 0 6px}
+    letter-spacing:.09em;text-transform:uppercase;color:#58a6ff;margin:0 0 6px}
   .lesson.gl b{font-size:14px;text-transform:uppercase;letter-spacing:.06em;
-    color:#d8a33c;margin-bottom:5px}
+    color:#58a6ff;margin-bottom:5px}
   /* title + portfolio */
-  .veil{position:fixed;inset:0;background:rgba(15,13,11,.93);display:flex;
+  .veil{position:fixed;inset:0;background:rgba(9,12,16,.94);display:flex;
     align-items:center;justify-content:center;padding:24px;z-index:20}
-  .veil .inner{max-width:520px;width:100%;background:#1c1916;border:1px solid #3d352c;
+  .veil .inner{max-width:520px;width:100%;background:#161b22;border:1px solid #2c3440;
     border-radius:14px;padding:26px 28px;max-height:80vh;overflow:auto}
   .veil h2{font-family:"Space Grotesk",sans-serif;font-size:25px;margin:0 0 10px;letter-spacing:-.02em}
   .veil h3{font-family:"Space Grotesk",sans-serif;font-size:18px;margin:0 0 14px}
-  .veil p{font-size:14px;line-height:1.7;color:#9a9285;margin:0 0 8px}
-  .veil button{margin-top:18px;font-family:inherit;font-size:14px;background:#d8a33c;
-    color:#1a1815;border:0;border-radius:8px;padding:11px 20px;cursor:pointer;font-weight:500}
-  .pf{border-top:1px solid #3d352c;padding:11px 0}
+  .veil p{font-size:14px;line-height:1.7;color:#8b97a6;margin:0 0 8px}
+  .veil button{margin-top:18px;font-family:inherit;font-size:14px;background:#58a6ff;
+    color:#0b0f14;border:0;border-radius:8px;padding:11px 20px;cursor:pointer;font-weight:500}
+  .pf{border-top:1px solid #2c3440;padding:11px 0}
   .pf b{font-family:"Space Grotesk",sans-serif;font-size:14px;display:block}
-  .pf span{font-size:12px;color:#9a9285;display:block;margin:2px 0 5px}
-  .pf i{font-style:normal;font-size:14px;color:#d8a33c}
+  .pf span{font-size:12px;color:#8b97a6;display:block;margin:2px 0 5px}
+  .pf i{font-style:normal;font-size:14px;color:#58a6ff}
   .empty{font-style:italic}
   .veil .inner.center{text-align:center}
   .veil .inner.wide{max-width:880px}
   .lede{font-size:15px;line-height:1.6;margin:0 0 22px}
   .lede.small{font-size:13px;margin-bottom:18px}
-  .hintline{font-size:12px;color:#6a655c;margin:10px 0 0}
-  .veil button.primary{background:#d8a33c;color:#1a1815}
-  .veil button.ghost{background:transparent;color:#e7e0d2;border:1px solid #3d352c}
-  .veil button.link{background:none;border:0;color:#9a9285;font-size:13px;padding:8px;margin-top:10px}
-  .veil button.link:hover{color:#d8a33c}
+  .hintline{font-size:12px;color:#6e7a89;margin:10px 0 0}
+  .veil button.primary{background:#58a6ff;color:#0b0f14}
+  .veil button.ghost{background:transparent;color:#dbe3ec;border:1px solid #2c3440}
+  .veil button.link{background:none;border:0;color:#8b97a6;font-size:13px;padding:8px;margin-top:10px}
+  .veil button.link:hover{color:#58a6ff}
   .veil .inner.center button.primary,.veil .inner.center button.ghost{display:block;width:100%;margin:9px 0 0}
   .veil button:disabled{opacity:.4;cursor:not-allowed}
-  #nameInput{width:100%;font-family:inherit;font-size:17px;background:#141210;color:#f2ece0;
-    border:1px solid #3d352c;border-radius:8px;padding:13px 15px;margin-top:6px}
-  #nameInput:focus{outline:none;border-color:#d8a33c}
+  #nameInput{width:100%;font-family:inherit;font-size:17px;background:#0e1116;color:#e6edf3;
+    border:1px solid #2c3440;border-radius:8px;padding:13px 15px;margin-top:6px}
+  #nameInput:focus{outline:none;border-color:#58a6ff}
   .avrow{display:flex;gap:12px;margin:6px 0 4px;justify-content:center}
-  .avcard{flex:1;background:#141210;border:2px solid #3d352c;border-radius:11px;
+  .avcard{flex:1;background:#0e1116;border:2px solid #2c3440;border-radius:11px;
     padding:6px;cursor:pointer;transition:.13s;line-height:0}
-  .avcard:hover{border-color:#6a655c}
-  .avcard.on{border-color:#d8a33c;background:#241f19}
+  .avcard:hover{border-color:#6e7a89}
+  .avcard.on{border-color:#58a6ff;background:#1d232c}
   .avcard canvas{width:100%;height:auto}
-  .lesson{border-top:1px solid #3d352c;padding:13px 0}
+  .lesson{border-top:1px solid #2c3440;padding:13px 0}
   .lesson b{font-family:"Space Grotesk",sans-serif;font-size:15px;display:block}
-  .lesson span{font-size:11px;color:#d8a33c;display:block;margin:3px 0 6px;
+  .lesson span{font-size:11px;color:#58a6ff;display:block;margin:3px 0 6px;
     text-transform:uppercase;letter-spacing:.06em}
-  .lesson p{margin:0;font-size:14px;line-height:1.65;color:#c8c1b3}
-  .trackcard{display:block;border:1px solid #3d352c;border-radius:10px;padding:14px 16px;
+  .lesson p{margin:0;font-size:14px;line-height:1.65;color:#b9c4d0}
+  .trackcard{display:block;border:1px solid #2c3440;border-radius:10px;padding:14px 16px;
     margin:0 0 10px;opacity:.6;text-decoration:none;color:inherit}
-  .trackcard.live{opacity:1;border-color:#3d352c;cursor:pointer}
-  .trackcard.live:hover,.trackcard.live:focus-visible{border-color:#d8a33c;outline:none}
-  .trackcard.away em{color:#d8a33c}
-  .trackcard.picked{border-color:#d8a33c;background:#241f19}
+  .trackcard.live{opacity:1;border-color:#2c3440;cursor:pointer}
+  .trackcard.live:hover,.trackcard.live:focus-visible{border-color:#58a6ff;outline:none}
+  .trackcard.away em{color:#58a6ff}
+  .trackcard.picked{border-color:#58a6ff;background:#1d232c}
   .trackcard b{font-family:"Space Grotesk",sans-serif;font-size:16px}
-  .trackcard em{font-style:normal;font-size:11px;color:#9a9285;margin-left:10px;
+  .trackcard em{font-style:normal;font-size:11px;color:#8b97a6;margin-left:10px;
     text-transform:uppercase;letter-spacing:.06em}
-  .trackcard p{margin:6px 0 0;font-size:13px;line-height:1.6;color:#9a9285}
+  .trackcard p{margin:6px 0 0;font-size:13px;line-height:1.6;color:#8b97a6}
   /* first-run coaching, and the spotlight it puts on the two things it names */
   #coach{display:none;margin:0 0 10px;padding:11px 13px;border-radius:9px;
-    border:1px solid #d8a33c;background:#211d19;color:#9a9285;font-size:12.5px;line-height:1.45}
+    border:1px solid #58a6ff;background:#1a1f27;color:#8b97a6;font-size:12.5px;line-height:1.45}
   #coach.on{display:block}
   #coach p{margin:0 0 7px;display:flex;gap:9px;align-items:flex-start}
   #coach p>span{flex:1;min-width:0}
-  #coach p>b.n{flex:0 0 17px;height:17px;border-radius:50%;background:#d8a33c;
-    color:#1a1815;font-size:10.5px;font-weight:600;display:flex;align-items:center;
+  #coach p>b.n{flex:0 0 17px;height:17px;border-radius:50%;background:#58a6ff;
+    color:#0b0f14;font-size:10.5px;font-weight:600;display:flex;align-items:center;
     justify-content:center;margin-top:1px}
   #coach span b{color:#f2ece0;font-weight:600}
   #coach button{margin:2px 0 0;padding:6px 15px;border-radius:7px;cursor:pointer;
-    border:1px solid #d8a33c;background:#d8a33c;color:#1a1815;
+    border:1px solid #58a6ff;background:#58a6ff;color:#0b0f14;
     font-family:inherit;font-size:12.5px;font-weight:600}
-  .objrow.spot #obj,.objrow.spot .map{border-color:#d8a33c}
-  #dlg.spot .opts button{border-color:#d8a33c}
+  .objrow.spot #obj,.objrow.spot .map{border-color:#58a6ff}
+  #dlg.spot .opts button{border-color:#58a6ff}
   /* floor map -- the six rooms sit in a 3x2 grid and every neighbour is a door */
   .objrow{display:flex;align-items:stretch;gap:10px;margin:0 0 12px;flex-wrap:wrap}
   .objrow #obj{flex:1 1 220px;display:flex;align-items:center;margin:0}
   .map{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;padding:5px;
-    border:1px solid #3d352c;background:#211d19;border-radius:7px;flex:0 0 auto}
+    border:1px solid #2c3440;background:#1a1f27;border-radius:7px;flex:0 0 auto}
   .mcell{display:flex;align-items:center;justify-content:center;text-align:center;
     min-width:58px;min-height:23px;padding:3px 8px;border-radius:4px;
-    border:1px solid #3d352c;background:#141210;color:#9a9285;
+    border:1px solid #2c3440;background:#0e1116;color:#8b97a6;
     font-size:9.5px;line-height:1.15;letter-spacing:.02em;
     font-family:inherit;cursor:pointer;appearance:none;-webkit-appearance:none}
-  .mcell:hover,.mcell:focus-visible{color:#1a1815;background:#d8a33c;
-    border-color:#d8a33c;outline:none}
-  .mcell.going{border-color:#d8a33c;border-style:dashed}
-  .mcell.goal{color:#e08265;border-color:#e08265}
-  .mcell.here{color:#1a1815;background:#d8a33c;border-color:#d8a33c;font-weight:600}
-  .mcell.here.goal{border-color:#e08265}
+  .mcell:hover,.mcell:focus-visible{color:#0b0f14;background:#58a6ff;
+    border-color:#58a6ff;outline:none}
+  .mcell.going{border-color:#58a6ff;border-style:dashed}
+  .mcell.goal{color:#f0803c;border-color:#f0803c}
+  .mcell.here{color:#0b0f14;background:#58a6ff;border-color:#58a6ff;font-weight:600}
+  .mcell.here.goal{border-color:#f0803c}
   @media (max-width:560px){
     .map{width:100%}
     .mcell{min-width:0;font-size:10.5px;min-height:28px}
@@ -135,22 +135,22 @@
   /* touch */
   .pad{display:none;margin:14px 0 0;justify-content:space-between;align-items:center;gap:20px}
   .dpad{display:grid;grid-template-columns:repeat(3,54px);grid-template-rows:repeat(3,54px);gap:5px}
-  .pad button{background:#211d19;color:#f2ece0;border:1px solid #3d352c;border-radius:10px;
+  .pad button{background:#1a1f27;color:#e6edf3;border:1px solid #2c3440;border-radius:10px;
     font-size:19px;font-family:inherit;cursor:pointer;user-select:none}
   #t_up{grid-area:1/2}#t_left{grid-area:2/1}#t_right{grid-area:2/3}#t_down{grid-area:3/2}
-  #t_act{width:78px;height:78px;border-radius:50%;background:#d8a33c;color:#1a1815;
+  #t_act{width:78px;height:78px;border-radius:50%;background:#58a6ff;color:#0b0f14;
     border:0;font-weight:600;font-size:15px}
-  .keys{font-size:12px;color:#6a655c;margin:14px 0 0}
+  .keys{font-size:12px;color:#6e7a89;margin:14px 0 0}
   @media (hover:none) and (pointer:coarse){ .pad{display:flex} .keys{display:none} }
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="top">
-    <h1 id="gameTitle">Account Chronicles</h1>
+    <h1 id="gameTitle">Consulting Chronicles</h1>
     <div class="hud">
       <span id="clock"></span>
-      <button id="folioBtn">Portfolio (<span id="folioCount">0</span>)</button>
+      <button id="folioBtn">Work log (<span id="folioCount">0</span>)</button>
     </div>
   </div>
   <div class="objrow">
@@ -166,7 +166,7 @@
     <button id="coachGo" type="button">Got it</button>
   </div>
   <div class="stage">
-    <canvas id="c" width="1600" height="960" role="img" aria-label="Agency floor"></canvas>
+    <canvas id="c" width="1600" height="960" role="img" aria-label="Consultancy floor"></canvas>
   </div>
   <div id="dlg"></div>
   <div class="pad">
@@ -176,14 +176,14 @@
     </div>
     <button id="t_act">TALK</button>
   </div>
-  <p class="keys">Arrow keys or WASD to move &middot; E or Space to talk &middot; P for portfolio</p>
+  <p class="keys">Arrow keys or WASD to move &middot; E or Space to talk &middot; P for work log</p>
 </div>
 
 <div class="veil" id="menu"><div class="inner center">
-  <h2 id="menuTitle">Account Chronicles</h2>
-  <p class="lede" id="menuLede">A day in an agency, and the six briefs that come with it.</p>
+  <h2 id="menuTitle">Consulting Chronicles</h2>
+  <p class="lede" id="menuLede">A day on a client engagement, and a sentence somebody wants taken out.</p>
   <button id="btnPlay" class="primary">Play game</button>
-  <button id="btnLearn" class="ghost">Learn copywriting</button>
+  <button id="btnLearn" class="ghost">Learn consulting</button>
   <button id="btnTracks" class="ghost">Choose another track</button>
 </div></div>
 
@@ -223,7 +223,7 @@
   <canvas id="certCanvas" width="800" height="565"></canvas>
   <div class="certbtns">
     <button id="certDownload" class="primary">Download</button>
-    <button id="certFolio" class="ghost">View portfolio</button>
+    <button id="certFolio" class="ghost">View work log</button>
   </div>
 </div></div>
 
@@ -552,13 +552,13 @@ function walls(room){
 function doorway(d){
   const T=90;
   const put=(x,y,w,h,vert)=>{ r(x,y,w,h,P.charcoal);
-    if(vert) r(x,y,3,h,P.ply); else r(x,y,w,3,P.ply); };
+    if(vert) r(x,y,3,h,P.anod); else r(x,y,w,3,P.anod); };
   if(d.side==='top'){ put(d.at-T/2,0,T,WALL,false); chev(d.at,WALL+15,0,-1); }
   if(d.side==='bottom'){ put(d.at-T/2,H-WALL,T,WALL,false); chev(d.at,H-WALL-15,0,1); }
   if(d.side==='left'){ put(0,d.at-T/2,WALL,T,true); chev(WALL+15,d.at,-1,0); }
   if(d.side==='right'){ put(W-WALL,d.at-T/2,WALL,T,true); chev(W-WALL-15,d.at,1,0); }
 }
-function chev(cx,cy,dx,dy){ X.strokeStyle=P.mustard; X.lineWidth=2.2; X.lineCap='round';
+function chev(cx,cy,dx,dy){ X.strokeStyle='#58a6ff'; X.lineWidth=2.2; X.lineCap='round';
   X.beginPath();
   if(dx){ X.moveTo(cx-dx*5,cy-7); X.lineTo(cx+dx*5,cy); X.lineTo(cx-dx*5,cy+7); }
   else  { X.moveTo(cx-7,cy-dy*5); X.lineTo(cx,cy+dy*5); X.lineTo(cx+7,cy-dy*5); }
@@ -567,216 +567,846 @@ function chev(cx,cy,dx,dy){ X.strokeStyle=P.mustard; X.lineWidth=2.2; X.lineCap=
 function shell(room){ r(0,0,W,H,P.ink); room.floor(); walls(room);
   (room.doors||[]).forEach(doorway); }
 
+/* ==========================================================================
+   THE BUILDING — Meridian, floor 3.
+   A software company draws nothing like an agency: no rugs, no mood boards,
+   no soft furniture arranged for a photograph. Bench desks on a grid, monitor
+   arms, cable spines, acoustic panels, a dashboard wall and two racks that
+   never stop humming.
+   ========================================================================== */
+
+Object.assign(P,{
+  slateD:'#2b323c', slateM:'#3b444f', slateL:'#515c6a', mesh:'#333c47',
+  birch:'#d6bd96', birchHi:'#e7d3b2', birchDk:'#ab9068',
+  screenDk:'#0d1117', screenLit:'#16202c', screenGlow:'#7fa8c4',
+  led:'#3fb950', ledA:'#d29922', ledR:'#f85149', cyan:'#58a6ff', blueDk:'#1f6feb',
+  acoustic:'#4a5560', acousticDk:'#3a434e', rubber:'#26292f',
+  moss:'#4f6b52', felt:'#5c6b7a', chrome:'#8d98a6', anod:'#6f7a87'
+});
+
+/* --- floors ------------------------------------------------------------- */
+function terrazzoCool(seed){                     /* fine chips, grey base, sealed */
+  const R=seeded(seed);
+  r(FX,FY,FW,FH,'#d5dae0');
+  const chips=['#4d5865','#8d98a6','#ffffff','#b9c2cb','#5c6b7a','#7fa8c4'];
+  for(let i=0;i<2100;i++){
+    const cx=FX+R()*FW, cy=FY+R()*FH, sz=1+R()*2.2;
+    X.globalAlpha=.34+R()*.4;
+    X.fillStyle=chips[Math.floor(R()*chips.length)];
+    X.beginPath(); X.ellipse(cx,cy,sz,sz*(.7+R()*.5),R()*3,0,Math.PI*2); X.fill();
+  }
+  X.globalAlpha=1;
+  X.strokeStyle='#b6bec7'; X.lineWidth=1.4;                /* expansion joints */
+  for(let x=FX+190;x<FX+FW;x+=190){ X.beginPath(); X.moveTo(x,FY); X.lineTo(x,FY+FH); X.stroke(); }
+  X.beginPath(); X.moveTo(FX,FY+FH/2); X.lineTo(FX+FW,FY+FH/2); X.stroke();
+  if(showLight){ X.globalAlpha=.08; X.fillStyle='#ffffff';
+    for(let i=0;i<3;i++){ X.beginPath();
+      X.ellipse(FX+170+i*210,FY+FH*.4,140,80,0,0,Math.PI*2); X.fill(); }
+    X.globalAlpha=1; }
+  grain(FX,FY,FW,FH,.045);
+}
+function accessFloor(seed){                      /* raised data-centre panels */
+  const R=seeded(seed), T=76;
+  r(FX,FY,FW,FH,'#2f343b');
+  for(let i=0;i<Math.ceil(FW/T);i++) for(let j=0;j<Math.ceil(FH/T);j++){
+    const x=FX+i*T, y=FY+j*T, w=Math.min(T,FX+FW-x), h=Math.min(T,FY+FH-y);
+    const v=R(); X.globalAlpha=.5+v*.5;
+    r(x,y,w,h, v>.66?'#343a42' : v>.33?'#2d323a' : '#31373f'); X.globalAlpha=1;
+    X.strokeStyle='#23272d'; X.lineWidth=1; X.strokeRect(x+.5,y+.5,w-1,h-1);
+    X.globalAlpha=.5; X.fillStyle='#4a525c';
+    X.fillRect(x+w/2-3,y+3,6,2); X.fillRect(x+w/2-3,y+h-5,6,2); X.globalAlpha=1;
+  }
+  grain(FX,FY,FW,FH,.05);
+}
+function gridCarpet(seed,base,alt,seam){         /* office carpet tile, laid true */
+  const R=seeded(seed), T=64;
+  r(FX,FY,FW,FH,base);
+  for(let i=0;i<Math.ceil(FW/T);i++) for(let j=0;j<Math.ceil(FH/T);j++){
+    const x=FX+i*T, y=FY+j*T, w=Math.min(T,FX+FW-x), h=Math.min(T,FY+FH-y);
+    if((i+j)%2){ X.globalAlpha=.55; r(x,y,w,h,alt); X.globalAlpha=1; }
+    X.globalAlpha=.35; X.strokeStyle=seam; X.lineWidth=1;
+    X.strokeRect(x+.5,y+.5,w-1,h-1); X.globalAlpha=1;
+  }
+  X.globalAlpha=.16;                              /* fibre speckle */
+  for(let i=0;i<900;i++){ const px=FX+R()*FW, py=FY+R()*FH;
+    r(px,py,1.6,1.6, R()>.5?seam:alt); }
+  X.globalAlpha=1; grain(FX,FY,FW,FH,.05);
+}
+function epoxyFloor(seed,base,hi){               /* poured resin, sealed */
+  const R=seeded(seed);
+  r(FX,FY,FW,FH,base);
+  for(let i=0;i<26;i++){ X.globalAlpha=.05+R()*.06;
+    const w=90+R()*260,h=60+R()*170;
+    rr(FX+R()*(FW-w),FY+R()*(FH-h),w,h,40,hi); }
+  X.globalAlpha=1;
+  if(showLight){ X.globalAlpha=.07; X.fillStyle='#ffffff';
+    for(let i=0;i<4;i++){ X.beginPath();
+      X.ellipse(FX+150+i*160, FY+FH*.45, 120, 66, 0, 0, Math.PI*2); X.fill(); }
+    X.globalAlpha=1; }
+  grain(FX,FY,FW,FH,.055);
+}
+
+/* --- walls and wall furniture -------------------------------------------- */
+function slatWall(x,y,w,h){                       /* acoustic timber battens */
+  r(x,y,w,h,P.acousticDk);
+  for(let i=0;i<Math.floor(w/9);i++){
+    const sx=x+i*9;
+    r(sx,y,6,h,i%3===0?P.acoustic:'#434d58');
+    X.globalAlpha=.35; r(sx+6,y,3,h,'#252c34'); X.globalAlpha=1;
+  }
+}
+function dashWall(x,y,w,h,seed){                  /* the graphs everyone watches */
+  box(x,y,w,h,'#12161c',3);
+  const R=seeded(seed), cols=5, rows=2;
+  const pw=(w-10)/cols, ph=(h-10)/rows;
+  for(let j=0;j<rows;j++) for(let i=0;i<cols;i++){
+    const px=x+5+i*pw, py=y+5+j*ph;
+    rr(px+1.5,py+1.5,pw-3,ph-3,2,'#0a0d12');
+    const bad=(i===3&&j===0);
+    const col=bad?P.ledR:(i===1&&j===1)?P.ledA:P.led;
+    X.strokeStyle=col; X.lineWidth=1.2; X.globalAlpha=.95;
+    X.beginPath();
+    const gw=pw-9, gh=ph-9, bx=px+4, by=py+4;
+    for(let k=0;k<=14;k++){
+      const v=bad? (k>8? .15+R()*.2 : .7+R()*.25) : .45+R()*.4;
+      const gx=bx+(k/14)*gw, gy=by+gh-v*gh;
+      k?X.lineTo(gx,gy):X.moveTo(gx,gy);
+    }
+    X.stroke();
+    X.globalAlpha=.16; X.fillStyle=col;
+    X.fillRect(bx,by+gh-2,gw,2); X.globalAlpha=1;
+    rr(px+4,py+3,10+R()*14,2,1,'#39414d');       /* panel title */
+  }
+}
+function stickyWall(x,y,w,h,seed){                /* three swimlanes, ungroomed */
+  box(x,y,w,h,'#e9e4d8',2);
+  X.strokeStyle='#c3bcab'; X.lineWidth=1;
+  for(let i=1;i<3;i++){ X.beginPath(); X.moveTo(x+i*(w/3),y+3); X.lineTo(x+i*(w/3),y+h-3); X.stroke(); }
+  const R=seeded(seed), cols=['#f0c674','#8fd18a','#8ec3e6','#e8948e','#c5a9dd'];
+  for(let lane=0;lane<3;lane++){
+    const n=lane===0?9:lane===1?6:2;             /* the third lane is always empty */
+    for(let i=0;i<n;i++){
+      const sx=x+lane*(w/3)+6+(i%3)*((w/3-16)/3);
+      const sy=y+8+Math.floor(i/3)*13;
+      X.save(); X.translate(sx,sy); X.rotate((R()-.5)*.14);
+      r(0,0,11,10,cols[Math.floor(R()*cols.length)]);
+      X.globalAlpha=.22; r(0,8,11,2,'#000000'); X.globalAlpha=1;
+      X.restore();
+    }
+  }
+}
+function ciScreen(x,y,w,h){                       /* the build, on the wall, on purpose */
+  box(x,y,w,h,P.slateD,3);
+  rr(x+4,y+4,w-8,h-8,2,'#0b0f14');
+  const rows=5, rh=(h-12)/rows;
+  for(let i=0;i<rows;i++){
+    const ry=y+6+i*rh, ok=i!==2;
+    rr(x+7,ry+1,5,rh-3,1, ok?P.led:P.ledR);
+    X.globalAlpha=.55; rr(x+16,ry+2,w-30-(i*7)%26,rh-5,1,ok?'#1d3a26':'#3d1d1f'); X.globalAlpha=1;
+  }
+  if(showLight){ X.save(); X.globalCompositeOperation='lighter'; X.globalAlpha=.1;
+    const g=X.createRadialGradient(x+w/2,y+h,0,x+w/2,y+h,120);
+    g.addColorStop(0,'#f85149'); g.addColorStop(1,'#f8514900'); X.fillStyle=g;
+    X.beginPath(); X.arc(x+w/2,y+h,120,0,Math.PI*2); X.fill(); X.restore(); }
+}
+function statusBoard(x,y,w,h){                    /* lobby: everything green, today */
+  box(x,y,w,h,'#151a21',3);
+  const cols=12, rows=3, pw=(w-12)/cols, ph=(h-12)/rows;
+  for(let j=0;j<rows;j++) for(let i=0;i<cols;i++)
+    rr(x+6+i*pw, y+6+j*ph, pw-2, ph-2, 1, (i===7&&j===1)?P.ledA:P.led);
+  X.globalAlpha=.25; vgrad(x+4,y+4,w-8,(h-8)/2,'#9fe8b5','#151a21'); X.globalAlpha=1;
+}
+function glassBooth(x,y,w,h,lit){                 /* focus pod, door ajar, one chair */
+  softShadow(x,y,w,h);
+  rr(x,y,w,h,3,'#21262d');
+  rr(x+3,y+3,w-6,h-6,2,lit?'#2b3b46':'#243039');
+  X.globalAlpha=.34; rr(x+3,y+3,w-6,(h-6)*.5,2,P.glassT); X.globalAlpha=1;
+  X.strokeStyle=P.chrome; X.lineWidth=1.4; X.strokeRect(x+.7,y+.7,w-1.4,h-1.4);
+  r(x+w-4,y+6,3,h-12,P.anod);
+  rr(x+w/2-9,y+h/2-6,18,12,2,P.slateL);           /* stool */
+  if(lit&&showLight){ X.save(); X.globalCompositeOperation='lighter'; X.globalAlpha=.12;
+    const g=X.createRadialGradient(x+w/2,y+h/2,0,x+w/2,y+h/2,90);
+    g.addColorStop(0,'#cfe3ff'); g.addColorStop(1,'#cfe3ff00'); X.fillStyle=g;
+    X.beginPath(); X.arc(x+w/2,y+h/2,90,0,Math.PI*2); X.fill(); X.restore(); }
+  collisions.push([x,y,w,h]);
+}
+
+/* --- desks, chairs, screens ---------------------------------------------- */
+function monitorPair(cx,y,n){                     /* on arms, backs to you */
+  const wid=n===1?26:48;
+  r(cx-1.5,y+6,3,7,P.anod);                       /* arm */
+  rr(cx-wid/2,y-9,wid,15,2,'#1b2027');
+  X.globalAlpha=.5; vgrad(cx-wid/2+1.5,y-7.5,wid-3,6,P.screenGlow,'#1b2027'); X.globalAlpha=1;
+  if(n===2){ r(cx-.8,y-9,1.6,15,'#0e1216'); }
+  if(showLight){ X.globalAlpha=.1; X.fillStyle='#9fc6e8';
+    X.beginPath(); X.ellipse(cx,y+16,wid*.55,10,0,0,Math.PI*2); X.fill(); X.globalAlpha=1; }
+}
+function benchDesk(cx,cy,w,seats,dual,flip){           /* the spine of the floor */
+  const h=52, x=cx-w/2, y=cy-h/2;
+  softShadow(x,y,w,h);
+  rr(x,y,w,h,3,P.birch); vgrad(x,y,w,7,P.birchHi,P.birch);
+  X.globalAlpha=.4; r(x,y+h/2-1,w,2,P.birchDk); X.globalAlpha=1;  /* shared spine seam */
+  r(x+6,y+h,w-12,3,P.anod);                       /* cable tray under */
+  for(let i=0;i<seats;i++){
+    const sx=x+(w/seats)*(i+.5);
+    monitorPair(sx, flip?y+h-8:y+13, dual?2:1);
+    rr(sx-13, flip?y+11:y+h-19, 26,8,1,'#c9cdd4');            /* keyboard */
+    rr(sx+16, flip?y+12:y+h-18, 6,6,1,'#c9cdd4');             /* mouse */
+    if(i%2) rr(sx-19, flip?y+22:y+h-30, 14,9,1,P.slateL);     /* laptop on a riser */
+  }
+  collisions.push([x,y-6,w,h+9]);
+}
+function standDesk(cx,cy,raised){
+  const w=112,h=44,x=cx-w/2,y=cy-h/2;
+  softShadow(x,y,w,h);
+  rr(x,y,w,h,3,P.birchHi); vgrad(x,y,w,6,'#f2e4c8',P.birchHi);
+  r(x+12,y+h,10,5,P.anod); r(x+w-22,y+h,10,5,P.anod);
+  monitorPair(cx,y+12,2);
+  rr(cx-13,y+h-15,26,7,1,'#c9cdd4');
+  if(raised) rr(cx+30,y+8,16,12,2,P.moss);        /* the plant that survives */
+  collisions.push([x,y-6,w,h+7]);
+}
+function taskChair(cx,cy,col){                    /* mesh back, five-star base */
+  X.save(); X.globalAlpha=.2; X.fillStyle='#000000';
+  X.beginPath(); X.ellipse(cx,cy+9,15,5,0,0,Math.PI*2); X.fill(); X.restore();
+  X.strokeStyle=P.chrome; X.lineWidth=2;
+  for(let i=0;i<5;i++){ const a=i*(Math.PI*2/5)+.4;
+    X.beginPath(); X.moveTo(cx,cy+3); X.lineTo(cx+Math.cos(a)*13,cy+3+Math.sin(a)*7); X.stroke(); }
+  rr(cx-13,cy-8,26,15,4,col||P.slateM);           /* seat */
+  X.globalAlpha=.3; rr(cx-11,cy-6,22,5,3,'#ffffff'); X.globalAlpha=1;
+  rr(cx-12,cy-19,24,11,4,P.mesh);                 /* mesh back */
+  X.globalAlpha=.4; X.strokeStyle='#6d7986'; X.lineWidth=.7;
+  for(let i=1;i<5;i++){ X.beginPath(); X.moveTo(cx-11,cy-18+i*2); X.lineTo(cx+11,cy-18+i*2); X.stroke(); }
+  X.globalAlpha=1;
+  collisions.push([cx-13,cy-14,26,22]);
+}
+function cableSpine(x1,x2,y){                     /* floor boxes and a trunk */
+  r(x1,y-3,x2-x1,6,'#2f353d');
+  X.globalAlpha=.5; r(x1,y-3,x2-x1,2,'#454d57'); X.globalAlpha=1;
+  for(let x=x1+30;x<x2-20;x+=86){ rr(x,y-7,16,14,2,P.anod); rr(x+3,y-4,10,8,1,'#1b2027'); }
+}
+function rack(x,y,w,h,seed){                      /* two of these, always humming */
+  softShadow(x,y,w,h);
+  rr(x,y,w,h,2,'#1b1f25');
+  X.strokeStyle='#2f363d';
+  const R=seeded(seed), units=Math.floor((h-8)/9);
+  for(let i=0;i<units;i++){
+    const uy=y+4+i*9;
+    rr(x+3,uy,w-6,7,1, i%4===3?'#242a31':'#20252c');
+    for(let k=0;k<3;k++){
+      const on=R()>.25;
+      r(x+6+k*4, uy+2.4, 2.2, 2.2, on?(R()>.85?P.ledA:P.led):'#2b3038');
+    }
+    X.globalAlpha=.5; r(x+w-16,uy+2,10,3,'#161a20'); X.globalAlpha=1;
+  }
+  collisions.push([x,y,w,h]);
+}
+function counterRun(x,y,w,h){                     /* kitchen: counter, machine, sink */
+  box(x,y,w,h,'#cfd4da',3); vgrad(x,y,w,6,'#e4e8ec','#cfd4da');
+  r(x,y+h-7,w,7,P.slateD);
+  box(x+14,y+4,34,30,P.slateD,3);                 /* the coffee machine */
+  rr(x+20,y+9,22,13,2,'#0d1117'); rr(x+27,y+24,8,6,1,P.chrome);
+  rr(x+18,y+7,4,4,2,P.ledR);
+  rr(x+w-64,y+8,40,22,3,'#b9bfc6');               /* sink */
+  X.globalAlpha=.45; rr(x+w-60,y+11,32,10,2,'#7e888f'); X.globalAlpha=1;
+  r(x+w-46,y+4,3,9,P.chrome);
+  for(let i=0;i<5;i++) rr(x+70+i*13,y+12,9,14,2,[P.cyan,'#e8948e','#8fd18a','#f0c674','#c5a9dd'][i]);
+}
+function island(cx,cy,w,h){
+  const x=cx-w/2,y=cy-h/2;
+  X.save(); X.globalAlpha=.22; X.fillStyle='#000000';
+  if(X.roundRect){X.beginPath();X.roundRect(x+3,y+h-2,w,9,6);X.fill();} X.restore();
+  rr(x,y,w,h,4,'#3f464e'); vgrad(x,y,w,8,'#525a64','#3f464e');
+  rr(x+8,y+6,w-16,h-14,3,'#d9dde2');              /* worktop */
+  rr(x+18,y+14,26,16,2,P.birch);                  /* board */
+  rr(x+w-52,y+12,18,18,9,'#e6ebef');              /* bowl */
+  rr(x+w/2-8,y+16,16,12,2,P.cyan);                /* somebody's laptop */
+  collisions.push([x,y,w,h]);
+}
+function stool(cx,cy,col){
+  X.save(); X.globalAlpha=.2; X.fillStyle='#000000';
+  X.beginPath(); X.ellipse(cx,cy+7,11,4,0,0,Math.PI*2); X.fill(); X.restore();
+  X.fillStyle=col; X.beginPath(); X.ellipse(cx,cy,11,8,0,0,Math.PI*2); X.fill();
+  X.globalAlpha=.3; X.fillStyle='#ffffff';
+  X.beginPath(); X.ellipse(cx-3,cy-2,5,3,0,0,Math.PI*2); X.fill(); X.globalAlpha=1;
+  collisions.push([cx-11,cy-9,22,18]);
+}
+function pingPong(cx,cy){
+  const w=190,h=100,x=cx-w/2,y=cy-h/2;
+  softShadow(x,y,w,h);
+  rr(x,y,w,h,3,'#2f6b56'); 
+  X.strokeStyle='#e6ebef'; X.lineWidth=1.6; X.strokeRect(x+4.5,y+4.5,w-9,h-9);
+  X.beginPath(); X.moveTo(x+4,y+h/2); X.lineTo(x+w-4,y+h/2); X.stroke();
+  r(x+w/2-1.5,y+2,3,h-4,'#d8dde2');               /* net, seen from above */
+  rr(x+22,y+20,16,11,5,P.ledR); rr(x+w-40,y+h-32,16,11,5,'#1b2027');
+  collisions.push([x,y,w,h]);
+}
+function ovalTable(cx,cy,w,h){
+  X.save(); X.globalAlpha=.24; X.fillStyle='#000000';
+  X.beginPath(); X.ellipse(cx,cy+h/2-2,w/2,10,0,0,Math.PI*2); X.fill(); X.restore();
+  X.fillStyle=P.birch; X.beginPath(); X.ellipse(cx,cy,w/2,h/2,0,0,Math.PI*2); X.fill();
+  X.globalAlpha=.5; X.fillStyle=P.birchHi;
+  X.beginPath(); X.ellipse(cx,cy-3,w/2-6,h/2-7,0,0,Math.PI*2); X.fill(); X.globalAlpha=1;
+  rr(cx-26,cy-13,52,26,3,'#1b2027');              /* conference puck + cables */
+  X.fillStyle=P.chrome; X.beginPath(); X.ellipse(cx,cy,11,7,0,0,Math.PI*2); X.fill();
+  rr(cx-52,cy-8,18,13,2,P.slateL); rr(cx+36,cy-2,18,13,2,P.slateL);
+  collisions.push([cx-w/2,cy-h/2,w,h]);
+}
+function lockers(x,y,w,h,n){
+  box(x,y,w,h,P.slateM,2);
+  for(let i=0;i<n;i++){
+    const ly=y+3+i*((h-6)/n);
+    rr(x+3,ly,w-6,(h-6)/n-3,1,i%2?'#46505b':'#3d4650');
+  }
+}
+function lowBench(cx,cy,w,col){
+  const h=30,x=cx-w/2,y=cy-h/2;
+  softShadow(x,y,w,h); rr(x,y,w,h,4,col);
+  X.globalAlpha=.25; rr(x+5,y+4,w-10,8,4,'#ffffff'); X.globalAlpha=1;
+  collisions.push([x,y,w,h]);
+}
+function whiteboardTech(x,y,w,h,seed){            /* boxes and arrows, not doodles */
+  box(x,y,w,h,'#f3f5f7',2);
+  const R=seeded(seed);
+  X.strokeStyle='#2f3a46'; X.lineWidth=1.1;
+  const nodes=[];
+  for(let i=0;i<5;i++){
+    const bw=20+R()*16, bh=10+R()*4;
+    const bx=x+8+ (i%3)*((w-24)/3), by=y+7+Math.floor(i/3)*((h-18)/2);
+    X.strokeRect(bx+.5,by+.5,bw,bh);
+    X.globalAlpha=.2; r(bx+1,by+1,bw-1,bh-1,[P.cyan,'#8fd18a','#f0c674'][i%3]); X.globalAlpha=1;
+    nodes.push([bx+bw/2,by+bh/2,bx+bw,by+bh/2]);
+  }
+  X.lineWidth=1;
+  for(let i=0;i<4;i++){
+    const a=nodes[i], b=nodes[i+1];
+    X.beginPath(); X.moveTo(a[2],a[3]); X.lineTo(b[0]-6,b[1]); X.stroke();
+    X.beginPath(); X.moveTo(b[0]-6,b[1]); X.lineTo(b[0]-10,b[1]-2.5);
+    X.moveTo(b[0]-6,b[1]); X.lineTo(b[0]-10,b[1]+2.5); X.stroke();
+  }
+  X.strokeStyle=P.ledR; X.lineWidth=1.4;          /* the circled one */
+  X.beginPath(); X.ellipse(nodes[3][0],nodes[3][1],17,9,0,0,Math.PI*2); X.stroke();
+}
+
+/* ==========================================================================
+   ROOMS
+   ========================================================================== */
+/* ==========================================================================
+   CALDER & HALE — a consultancy floor, drawn from the client's photographs.
+   Three materials do most of the work: polished concrete and a red wall at the
+   front, pale oak and plants in the team room, herringbone and cream leather
+   where the partners sit. Same flat top-down vocabulary as the rest.
+   ========================================================================== */
+
+Object.assign(P,{
+  conRed:'#b01f2e', conRedDk:'#7d1420', conRedHi:'#c7404c',
+  polish:'#bcbec1', polishHi:'#cfd1d3', polishDk:'#9b9da0',
+  oakL:'#d3b489', oakLHi:'#e6cfa9', oakLDk:'#ab8d63',
+  walnut:'#6b4a2f', walnutHi:'#8a6340', walnutDk:'#43301f',
+  creamL:'#e6dcc8', creamLHi:'#f3ecdd', creamLDk:'#c9bda3',
+  stoneP:'#e2ded4', stonePDk:'#c7c2b6',
+  leatherB:'#24252a', leatherBHi:'#35373d', chrome2:'#b6bdc4',
+  glassT2:'#9fb6c4', inkBlack:'#1a1b1e'
+});
+
+/* --- floors -------------------------------------------------------------- */
+function polishedConcrete(seed){                 /* sealed, and it shows the lights */
+  const R=seeded(seed);
+  r(FX,FY,FW,FH,'#bcbec1');
+  for(let i=0;i<1400;i++){ const cx=FX+R()*FW, cy=FY+R()*FH;
+    X.globalAlpha=.05+R()*.09; X.fillStyle=R()>.5?'#ffffff':'#8a8c8f';
+    X.beginPath(); X.ellipse(cx,cy,1+R()*3.2,1+R()*2.2,0,0,Math.PI*2); X.fill(); }
+  X.globalAlpha=1;
+  X.strokeStyle='#a9abae'; X.lineWidth=1.2;                    /* saw cuts */
+  for(let x=FX+190;x<FX+FW;x+=190){ X.beginPath(); X.moveTo(x,FY); X.lineTo(x,FY+FH); X.stroke(); }
+  for(let y=FY+220;y<FY+FH;y+=220){ X.beginPath(); X.moveTo(FX,y); X.lineTo(FX+FW,y); X.stroke(); }
+  X.globalAlpha=.18;                                            /* pools of downlight */
+  [[180,140],[400,120],[620,150],[300,330],[560,340]].forEach(function(p){
+    const g=X.createRadialGradient(p[0],p[1],0,p[0],p[1],95);
+    g.addColorStop(0,'#ffffff'); g.addColorStop(1,'#ffffff00');
+    X.fillStyle=g; X.beginPath(); X.arc(p[0],p[1],95,0,Math.PI*2); X.fill(); });
+  X.globalAlpha=1;
+  grain(FX,FY,FW,FH,.04);
+}
+function creamStone(seed){                       /* large cream slabs, softly veined */
+  const R=seeded(seed);
+  r(FX,FY,FW,FH,'#e9e1d2');
+  const SW=148, SH=126;                                        /* slab grid */
+  for(let j=0;j<Math.ceil(FH/SH)+1;j++){
+    for(let i=0;i<Math.ceil(FW/SW)+1;i++){
+      const x=FX+i*SW, y=FY+j*SH;
+      const tone=['#eae2d3','#e5dccb','#efe8db','#e2d9c7'][(i*3+j*2)%4];
+      X.fillStyle=tone;
+      X.fillRect(x,y,Math.min(SW,FX+FW-x),Math.min(SH,FY+FH-y));
+      X.save();                                                /* veining, kept inside the slab */
+      X.beginPath(); X.rect(x,y,Math.min(SW,FX+FW-x),Math.min(SH,FY+FH-y)); X.clip();
+      X.strokeStyle='#d5c9b2'; X.globalAlpha=.55;
+      for(let v=0;v<3;v++){
+        X.lineWidth=.8+R()*1.1; X.beginPath();
+        let vx=x+R()*SW, vy=y;
+        X.moveTo(vx,vy);
+        while(vy<y+SH){ vx+=(R()-.5)*26; vy+=10+R()*14; X.lineTo(vx,vy); }
+        X.stroke();
+      }
+      X.globalAlpha=.3; X.strokeStyle='#cfc3ab'; X.lineWidth=1.2;
+      X.strokeRect(x+.6,y+.6,SW-1.2,SH-1.2);                   /* the joint */
+      X.globalAlpha=1; X.restore();
+    }
+  }
+  for(let i=0;i<700;i++){                                      /* fine grain */
+    const cx=FX+R()*FW, cy=FY+R()*FH;
+    X.globalAlpha=.05+R()*.07; X.fillStyle=R()>.5?'#ffffff':'#c2b79f';
+    X.beginPath(); X.ellipse(cx,cy,.9+R()*2,.9+R()*1.6,0,0,Math.PI*2); X.fill();
+  }
+  X.globalAlpha=.2;                                            /* daylight from the window side */
+  const g=X.createRadialGradient(FX+FW*0.74,FY+110,0,FX+FW*0.74,FY+110,340);
+  g.addColorStop(0,'#fff6e2'); g.addColorStop(1,'#fff6e200');
+  X.fillStyle=g; X.fillRect(FX,FY,FW,FH); X.globalAlpha=1;
+  grain(FX,FY,FW,FH,.035);
+}
+function palePlank(seed){                        /* light timber, team room */
+  const R=seeded(seed);
+  r(FX,FY,FW,FH,'#d9c7a8');
+  for(let y=FY;y<FY+FH;y+=17){
+    const tone=['#dcc9a9','#d3bd9a','#e2d1b3','#d7c4a2'][Math.floor(R()*4)];
+    r(FX,y,FW,16,tone);
+    X.globalAlpha=.18; r(FX,y+16,FW,1.2,'#b49a74'); X.globalAlpha=1;
+    for(let x=FX+Math.floor(R()*120);x<FX+FW;x+=110+R()*90){
+      X.globalAlpha=.35; r(x,y,1.4,16,'#b08f66'); X.globalAlpha=1; }
+  }
+  grain(FX,FY,FW,FH,.05);
+}
+function stoneFloor(seed){                       /* big pale slabs, timber band */
+  const R=seeded(seed);
+  r(FX,FY,FW,FH,'#e2ded4');
+  for(let i=0;i<900;i++){ const cx=FX+R()*FW, cy=FY+R()*FH;
+    X.globalAlpha=.05+R()*.07; X.fillStyle=R()>.5?'#ffffff':'#b4afa3';
+    X.beginPath(); X.ellipse(cx,cy,1+R()*2.6,1+R()*2,0,0,Math.PI*2); X.fill(); }
+  X.globalAlpha=1;
+  X.strokeStyle='#cec9bd'; X.lineWidth=1.3;
+  for(let x=FX+160;x<FX+FW;x+=160){ X.beginPath(); X.moveTo(x,FY); X.lineTo(x,FY+FH); X.stroke(); }
+  for(let y=FY+150;y<FY+FH;y+=150){ X.beginPath(); X.moveTo(FX,y); X.lineTo(FX+FW,y); X.stroke(); }
+  r(FX,FY+FH-64,FW,58,'#cbb289');                              /* the timber band */
+  X.globalAlpha=.25;
+  for(let x=FX;x<FX+FW;x+=19) r(x,FY+FH-64,1.6,58,'#a8895f');
+  X.globalAlpha=1;
+  grain(FX,FY,FW,FH,.04);
+}
+
+/* --- reception ----------------------------------------------------------- */
+function redPanel(x,y,w,h){                      /* the accent wall, lit from behind */
+  box(x,y,w,h,P.conRedDk,2);
+  rr(x+3,y+3,w-6,h-6,1,P.conRed);
+  X.globalAlpha=.3; vgrad(x+3,y+3,w-6,8,P.conRedHi,P.conRed); X.globalAlpha=1;
+  X.globalAlpha=.22; X.fillStyle='#ffffff';
+  X.beginPath(); X.ellipse(x+w*0.5,y+h,w*0.42,10,0,0,Math.PI*2); X.fill(); X.globalAlpha=1;
+}
+function receptionDesk(x,y,w,h){                 /* white block, dark counter */
+  softShadow(x,y,w,h);
+  rr(x,y,w,h,3,'#e9ebec'); vgrad(x,y,w,9,'#fbfcfc','#e9ebec');
+  rr(x,y+h-16,w,16,2,'#2f3034');                               /* dark counter lip */
+  X.globalAlpha=.25; r(x+2,y+h-16,w-4,2,'#8f9295'); X.globalAlpha=1;
+  rr(x+18,y+10,34,20,2,'#1b2027'); rr(x+22,y+13,26,13,1,P.screenLit);
+  rr(x+w-54,y+12,26,14,2,'#d8dde2');
+  rr(x+w-96,y+13,22,12,2,P.conRed);
+  collisions.push([x,y,w,h]);
+}
+function barStools(x,y,n,col){
+  for(let i=0;i<n;i++){
+    const cx=x+i*34;
+    X.save(); X.globalAlpha=.2; X.fillStyle='#000';
+    X.beginPath(); X.ellipse(cx,y+8,10,4,0,0,Math.PI*2); X.fill(); X.restore();
+    X.fillStyle=col||P.leatherB; X.beginPath(); X.ellipse(cx,y,10,8,0,0,Math.PI*2); X.fill();
+    X.globalAlpha=.3; X.fillStyle='#fff';
+    X.beginPath(); X.ellipse(cx-3,y-2,4,2.6,0,0,Math.PI*2); X.fill(); X.globalAlpha=1;
+    collisions.push([cx-10,y-9,20,18]);
+  }
+}
+function wallScreen(x,y,w,h,kind){
+  box(x,y,w,h,'#17181b',2);
+  rr(x+3,y+3,w-6,h-6,1,'#0c0f13');
+  if(kind==='art'){
+    const g=X.createLinearGradient(x,y,x+w,y+h);
+    g.addColorStop(0,'#1b2f4d'); g.addColorStop(.55,'#4a2f52'); g.addColorStop(1,'#a8432f');
+    X.fillStyle=g; X.fillRect(x+4,y+4,w-8,h-8);
+    X.globalAlpha=.5; r(x+4,y+h-16,w-8,3,'#f0a06a'); X.globalAlpha=1;
+  } else if(kind==='deck'){
+    r(x+10,y+9,w*0.46,3.4,'#e8ecef');                          /* a title and a chart */
+    r(x+10,y+17,w*0.3,2.2,'#7f8b98');
+    for(let i=0;i<5;i++) r(x+12+i*13,y+h-14-i*3.5,8,10+i*3.5,[P.cyan,P.cyan,P.conRed,P.cyan,P.cyan][i]);
+  } else {
+    r(x+9,y+9,w-18,2.4,'#4d5865'); r(x+9,y+16,w*0.55,2.4,'#39414b');
+    rr(x+w-34,y+h-16,24,9,1,P.conRed);
+  }
+}
+
+/* --- partner floor ------------------------------------------------------- */
+function execDesk(cx,cy,w,h){                    /* dark wood, one laptop, no clutter */
+  const x=cx-w/2,y=cy-h/2;
+  softShadow(x,y,w,h);
+  rr(x,y,w,h,4,P.walnut); vgrad(x,y,w,8,P.walnutHi,P.walnut);
+  X.globalAlpha=.2;
+  for(let i=0;i<w;i+=7) r(x+i,y,2,h,P.walnutDk);
+  X.globalAlpha=1;
+  rr(x+w*0.36,y+8,40,24,2,'#c9cfd6'); rr(x+w*0.38,y+11,34,16,1,'#1b2027');
+  rr(x+14,y+h-22,26,13,2,P.creamL);
+  rr(x+w-42,y+12,16,16,8,'#2f3034');
+  collisions.push([x,y,w,h]);
+}
+function creamArmchair(cx,cy,ang){               /* low, cream, arms you can see */
+  tilted(cx,cy,46,42,ang||0,(x,y,w,h)=>{
+    softShadow(x,y,w,h);
+    rr(x,y,w,h,10,P.creamLDk);                                  /* back and frame */
+    rr(x+7,y+6,w-14,h-10,7,P.creamL);                           /* seat */
+    vgrad(x+7,y+6,w-14,7,P.creamLHi,P.creamL);
+    rr(x+1.5,y+9,7,h-18,4,P.creamLHi);                          /* arms */
+    rr(x+w-8.5,y+9,7,h-18,4,P.creamLHi);
+    X.globalAlpha=.35; rr(x+11,y+h-15,w-22,7,3,P.creamLDk); X.globalAlpha=1;
+  });
+}
+function bookcase(x,y,w,h,seed){
+  box(x,y,w,h,P.walnutDk,2);
+  const R=seeded(seed||9);
+  for(let i=0;i<3;i++){
+    const sy=y+5+i*((h-8)/3);
+    r(x+3,sy+((h-8)/3)-5,w-6,2.4,P.walnutHi);
+    let bx=x+6;
+    while(bx<x+w-12){
+      const bw=5+R()*7;
+      rr(bx,sy+3,bw,((h-8)/3)-10,1,['#4a3f56','#2f4a3f','#6b3a33','#d8cdb5','#2d3a4a'][Math.floor(R()*5)]);
+      bx+=bw+2;
+    }
+    if(i===1){ rr(x+w-34,sy+4,24,((h-8)/3)-11,2,P.creamL); }   /* an object, deliberately */
+  }
+}
+function ovalWalnutTable(cx,cy,w,h){
+  X.save(); X.globalAlpha=.26; X.fillStyle='#000';
+  X.beginPath(); X.ellipse(cx,cy+h/2-4,w/2,11,0,0,Math.PI*2); X.fill(); X.restore();
+  X.fillStyle=P.walnut; X.beginPath(); X.ellipse(cx,cy,w/2,h/2,0,0,Math.PI*2); X.fill();
+  X.globalAlpha=.45; X.fillStyle=P.walnutHi;
+  X.beginPath(); X.ellipse(cx,cy-3,w/2-7,h/2-8,0,0,Math.PI*2); X.fill(); X.globalAlpha=1;
+  X.strokeStyle=P.walnutDk; X.lineWidth=1.4;
+  X.beginPath(); X.moveTo(cx,cy-h/2+4); X.lineTo(cx,cy+h/2-4); X.stroke();  /* the seam */
+  for(let i=0;i<4;i++) rr(cx-46+i*26,cy-7,11,15,3,P.glassT2);  /* glasses on a tray */
+  rr(cx+52,cy-9,26,18,3,P.creamL);
+  collisions.push([cx-w/2,cy-h/2,w,h]);
+}
+
+/* --- team room ----------------------------------------------------------- */
+function oakSlats(x,y,w,h){                      /* pale battens, the whole wall */
+  r(x,y,w,h,P.oakLDk);
+  for(let i=0;i<Math.floor(w/11);i++){
+    const sx=x+i*11;
+    r(sx,y,7.5,h,i%3===0?P.oakLHi:P.oakL);
+    X.globalAlpha=.3; r(sx+7.5,y,3.5,h,'#8a704c'); X.globalAlpha=1;
+  }
+  collisions.push([x,y,w,h]);
+}
+function oakTable(cx,cy,w,h,laptops){
+  const x=cx-w/2,y=cy-h/2;
+  softShadow(x,y,w,h);
+  rr(x,y,w,h,5,P.oakL); vgrad(x,y,w,8,P.oakLHi,P.oakL);
+  X.globalAlpha=.11;
+  for(let i=0;i<w;i+=15) r(x+i,y,2.2,h,P.oakLDk);
+  X.globalAlpha=1;
+  for(let i=0;i<(laptops||3);i++){
+    const lx=x+22+i*((w-50)/(laptops||3));
+    rr(lx,y+9,30,17,2,'#b9c0c6'); rr(lx+3,y+11,24,11,1,'#1b2027');
+    rr(lx+4,y+h-24,22,12,2,i%2?P.creamL:'#d8dde2');
+  }
+  collisions.push([x,y,w,h]);
+}
+function artPanel(x,y,w,h,seed){                 /* the one colourful thing on the wall */
+  box(x,y,w,h,'#f3f3f1',2);
+  const R=seeded(seed||17), cols=['#b01f2e','#2f6fa8','#c9a227','#4f8b62','#6b4a7d','#e08265'];
+  for(let i=0;i<26;i++){
+    const cx=x+6+R()*(w-14), cy=y+6+R()*(h-14);
+    X.fillStyle=cols[Math.floor(R()*cols.length)]; X.globalAlpha=.85;
+    X.beginPath(); X.arc(cx,cy,1.6+R()*3,0,Math.PI*2); X.fill();
+  }
+  X.globalAlpha=1;
+}
+function plantTall(cx,cy,s){                     /* the fiddle leaf in every photograph */
+  const sc=s||1;
+  X.save(); X.globalAlpha=.22; X.fillStyle='#000';
+  X.beginPath(); X.ellipse(cx,cy+13*sc,17*sc,6*sc,0,0,Math.PI*2); X.fill(); X.restore();
+  rr(cx-13*sc,cy-2*sc,26*sc,17*sc,4,'#cfc6b4');
+  vgrad(cx-13*sc,cy-2*sc,26*sc,5*sc,'#e2dbcc','#cfc6b4');
+  const leaves=[[0,-20,15,11],[-13,-12,13,10],[13,-13,13,10],[-8,-27,12,9],[9,-26,12,9],[0,-34,11,8]];
+  leaves.forEach(function(l,i){
+    X.fillStyle=[P.leafD,P.leafM,P.leafL][i%3];
+    X.beginPath(); X.ellipse(cx+l[0]*sc,cy+l[1]*sc,l[2]*sc,l[3]*sc,(i-2)*0.3,0,Math.PI*2); X.fill();
+    X.globalAlpha=.25; X.fillStyle='#0d2417';
+    X.beginPath(); X.ellipse(cx+l[0]*sc,cy+(l[1]+2)*sc,l[2]*0.7*sc,l[3]*0.6*sc,(i-2)*0.3,0,Math.PI*2);
+    X.fill(); X.globalAlpha=1;
+  });
+  collisions.push([cx-15*sc,cy-8*sc,30*sc,24*sc]);
+}
+function glassWall(x,y,w,h,vertical){            /* partition, mullions, a door gap */
+  X.globalAlpha=.3; rr(x,y,w,h,1,P.glassT2); X.globalAlpha=1;
+  X.strokeStyle='#5c636b'; X.lineWidth=1.6; X.strokeRect(x+.8,y+.8,w-1.6,h-1.6);
+  if(vertical){ for(let i=y+40;i<y+h-20;i+=48){ r(x,i,w,1.8,'#5c636b'); } }
+  else { for(let i=x+40;i<x+w-20;i+=48){ r(i,y,1.8,h,'#5c636b'); } }
+  collisions.push([x,y,w,h]);
+}
+
+/* --- data room ----------------------------------------------------------- */
+function exhibitWall(x,y,w,h,seed){              /* printed pages, pinned in a grid */
+  box(x,y,w,h,'#22252b',2);
+  const R=seeded(seed||21), cols=Math.floor(w/44);
+  for(let i=0;i<cols;i++) for(let j=0;j<2;j++){
+    const px=x+7+i*((w-10)/cols), py=y+6+j*((h-10)/2);
+    rr(px,py,((w-10)/cols)-7,((h-10)/2)-7,1,'#eef1f3');
+    r(px+3,py+3,((w-10)/cols)-16,2,'#8b949e');
+    const k=Math.floor(R()*3);
+    if(k===0){ for(let b=0;b<4;b++) r(px+4+b*6,py+((h-10)/2)-13-b*2.5,4,8+b*2.5,b===2?P.conRed:'#7fa8c4'); }
+    else if(k===1){ X.strokeStyle='#7fa8c4'; X.lineWidth=1.2; X.beginPath();
+      for(let b=0;b<=18;b+=3) b?X.lineTo(px+4+b,py+((h-10)/2)-9-Math.sin(b/4)*5):X.moveTo(px+4,py+((h-10)/2)-9);
+      X.stroke(); }
+    else { for(let b=0;b<3;b++) r(px+4,py+((h-10)/2)-14+b*4,10+b*4,2.6,'#9aa6b2'); }
+    rr(px+((w-10)/cols)/2-7,py-2,4,4,2,P.conRed);
+  }
+}
+function plotter(x,y,w,h){
+  box(x,y,w,h,'#3a3f47',2); vgrad(x,y,w,6,'#4c525b','#3a3f47');
+  rr(x+4,y+h-13,w-8,9,1,'#eef1f3');                            /* a sheet, half out */
+  rr(x+w-30,y+6,22,11,1,'#1b2027'); rr(x+w-27,y+8,7,6,1,P.led);
+}
+
+/* --- boardroom ----------------------------------------------------------- */
+function finWall(x,y,w,h){                       /* the tall timber fins */
+  r(x,y,w,h,'#2b2b2e');
+  for(let i=0;i<Math.floor(w/16);i++){
+    const sx=x+i*16;
+    rr(sx,y,11,h,1,i%2?P.oakL:P.oakLDk);
+    X.globalAlpha=.35; r(sx+11,y,5,h,'#1f1f22'); X.globalAlpha=1;
+    X.globalAlpha=.18; vgrad(sx,y,11,h*0.45,'#ffffff','#ffffff00'); X.globalAlpha=1;
+  }
+  collisions.push([x,y,w,h]);
+}
+function louvreWindow(x,y,w,h){
+  box(x,y,w,h,'#d7d3c9',2);
+  const g=X.createLinearGradient(0,y,0,y+h);
+  g.addColorStop(0,'#cfe0ea'); g.addColorStop(1,'#eef3f6');
+  X.fillStyle=g; X.fillRect(x+3,y+3,w-6,h-6);
+  for(let i=0;i<Math.floor(w/22);i++) rr(x+6+i*22,y+3,9,h-6,1,P.oakL);
+  X.globalAlpha=.3; r(x+3,y+3,w-6,3,'#ffffff'); X.globalAlpha=1;
+}
+function boardTable(cx,cy,w,h){                  /* white top, mics, pads, cable boxes */
+  X.save(); X.globalAlpha=.26; X.fillStyle='#000';
+  X.beginPath(); X.ellipse(cx,cy+h/2-4,w/2,12,0,0,Math.PI*2); X.fill(); X.restore();
+  X.fillStyle='#e7e9ea'; X.beginPath(); X.ellipse(cx,cy,w/2,h/2,0,0,Math.PI*2); X.fill();
+  X.globalAlpha=.6; X.fillStyle='#ffffff';
+  X.beginPath(); X.ellipse(cx,cy-5,w/2-9,h/2-10,0,0,Math.PI*2); X.fill(); X.globalAlpha=1;
+  X.strokeStyle='#cfd2d4'; X.lineWidth=1.6;
+  X.beginPath(); X.ellipse(cx,cy,w/2-18,h/2-15,0,0,Math.PI*2); X.stroke();
+  X.globalAlpha=.5; X.strokeStyle='#ffffff'; X.lineWidth=2.4;
+  X.beginPath(); X.ellipse(cx,cy-3,w/2-4,h/2-5,0,0,Math.PI*2); X.stroke(); X.globalAlpha=1;
+  for(let i=0;i<8;i++){
+    const a=i*Math.PI/4+0.4;
+    const px=cx+Math.cos(a)*(w/2-30), py=cy+Math.sin(a)*(h/2-26);
+    X.save(); X.translate(px,py); X.rotate(a+Math.PI/2);
+    rr(-11,-7,22,14,1.5,'#f7f8f9');                             /* a pad and a pen */
+    X.globalAlpha=.5; r(-8,-3,16,1.4,'#b9c0c6'); r(-8,1,11,1.4,'#b9c0c6'); X.globalAlpha=1;
+    rr(-1.4,-8,2.8,9,1.4,'#2f3034');
+    X.restore();
+    const mx=cx+Math.cos(a)*(w/2-19), my=cy+Math.sin(a)*(h/2-17);
+    rr(mx-4,my-3,8,6,2,'#2f3034');
+    X.strokeStyle='#4d5560'; X.lineWidth=1.6;
+    X.beginPath(); X.moveTo(mx,my); X.lineTo(mx+Math.cos(a)*7,my+Math.sin(a)*7); X.stroke();
+  }
+  rr(cx-24,cy-10,48,20,3,'#2f3034'); rr(cx-18,cy-6,36,12,2,'#1b2027');
+  rr(cx-14,cy-3,10,6,1,P.conRed);
+  collisions.push([cx-w/2,cy-h/2,w,h]);
+}
+function boardChair(cx,cy,ang){                  /* black leather cantilever */
+  tilted(cx,cy,26,28,ang||0,(x,y,w,h)=>{
+    X.save(); X.globalAlpha=.2; X.fillStyle='#000';
+    X.beginPath(); X.ellipse(x+w/2,y+h-2,w*0.45,4,0,0,Math.PI*2); X.fill(); X.restore();
+    rr(x,y,w,h-8,5,P.leatherB);
+    X.globalAlpha=.35; rr(x+3,y+3,w-6,7,4,P.leatherBHi); X.globalAlpha=1;
+    rr(x+2,y+h-9,w-4,5,2,P.chrome2);
+  });
+}
+function chandelier(cx,cy,r0){                   /* seen from underneath, as a cluster */
+  const R=seeded(5), rad=r0||46;
+  X.save(); X.globalAlpha=.16;
+  const g=X.createRadialGradient(cx,cy,0,cx,cy,rad*2);
+  g.addColorStop(0,'#fff3d8'); g.addColorStop(1,'#fff3d800');
+  X.fillStyle=g; X.beginPath(); X.arc(cx,cy,rad*2,0,Math.PI*2); X.fill(); X.restore();
+  for(let i=0;i<110;i++){
+    const a=R()*Math.PI*2, d=Math.sqrt(R())*rad;
+    const px=cx+Math.cos(a)*d, py=cy+Math.sin(a)*d*0.6;
+    X.save(); X.translate(px,py); X.rotate(a*0.6);
+    X.globalAlpha=.5+R()*.5;
+    const len=8+R()*14, wdt=2.2+R()*1.8;
+    rr(-wdt/2,-len/2,wdt,len,wdt/2, R()>.45?'#ffffff':'#e4ebf0');
+    X.globalAlpha=.5; rr(-wdt/2,-len/2,wdt*0.5,len*0.6,wdt/2,'#ffffff');
+    X.restore();
+  }
+  X.globalAlpha=1;
+  X.fillStyle='#f4f8fb'; X.beginPath(); X.ellipse(cx,cy,12,8,0,0,Math.PI*2); X.fill();
+  X.globalAlpha=.6; X.fillStyle='#ffffff';
+  X.beginPath(); X.ellipse(cx-3,cy-2,6,4,0,0,Math.PI*2); X.fill(); X.globalAlpha=1;
+}
+
+function redRug(cx,cy,w,h){                      /* the one bit of colour on the concrete */
+  const x=cx-w/2, y=cy-h/2;
+  X.save(); X.globalAlpha=.18; X.fillStyle='#000';
+  if(X.roundRect){ X.beginPath(); X.roundRect(x+4,y+6,w,h,4); X.fill(); }
+  X.restore();
+  rr(x,y,w,h,4,'#8f2130');
+  X.globalAlpha=.5; rr(x+6,y+6,w-12,h-12,3,'#a8443a'); X.globalAlpha=1;
+  X.globalAlpha=.22; rr(x+14,y+12,w*0.42,h-24,3,'#e08265'); X.globalAlpha=1;
+  X.strokeStyle='#6f1622'; X.lineWidth=1.4; X.strokeRect(x+.7,y+.7,w-1.4,h-1.4);
+}
+
 const ROOMS={
 lobby:{
-  name:'Lobby', wall:'#e4ded2', wallHi:'#efe9dd', wallDk:'#cdc5b6', skirt:'#3a352d',
-  material:'Large-format porcelain tile, plywood reception block, daylight',
-  desc:'Pale porcelain in large squares, laid true. A plywood reception block centred on the room, and one seating group set square to the wall. Two plants, one shelf, nothing else.',
-  exits:'Right → Servicing<br/>Down → Break Room',
+  name:'Reception', wall:'#2a2c30', wallHi:'#36383d', wallDk:'#1f2125', skirt:'#141518',
+  material:'Polished concrete, a white desk with a dark counter, and one red wall',
+  desc:'Black ceiling, exposed services, track lights, and the whole floor in polished concrete. A white reception block with a dark counter lip, a red lit wall behind it, a screen showing the firm’s work, four leather stools nobody sits on, and a red rug in front of the low seating.',
+  exits:'Right → Partner Office<br/>Down → Kitchen',
   doors:[{side:'right',at:240},{side:'bottom',at:400}],
-  floor(){ tileFloor(31,'#ded8cc','#d2ccbf','#a89f8f',95); },
+  floor(){ polishedConcrete(31); },
   draw(){
-    tilted(400,152,180,66,0,(x,y,w,h)=>{
-      X.save(); X.globalAlpha=.2; X.fillStyle='#000000';
-      if(X.roundRect){X.beginPath();X.roundRect(x+2,y+h-2,w,8,5);X.fill();} X.restore();
-      rr(x,y,w,h,4,P.ply); vgrad(x,y,w,8,P.plyHi,P.ply);
-      rr(x+14,y+h-22,w-28,15,3,P.plyDk);
-      rr(x+w-46,y+13,30,15,2,P.charcoal);
-    });
-    chairSoft(400,100,0,P.teal);
-    areaRug(505,238,190,170,P.terracotta,P.cream,P.coral,9);
-    tilted(600,270,150,42,0,(x,y,w,h)=>{ rr(x,y,w,h,10,P.plum);
-      X.globalAlpha=.26; rr(x+6,y+4,w-12,9,5,'#ffffff'); X.globalAlpha=1; });
-    tilted(600,376,150,42,0,(x,y,w,h)=>{ rr(x,y,w,h,10,P.sage);
-      X.globalAlpha=.26; rr(x+6,y+4,w-12,9,5,'#ffffff'); X.globalAlpha=1; });
-    tilted(600,323,80,40,0,(x,y,w,h)=>{ rr(x,y,w,h,4,P.oak); vgrad(x,y,w,5,P.oakHi,P.oak);
-      rr(x+16,y+11,30,18,2,P.paper); });
-    pot(120,150,1.15,'clay'); pot(120,340,1.15,'cream');
-    box(24,240,16,120,P.ply,2);
-    for(let i=0;i<4;i++) rr(27,248+i*29,10,19,1,[P.mustard,P.teal,P.coral,P.plum][i]);
+    wallScreen(80,26,250,52,'art');
+    redPanel(360,26,340,52);
+    pendant(230,104,'#f4f7fa','#2f3034'); pendant(430,104,'#f4f7fa','#2f3034');
+    receptionDesk(190,140,264,74);
+    barStools(236,238,4,P.leatherB);
+    taskChair(300,120,'#2f3034');
+    redRug(614,352,232,140);
+    lowBench(600,308,140,'#2f3034');
+    lowBench(600,382,140,P.conRedDk);
+    plantTall(96,320,1.15);
+    plantTall(724,120,1.0);
+    grain(FX,FY,FW,FH,.04);
   }},
-
-creative:{
-  name:'Creative', wall:'#8f5340', brick:true, wallDk:'#6d3d2f', skirt:'#4a3220',
-  material:'Poured microcement, exposed brick, whiteboard wall',
-  desc:'Seamless poured microcement — no planks, no grid, nothing to fight the brick. Four identical desks in a true two-by-two on a single rug, whiteboard and mood board hung level with each other, two plants.',
-  exits:'Left → Servicing<br/>Down → Meeting Room',
-  doors:[{side:'left',at:240},{side:'bottom',at:400}],
-  floor(){ screedFloor(47,'#b9b0a2','#cbc3b6','#968d80'); },
-  draw(){
-    whiteboard(150,26,250,52,13);
-    moodboard(430,26,250,52,21);
-    areaRug(220,150,360,258,P.teal,P.cream,P.mustard,5);
-    [[300,190],[500,190],[300,320],[500,320]].forEach(([dx,dy])=>deskAngled(dx,dy,0,P.ply,2));
-    [[300,246],[500,246],[300,376],[500,376]].forEach(([cx,cy],i)=>
-      chairSoft(cx,cy,0,[P.coral,P.mustard,P.sage,P.plum][i]));
-    pot(120,150,1.15,'clay'); pot(120,340,1.15,'cream');
-    box(696,190,60,120,P.ply,3);
-    for(let i=0;i<3;i++){ rr(702,198+i*38,48,28,2,P.paperDk);
-      for(let k=0;k<4;k++) rr(705+k*11,202+i*38,8,20,1,[P.coral,P.teal,P.mustard,P.plum][k]); }
-    pendant(300,104,P.warmLamp,P.mustard); pendant(500,104,P.warmLamp,P.coral);
-  }},
-
 servicing:{
-  name:'Servicing', wall:'#e4ded2', wallHi:'#efe9dd', wallDk:'#cdc5b6', skirt:'#2e544f',
-  material:'Teal carpet tile, laminate desks, wall planner',
-  desc:'Carpet tile in a colour somebody chose on purpose, three identical desks in one straight row, the quarter on the wall behind them and the client logos beside it. One sofa, two plants.',
-  exits:'Left → Lobby<br/>Right → Creative<br/>Down → Studio',
+  name:'Partner Office', wall:'#ded5c6', wallHi:'#eee7d9', wallDk:'#c4bba9', skirt:'#463526',
+  material:'Cream stone, stone panelling, and cream leather',
+  desc:'Ruth’s room, and where the day starts. Big cream slabs with the daylight coming across them, stone panels to the ceiling, a walnut desk with one laptop on it, two cream armchairs for the conversations that are not meetings, a walnut table with eight chairs set out properly for the ones that are, and a screen showing a painting rather than a dashboard.',
+  exits:'Left → Reception<br/>Right → Team Room<br/>Down → Data Room',
   doors:[{side:'left',at:240},{side:'right',at:240},{side:'bottom',at:400}],
-  floor(){ carpetFloor(59,P.carpet,P.carpetHi,P.carpetDk); },
+  floor(){ creamStone(47); },
   draw(){
-    box(110,26,320,50,P.paper,2);
-    X.globalAlpha=.5; X.strokeStyle=P.wallWDk; X.lineWidth=1;
-    for(let i=1;i<12;i++){ X.beginPath(); X.moveTo(110+i*26,28); X.lineTo(110+i*26,74); X.stroke(); }
-    X.globalAlpha=1;
-    const R=seeded(3);
-    for(let i=0;i<14;i++){ const bx=114+Math.floor(R()*10)*26, by=32+Math.floor(R()*3)*14;
-      rr(bx,by,22+Math.floor(R()*24),9,2,[P.teal,P.coral,P.mustard,P.plum][i%4]); }
-    box(470,26,210,50,P.wallWDk,2);
-    for(let i=0;i<8;i++) rr(478+(i%4)*51,32+Math.floor(i/4)*20,42,15,3,
-      [P.slate,P.teal,P.terracotta,P.plum][i%4]);
-    [[200,190],[400,190],[600,190]].forEach(([dx,dy])=>deskAngled(dx,dy,0,P.paperDk,2));
-    [[200,246],[400,246],[600,246]].forEach(([cx,cy],i)=>
-      chairSoft(cx,cy,0,[P.coral,P.teal,P.mustard][i]));
-    tilted(400,340,170,48,0,(x,y,w,h)=>{ rr(x,y,w,h,10,P.terracotta);
-      X.globalAlpha=.26; rr(x+6,y+4,w-12,9,5,'#ffffff'); X.globalAlpha=1; });
-    pot(100,340,1.1,'cream'); pot(700,340,1.1,'clay');
+    bookcase(96,26,250,54,9);
+    wallScreen(410,26,300,54,'art');
+    execDesk(238,168,200,84);
+    taskChair(238,112,'#2f3034');
+    creamArmchair(176,272,Math.PI); creamArmchair(272,272,Math.PI);   /* facing the desk */
+    ovalWalnutTable(520,300,258,150);
+    [-90,-45,0,45,90,135,180,-135].forEach(function(deg){              /* eight, evenly round */
+      const a=deg*Math.PI/180;
+      creamArmchair(520+Math.cos(a)*158, 300+Math.sin(a)*104, a+Math.PI/2);
+    });
+    plantTall(716,140,1.05);
+    grain(FX,FY,FW,FH,.05);
   }},
-
+creative:{
+  name:'Team Room', wall:'#eceae4', wallHi:'#f8f7f3', wallDk:'#d4d1c8', skirt:'#8a704c',
+  material:'Pale oak, glass, grey chairs and a great many plants',
+  desc:'Where the team actually works. One long pale oak table, six grey chairs, laptops open, an oak batten wall down one side, glass to the corridor, one small painting with every colour in it, and plants that somebody genuinely waters.',
+  exits:'Left → Partner Office<br/>Down → Client Room',
+  doors:[{side:'left',at:240},{side:'bottom',at:400}],
+  floor(){ palePlank(59); },
+  draw(){
+    oakSlats(96,26,296,54);
+    wallScreen(424,26,240,54,'deck');
+    artPanel(686,26,62,54,17);
+    oakTable(330,250,290,124,4);
+    taskChair(250,180,'#9aa1a8'); taskChair(330,174,'#9aa1a8'); taskChair(412,180,'#9aa1a8');
+    taskChair(250,322,'#9aa1a8'); taskChair(330,328,'#9aa1a8'); taskChair(412,322,'#9aa1a8');
+    taskChair(170,250,'#9aa1a8'); taskChair(492,250,'#9aa1a8');
+    plantTall(612,176,1.2);
+    plantTall(668,318,1.05);
+    plantTall(106,376,1.0);
+    grain(FX,FY,FW,FH,.05);
+  }},
 studio:{
-  name:'Studio', wall:'#33302b', wallHi:'#454039', wallDk:'#22201d', skirt:'#1a1815',
-  material:'Polished concrete, seamless backdrop, edit bays',
-  desc:'Polished concrete with straight pour lines, a seamless backdrop squared into the corner with two softboxes level either side, two matching edit bays, and the flight cases stacked in one column. The darkest room, on purpose.',
-  exits:'Left → Break Room<br/>Up → Servicing<br/>Right → Meeting Room',
+  name:'Data Room', wall:'#24262a', wallHi:'#2f3237', wallDk:'#1b1d21', skirt:'#131417',
+  material:'The dark room with the working on the walls',
+  desc:'Hattie works in here with the blinds down. Two walls of printed exhibits, the live charts on a screen, a bench of monitors, the hypothesis tree on a whiteboard with three of its branches already crossed out, and a plotter that has been warm since Monday.',
+  exits:'Left → Kitchen<br/>Up → Partner Office<br/>Right → Client Room',
   doors:[{side:'left',at:240},{side:'top',at:400},{side:'right',at:240}],
-  floor(){ concreteFloor(71); },
+  floor(){ polishedConcrete(71); },
   draw(){
-    box(100,290,200,120,P.cream,2);
-    X.globalAlpha=.35; vgrad(100,290,200,44,P.wallWDk,P.cream); X.globalAlpha=1;
-    [[140,268],[260,268]].forEach(([sx,sy])=>{
-      collisions.push([sx-17,sy-17,34,34]);
-      X.strokeStyle=P.steel; X.lineWidth=2.4;
-      X.beginPath(); X.moveTo(sx,sy); X.lineTo(sx-12,sy+18); X.moveTo(sx,sy); X.lineTo(sx+12,sy+18);
-      X.moveTo(sx,sy); X.lineTo(sx,sy+20); X.stroke();
-      X.fillStyle=P.steelHi; X.beginPath();
-      X.moveTo(sx-16,sy-14); X.lineTo(sx+16,sy-14); X.lineTo(sx+10,sy+2); X.lineTo(sx-10,sy+2);
-      X.closePath(); X.fill();
-      if(showLight){ X.save(); X.globalCompositeOperation='lighter'; X.globalAlpha=.16;
-        const g=X.createRadialGradient(sx,sy+30,0,sx,sy+30,110);
-        g.addColorStop(0,'#ffffff'); g.addColorStop(1,'#ffffff00'); X.fillStyle=g;
-        X.beginPath(); X.arc(sx,sy+30,110,0,Math.PI*2); X.fill(); X.restore(); }
-      rr(sx-13,sy-12,26,4,1,'#f8f4ea');
-    });
-    [[460,300],[620,300]].forEach(([dx,dy])=>{
-      tilted(dx,dy,132,58,0,(x,y,w,h)=>{ rr(x,y,w,h,3,P.charcoal); vgrad(x,y,w,5,P.slate,P.charcoal);
-        rr(x+12,y+8,52,26,2,'#10151d'); rr(x+70,y+8,50,26,2,'#10151d');
-        X.globalAlpha=.22; vgrad(x+12,y+8,52,13,'#7fa8c4','#10151d');
-        vgrad(x+70,y+8,50,13,'#7fa8c4','#10151d'); X.globalAlpha=1;
-        rr(x+24,y+h-14,84,8,2,P.slate); });
-      chairSoft(dx,dy+58,0,P.slate);
-    });
-    for(let i=0;i<3;i++){ box(614,78+i*54,82,46,i%2?P.slate:P.charcoal,3);
-      rr(622,86+i*54,22,8,2,P.mustard); }
-    box(100,86,150,52,P.charcoal,3);
-    for(let i=0;i<5;i++) rr(108+i*28,94,22,36,2,P.slate);
-    pendant(300,88,'#cfe3ff',P.slate); pendant(560,88,'#cfe3ff',P.slate);
+    exhibitWall(96,30,246,74,21);
+    dashWall(452,28,268,76,7);
+    benchDesk(320,214,250,3,true);
+    taskChair(250,258,'#2f3034'); taskChair(390,258,'#2f3034');
+    whiteboardTech(100,286,210,116,13);
+    plotter(628,300,104,62);
+    exhibitWall(360,366,240,72,29);
+    grain(FX,FY,FW,FH,.05);
   }},
-
 breakroom:{
-  name:'Break Room', wall:'#e4ded2', wallHi:'#efe9dd', wallDk:'#cdc5b6', skirt:'#3a352d',
-  material:'Pale ceramic tile, oak communal table, full-height fridge',
-  desc:'Pale ceramic tile in a smaller format than the lobby, one long oak table on bare floor, eight stools evenly spaced, and a full-height fridge that has been here longer than anyone in the building. Daylight only.',
-  exits:'Up → Lobby<br/>Right → Studio',
+  name:'Kitchen', wall:'#eceae4', wallHi:'#f8f7f3', wallDk:'#d4d1c8', skirt:'#8a704c',
+  material:'Oak again, a good machine, and the conversations that matter',
+  desc:'Pale timber, a counter with a machine somebody in the firm insisted on, one island, stools, and a plant. Gerry is standing at the end of it with a mug, because nobody booked him a room and he has been here since eight.',
+  exits:'Up → Reception<br/>Right → Data Room',
   doors:[{side:'top',at:400},{side:'right',at:240}],
-  floor(){ tileFloor(83,'#c9cdc3','#bdc2b7','#8f948a',60); },
+  floor(){ palePlank(83); },
   draw(){
-    box(110,26,230,52,P.oak,3); vgrad(110,26,230,7,P.oakHi,P.oak);
-    box(140,32,46,38,P.steel,3); rr(146,38,34,16,2,'#191d24'); rr(156,60,16,6,1,P.steelHi);
-    box(210,36,40,32,P.charcoal,3); rr(216,42,28,10,1,'#12161c');
-    fridge(24,148,56,168);
-    tilted(400,254,240,86,0,(x,y,w,h)=>{
-      X.save(); X.globalAlpha=.22; X.fillStyle='#000000';
-      if(X.roundRect){X.beginPath();X.roundRect(x+3,y+h-2,w,9,6);X.fill();} X.restore();
-      rr(x,y,w,h,5,P.oak); vgrad(x,y,w,8,P.oakHi,P.oak);
-      X.globalAlpha=.5; for(let i=1;i<5;i++){ r(x+i*(w/5),y,2,h,P.oakSeam); } X.globalAlpha=1;
-      rr(x+26,y+31,30,24,3,P.cream); rr(x+w-58,y+31,26,20,3,P.coral);
-    });
-    [310,370,430,490].forEach((sx,i)=>{
-      collisions.push([sx-13,196-11,26,22]);
-      X.save(); X.globalAlpha=.2; X.fillStyle='#000000';
-      X.beginPath(); X.ellipse(sx,207,13,4,0,0,Math.PI*2); X.fill(); X.restore();
-      X.fillStyle=[P.teal,P.coral,P.plum,P.sage][i];
-      X.beginPath(); X.ellipse(sx,196,13,10,0,0,Math.PI*2); X.fill();
-      X.globalAlpha=.3; X.fillStyle='#ffffff';
-      X.beginPath(); X.ellipse(sx-3,193,6,4,0,0,Math.PI*2); X.fill(); X.globalAlpha=1;
-    });
-    [310,370,430,490].forEach((sx,i)=>{
-      collisions.push([sx-13,320-11,26,22]);
-      X.fillStyle=[P.mustard,P.sage,P.teal,P.coral][i];
-      X.beginPath(); X.ellipse(sx,320,13,10,0,0,Math.PI*2); X.fill();
-    });
-    tilted(640,350,150,46,0,(x,y,w,h)=>{ rr(x,y,w,h,12,P.terracotta);
-      X.globalAlpha=.26; rr(x+6,y+4,w-12,10,6,'#ffffff'); X.globalAlpha=1; });
-    pot(700,140,1.15,'clay');
+    counterRun(96,30,254,46);
+    artPanel(470,26,130,52,23);
+    island(348,300,206,90);
+    stool(268,262,P.leatherB); stool(348,262,P.leatherB); stool(428,262,P.leatherB);
+    stool(268,340,P.leatherB); stool(348,340,P.leatherB); stool(428,340,P.leatherB);
+    fridge(612,112,72,112);
+    plantTall(680,330,1.1);
+    plantTall(104,380,1.0);
+    grain(FX,FY,FW,FH,.05);
   }},
-
 meeting:{
-  name:'Meeting Room', wall:'#cdc5b6', wallHi:'#ded7c8', wallDk:'#b3aa9a', skirt:'#5f5a50',
-  material:'Light grey carpet tile, glass partition, whiteboard',
-  desc:'Light grey carpet tile, quiet underfoot and laid straight. One oak table on bare floor with eight chairs evenly spaced around it, a whiteboard level with the screen, glass to the corridor. Nothing else in here at all.',
-  exits:'Left → Studio<br/>Up → Creative',
+  name:'Client Room', wall:'#e6e3dc', wallHi:'#f4f2ec', wallDk:'#cbc7bd', skirt:'#2b2b2e',
+  material:'Timber fins, a wall of glass, and a table you can hear yourself across',
+  desc:'Double height, timber fins the length of one wall, louvres against the glass, and a light fitting that cost more than the engagement. A white oval table with microphones round the rim and black leather chairs, and Sonia at the far end of it with your draft in front of her.',
+  exits:'Left → Data Room<br/>Up → Team Room',
   doors:[{side:'left',at:240},{side:'top',at:400}],
-  floor(){ carpetFloor(97,'#9a968c','#a6a298','#84806f'); },
+  floor(){ stoneFloor(97); },
   draw(){
-    whiteboard(104,26,236,52,41);
-    box(760,150,20,150,P.glass,2);
-    X.globalAlpha=.35; r(762,154,16,142,'#dff0f4'); X.globalAlpha=1;
-    screenWall(460,26,220,52);
-    tilted(400,264,268,104,0,(x,y,w,h)=>{
-      X.save(); X.globalAlpha=.24; X.fillStyle='#000000';
-      if(X.roundRect){X.beginPath();X.roundRect(x+3,y+h-2,w,10,7);X.fill();} X.restore();
-      rr(x,y,w,h,8,P.oak); vgrad(x,y,w,9,P.oakHi,P.oak);
-      X.globalAlpha=.45; for(let i=1;i<4;i++) r(x+i*(w/4),y,2,h,P.oakSeam); X.globalAlpha=1;
-      rr(x+w/2-52,y+34,104,36,4,P.paper);
-      X.globalAlpha=.6; X.strokeStyle=P.wallWDk; X.lineWidth=.8;
-      for(let i=0;i<4;i++){ X.beginPath(); X.moveTo(x+w/2-44,y+42+i*7); X.lineTo(x+w/2+32,y+42+i*7); X.stroke(); }
-      X.globalAlpha=1;
-    });
-    [290,400,510].forEach((cx,i)=>chairSoft(cx,186,0,[P.teal,P.coral,P.mustard][i]));
-    [290,400,510].forEach((cx,i)=>chairSoft(cx,342,0,[P.plum,P.sage,P.terracotta][i]));
-    chairSoft(238,264,0,P.slate); chairSoft(562,264,0,P.slate);
-    pot(700,380,1.1,'clay');
-    pendant(330,100,P.warmLamp,P.charcoal); pendant(470,100,P.warmLamp,P.charcoal);
+    finWall(96,26,246,58);
+    louvreWindow(454,26,290,58);
+    chandelier(400,152,52);
+    boardTable(400,300,336,168);
+    boardChair(300,206,0); boardChair(500,206,0);
+    boardChair(236,262,-1.4); boardChair(226,334,-1.6);
+    boardChair(564,262,1.4); boardChair(574,334,1.6);
+    boardChair(300,398,3.14); boardChair(400,404,3.14); boardChair(500,398,3.14);
+    plantTall(720,398,1.0);
+    grain(FX,FY,FW,FH,.04);
   }}
 };
 
 const CAST={
- mike:{name:'Mike', role:'Creative Director', where:'Creative',
-   accent:'#fbbf24', top:'#c9852f', topDk:'#a06a22', style:'overshirt', tee:'#f2ece0',
-   legs:'#33405c', legsDk:'#26314a', shoe:'#e8e2d6',
+ mike:{name:'Femi', role:'Engagement Manager', where:'Team Room',
+   accent:'#fbbf24', top:'#26303f', topDk:'#1b2330', style:'suit', tee:'#eef2f6', tie:'#9d2235',
+   legs:'#2a3140', legsDk:'#1e2431', shoe:'#2b2621',
    skin:'#c98a56', skinDk:'#a26c3f', hair:'#5a5148', hairHi:'#7d7266', cut:'curls',
    specs:true, prop:'notebook', build:1.04, bw:23, beard:true},
- kate:{name:'Kate', role:'Project Manager', where:'Servicing',
-   accent:'#f472b6', top:'#6d4a63', topDk:'#523849', style:'blazer', tee:'#f2ece0',
+ kate:{name:'Ruth', role:'Partner', where:'Partner Office',
+   accent:'#f472b6', top:'#2f3542', topDk:'#232833', style:'blazer', tee:'#f2ece0',
    legs:'#2c2a26', legsDk:'#1f1e1b', shoe:'#33302b',
    skin:'#e8b98c', skinDk:'#c2955f', hair:'#2b1f18', hairHi:'#463228', cut:'long',
    specs:false, prop:'tablet', build:1.0, bw:20, beard:false},
- jenny:{name:'Jenny', role:'Production', where:'Studio',
-   accent:'#34d399', top:'#2f7d78', topDk:'#215b57', style:'hoodie', tee:'#2f7d78',
-   legs:'#5e6a4f', legsDk:'#48523c', shoe:'#e08265',
+ jenny:{name:'Hattie', role:'Research Lead', where:'Data Room',
+   accent:'#34d399', top:'#4a4f5c', topDk:'#383d47', style:'blazer', tee:'#dfe6ec',
+   legs:'#2f3340', legsDk:'#23262f', shoe:'#2b2621',
    skin:'#8d5f38', skinDk:'#6d4626', hair:'#1e1710', hairHi:'#3a2c1e', cut:'puff',
    specs:false, prop:'camera', build:0.98, bw:22, beard:false},
- alex:{name:'Alex', role:'Copywriter', where:'Creative',
-   accent:'#38bdf8', top:'#e08265', topDk:'#b8624a', style:'knit', tee:'#e08265',
-   legs:'#a8a49c', legsDk:'#8d8981', shoe:'#33302b',
+ alex:{name:'Anya', role:'Consultant', where:'Team Room',
+   accent:'#38bdf8', top:'#3b3f4d', topDk:'#2c303b', style:'blazer', tee:'#f2ece0',
+   legs:'#2c3040', legsDk:'#20232e', shoe:'#33302b',
    skin:'#f0c8a0', skinDk:'#cfa079', hair:'#3a2a1c', hairHi:'#5a4430', cut:'undercut',
    specs:true, prop:'coffee', build:0.96, bw:19, beard:false},
- dan:{name:'Dan', role:'Studio & everything else', where:'Break Room',
-   accent:'#a78bfa', top:'#7d9070', topDk:'#5f6f54', style:'tee', tee:'#7d9070',
-   legs:'#3f4a5c', legsDk:'#2f3747', shoe:'#f2ece0',
+ dan:{name:'Gerry', role:'Site Manager, Larkfield Foods', where:'Kitchen',
+   accent:'#a78bfa', top:'#54606e', topDk:'#3f4954', style:'overshirt', tee:'#e8ecef',
+   legs:'#3a4049', legsDk:'#2c3138', shoe:'#2b2621',
    skin:'#a0673a', skinDk:'#7d4c28', hair:'#22201d', hairHi:'#3a352d', cut:'beanie',
    specs:false, prop:'mug', build:1.02, bw:21, beard:true},
- player:{name:'You', role:'The new writer', where:'Lobby',
+ player:{name:'You', role:'The new consultant', where:'Reception',
    accent:'#e4ded2', top:'#4a6a86', topDk:'#3a5468', style:'overshirt', tee:'#f2ece0',
    legs:'#33405c', legsDk:'#26314a', shoe:'#e8e2d6',
    skin:'#c08a5e', skinDk:'#9c6c45', hair:'#241c16', hairHi:'#3c2f24', cut:'short',
@@ -898,7 +1528,7 @@ function person(x,yFeet,key,dir,t,opts){
     rr(x+bw/2-3.2+sway,y-15-armSw,3,3,1.5,ch.skin); }
 
   if(!back && ch.style!=='hoodie'){
-    if(ch.style==='overshirt'||ch.style==='blazer'){
+    if(ch.style==='overshirt'||ch.style==='blazer'||ch.style==='suit'){
       X.fillStyle=ch.tee; X.beginPath();
       X.moveTo(x-3.2+sway,y-33); X.lineTo(x+3.2+sway,y-33);
       X.lineTo(x+2.6+sway,y-17); X.lineTo(x-2.6+sway,y-17); X.closePath(); X.fill();
@@ -907,6 +1537,14 @@ function person(x,yFeet,key,dir,t,opts){
       X.lineTo(x-4.4+sway,y-20); X.closePath(); X.fill();
       X.beginPath(); X.moveTo(x+3.4+sway,y-33); X.lineTo(x+7+sway,y-33);
       X.lineTo(x+4.4+sway,y-20); X.closePath(); X.fill();
+    }
+    if(ch.style==='suit'&&ch.tie){                 /* the tie, from above */
+      X.fillStyle=ch.tie; X.beginPath();
+      X.moveTo(x-1.5+sway,y-32.6); X.lineTo(x+1.5+sway,y-32.6);
+      X.lineTo(x+2.1+sway,y-21.5); X.lineTo(x+sway,y-18.8);
+      X.lineTo(x-2.1+sway,y-21.5); X.closePath(); X.fill();
+      X.globalAlpha=.25; X.fillStyle='#ffffff';
+      rr(x-1.2+sway,y-32,2.4,4,1,'#ffffff'); X.globalAlpha=1;
     }
     if(ch.style==='knit'){ X.globalAlpha=.28; X.strokeStyle=P.ink; X.lineWidth=.6;
       for(let i=0;i<5;i++){ X.beginPath(); X.moveTo(x-bw/2+2+sway,y-30+i*4); 
@@ -1075,7 +1713,7 @@ function paintDlg(){
   if(!DLG){ el.style.display='none'; el.innerHTML=''; return; }
   const ch=CAST[DLG.speaker];
   el.style.display='block';
-  el.innerHTML='<div class="who"><span class="dot" style="background:'+(ch?ch.accent:'#d8a33c')+'"></span>'+
+  el.innerHTML='<div class="who"><span class="dot" style="background:'+(ch?ch.accent:'#58a6ff')+'"></span>'+
     (ch?ch.name:(ROOMS[G.room]?ROOMS[G.room].name:''))+(ch?' <em>'+ch.role+'</em>':'')+'</div>'+
     '<p>'+DLG.text+'</p><div class="opts"></div>';
   const wrap=el.querySelector('.opts');
@@ -1148,7 +1786,7 @@ function paintHUD(){
 function openFolio(){
   const el=$('folio');
   el.style.display='flex';
-  el.querySelector('.inner').innerHTML='<h3>Portfolio</h3>'+
+  el.querySelector('.inner').innerHTML='<h3>Work log</h3>'+
     (G.portfolio.length?G.portfolio.map(function(p){
       return '<div class="pf"><b>'+p.title+'</b><span>'+p.client+'</span><i>'+p.line+'</i></div>';
     }).join(''):'<p class="empty">Nothing filed yet.</p>')+
@@ -1595,318 +2233,305 @@ window.CC.coll=function(){ return baked().coll; };
 
 
 /* ==========================================================================
-   ACCOUNT MANAGEMENT TRACK
-   Content only. No engine changes — same rooms, renderer, doors, dialogue.
+   CONSULTING TRACK — content only
    ========================================================================== */
 
-/* The client. Same CAST fields the renderer already reads. */
-CAST.priya={name:'Priya', role:'Marketing Manager, Kestrelbank', where:'Lobby',
-  accent:'#e08265', top:'#8c5a4a', topDk:'#6d4437', style:'blazer', tee:'#f2ece0',
-  legs:'#2c2a26', legsDk:'#1f1e1b', shoe:'#33302b',
-  skin:'#b07a4c', skinDk:'#8d5c34', hair:'#1b1410', hairHi:'#352418', cut:'long',
-  specs:true, prop:'tablet', build:1.0, bw:21, beard:false};
+CAST.owen={name:'Sonia', role:'Chief Operating Officer, Larkfield Foods', where:'Client Room',
+   accent:'#38bdf8', top:'#31363f', topDk:'#23272e', style:'blazer', tee:'#e9dcc8',
+   legs:'#2c2a26', legsDk:'#1f1e1b', shoe:'#33302b',
+   skin:'#f0c8a0', skinDk:'#cfa079', hair:'#3a2a1c', hairHi:'#5a4430', cut:'long',
+   specs:true, prop:'tablet', build:1.0, bw:20, beard:false};
 
-const OBJ_ACCOUNT={
-  client_brief:'Priya from Kestrelbank is waiting in the Lobby',
-  real_brief:'Take it to Kate in Servicing',
-  brief_creative:'Brief Mike in Creative',
-  scope_email:'Kate has something from the client',
-  scope_cost:'Find out what it costs — Dan, Break Room',
-  scope_reply:'Answer Priya in the Lobby',
-  date_ask:'Priya is in the Lobby about the date',
-  date_check:'Ask Jenny in the Studio what it takes',
-  date_reply:'Go back to Priya with an answer',
-  present_work:'Present the campaign in the Meeting Room',
-  crisis_brief:'Kate needs you in Servicing. Now.',
-  crisis_call:'Meeting Room. Call Priya.',
-  complete:'You run the account now'
+const OBJ_CONS={
+  brief:'Get the engagement brief from Ruth in the Partner Office',
+  question:'Femi is in the Team Room — the client has asked for a benchmark',
+  hypothesis:'Femi again. Two ways to spend the next fortnight',
+  data:'Hattie is in the Data Room, and the three numbers disagree',
+  interview:'Gerry is in the Kitchen. Nobody booked him a room',
+  storyline:'Back to Femi. Your deck reads like a detective novel',
+  client:'Sonia is waiting in the Client Room',
+  crisis_fix:'Team Room. Femi. Quickly',
+  crisis_show:'Back to Sonia in the Client Room',
+  complete:'You are a consultant now'
 };
 
-function accountOccupants(room){
+function consOccupants(room){
   const s=G.step;
-  const lobbyClient=['client_brief','scope_reply','date_ask','date_reply'].indexOf(s)>=0;
-  const pitching=(s==='present_work'), calling=(s==='crisis_call');
-  if(room==='lobby')     return lobbyClient?[['priya',400,300,'down']]:[];
-  if(room==='servicing') return [['kate',400,306,'down'],['alex',620,240,'left']];
-  if(room==='creative')  return [['mike',260,258,'right']];
+  const withSonia=['client','crisis_fix','crisis_show'].indexOf(s)>=0;
+  if(room==='lobby')     return [];
+  if(room==='servicing') return [['kate',336,320,'right']];   /* clear of the table edge */
+  if(room==='creative')  return [['mike',260,258,'right'],['alex',560,268,'left']];
   if(room==='studio')    return [['jenny',400,196,'down']];
   if(room==='breakroom') return [['dan',650,268,'down']];
-  if(room==='meeting'){
-    if(pitching) return [['priya',360,196,'down'],['mike',470,196,'down']];
-    if(calling)  return [['priya',400,196,'down']];
-    return [];
-  }
+  if(room==='meeting')   return withSonia?[['owen',400,196,'down']]:[];
   return [];
 }
 
-function accountScript(key){
+function consScript(key){
   const s=G.step;
 
-  /* ---------- 1. the brief that isn't a brief ---------- */
-  if(key==='priya'&&s==='client_brief'){
-    return choose('priya',
-      `You must be the new one — Priya, marketing at Kestrelbank. Nice to meet you. Right. We need a TikTok campaign. Our competitors all have one and the board keep asking.`,
+  /* ---------- the engagement ---------- */
+  if(key==='kate'&&s==='brief')
+    return say('kate',`Hi — I'm Ruth, partner here. Welcome to Calder and Hale. Our client is Larkfield Foods: nine hundred people, three bakeries, and a board that has decided two of them is one too many. They've asked us for a cost benchmark against comparable manufacturers, they want it by Friday, and there's a steering committee at five.`,
+      [{label:'What have we actually been asked to do?',go:function(){
+        say('kate',`That's the right question, and you'll be the only person in the building asking it today. Femi's in the team room — start with him, and start with what the benchmark is for, because nobody has written that down anywhere.`,
+          [{label:'On my way.',go:function(){ advance('question'); }}]);
+      }}]);
+
+  /* ---------- 1. the question behind the question ---------- */
+  if(key==='mike'&&s==='question'){
+    return choose('mike',
+      `Femi Adeyemi, engagement manager — good to have you. The scope says cost benchmark against comparable manufacturers, four weeks. That's a deliverable, not a question. What do we do with it?`,
       [
-       {label:`"Great — I'll get the creative team on it this week."`,ok:false,
-        note:`Lovely. So... six videos? What are they for?  (You've just sold a deliverable nobody has justified. When it doesn't work, that's your agency's failure, not her brief's. Want to try again?)`},
-       {label:`"Before I take that back — what's the thing that's actually not working?"`,ok:true},
-       {label:`"Honestly, TikTok's probably not right for a building society."`,ok:false,
-        note:`...Right. Well. I've been here eleven years.  (You may even be correct. You've also told the client she's stupid in the first meeting. Being right isn't the job. Try again?)`}
+       {label:`Run the benchmark. It's what they've signed for, and it is four weeks of work.`,ok:false,
+        note:`And in four weeks they have a chart showing they're eleventh of twenty, and they ask us what to do about it — with the budget spent describing the problem. Want to try another?`},
+       {label:`Find out what decision the benchmark is meant to support, who makes it and when — then design the work backwards from that.`,ok:true},
+       {label:`Tell them benchmarking is a waste of money and propose something better.`,ok:false,
+        note:`You've been here forty minutes and you're telling the client their signed scope is stupid. You may even be right. You're also out of the room. Try again?`}
       ],function(){
-        say('priya',`...Right, well. Under-25 current account openings. Down about forty per cent in eighteen months. We're told we look like our parents' bank. TikTok was my best guess at a fix, not the fix itself. Budget's forty thousand, live by end of Q3.`,
-          [{label:'That I can work with.',go:function(){
-            advance('real_brief','priya',`Nobody's asked me that before. They usually just take the order.`);
-          }}]);
+        filed('Scope, reframed','Larkfield Foods','The decision the work has to serve, named — with who makes it and when');
+        advance('hypothesis','mike',`That's it. The benchmark is for a board paper in six weeks about closing the Ashby bakery. So the question isn't how do our costs compare — it's what would have to be true for Ashby to stay open. Completely different four weeks. Right. How are you going to do it?`);
       });
   }
 
-  if(key==='kate'&&s==='real_brief')
-    return say('kate',`Forty per cent is a business problem, not a channel problem. You went in to be told what to make and came out knowing what's broken — that's the whole job, and most people take three years to learn it.`,
-      [{label:'So what now?',go:function(){
-        filed('Client brief','Kestrelbank','Under-25 openings down 40% — not a TikTok problem');
-        advance('brief_creative','kate',`Now you brief Mike. And he'll take it apart, so make it worth his time.`);
-      }}]);
-
-  /* ---------- 2. briefing creative ---------- */
-  if(key==='mike'&&s==='brief_creative'){
-    return choose('mike',`Kestrelbank. Go on then — what am I solving?`,
+  /* ---------- 2. hypothesis, not a trawl ---------- */
+  if(key==='mike'&&s==='hypothesis'){
+    return choose('mike',
+      `Two ways to spend the next fortnight. Tell me which, and why.`,
       [
-       {label:`"Client wants a TikTok campaign. Six videos, by the 30th."`,ok:false,
-        note:`That's an order, not a brief. You've picked the channel, the format and the count before anyone's worked out what's actually wrong. If you want six videos, hire a production company. Want to try again?`},
-       {label:`"Under-25 openings down 40% in 18 months. They think we're their parents' bank. £40k, live end of Q3, has to work without a branch visit."`,ok:true},
-       {label:`"They're down on under-25s and open to anything — see what you come up with."`,ok:false,
-        note:`No constraints isn't freedom, it's three rounds of rejected work and a client who stops trusting us. Give me the edges. Try again?`}
+       {label:`Collect everything — three sites, five years, every cost line — and see what the data says.`,ok:false,
+        note:`Three weeks of extraction, one week left, and a pile of numbers with no argument in it. Data doesn't say things. People do, eventually, too late. Try again?`},
+       {label:`Start from four hypotheses about why Ashby costs more, and for each one design the quickest analysis that could prove it wrong.`,ok:true},
+       {label:`Ask the client what they think the answer is, and build the case for it.`,ok:false,
+        note:`That isn't analysis, it's stenography with a fee attached — and when the board tests it, you own it, not them. Have another go?`}
       ],function(){
-        filed('Creative brief','Kestrelbank','Problem, evidence, constraints — channel left open');
-        advance('scope_email','mike',`Now that's a brief. Problem, evidence, edges — and you've left the channel open so we can actually think. Give me a week.`);
+        filed('Hypotheses','Larkfield Foods','Four candidate explanations, each with the single number that would kill it');
+        advance('data','mike',`Good. Four hypotheses and, for each, the one number that kills it. If Ashby's problem is labour we know by Wednesday. If it's volume, Thursday. Hattie's in the data room — and the three systems disagree with each other by about eleven per cent.`);
       });
   }
 
-  /* ---------- 3. scope creep ---------- */
-  if(key==='kate'&&s==='scope_email')
-    return say('kate',`Two weeks in, and Priya's been in touch. Can we also get a version for the branch screens? And a radio cut? Same deadline, obviously.`,
-      [{label:'Obviously.',go:function(){
-        advance('scope_cost','kate',`Before you answer her — go and find out what that actually costs us. Answering a client before you know the number is how agencies lose money politely.`);
-      }}]);
-
-  if(key==='dan'&&s==='scope_cost')
-    return say('dan',`Branch screens and a radio cut? Different masters, different ratios, separate audio mix, and the screens need the legal rate on them. Eleven days of studio. Not eleven hours — days.`,
-      [{label:'Eleven.',go:function(){
-        advance('scope_reply','dan',`Eleven. Go and tell her before she assumes it's free, because right now she does.`);
-      }}]);
-
-  if(key==='priya'&&s==='scope_reply'){
-    return choose('priya',`Did you get my note? The branch screens and the radio thing. Straightforward enough, I'd have thought.`,
+  /* ---------- 3. three numbers, three definitions ---------- */
+  if(key==='jenny'&&s==='data'){
+    return choose('jenny',
+      `Hattie Moss, research — hello. Finance say Ashby's cost per tonne is a hundred and forty-two pounds. The site's own spreadsheet says a hundred and twenty-nine. The group system says a hundred and thirty-six, and that is the only one the board has ever seen. It's Wednesday. Go on.`,
       [
-       {label:`"Of course, no problem."`,ok:false,
-        note:`Wonderful, thank you.  (You've just given away eleven days of studio time, and taught her that everything after this is free too. Try again?)`},
-       {label:`"Both are doable. They're outside the original scope, so I'll send a revised estimate and timeline today — and if you need something by the 30th, tell me which of the two matters more."`,ok:true},
-       {label:`"That wasn't in the original scope."`,ok:false,
-        note:`I'm aware of what was in the scope.  (True — and now you're the department of no. She heard an obstacle, not a partner. Try again?)`}
+       {label:`Use the group number. It's the one the board recognises.`,ok:false,
+        note:`It's also the one that quietly puts all of group overhead on the biggest site. Recognised isn't the same as right, and somebody will ask you where it came from. Want to try another?`},
+       {label:`Find out what each one counts — overhead, waste, downtime, agency labour — rebuild one number on a definition we can defend, and show the range instead of pretending there is a single figure.`,ok:true},
+       {label:`Average the three. It's the honest middle.`,ok:false,
+        note:`Three different definitions averaged is a fourth thing that measures nothing at all. Have another go?`}
       ],function(){
-        filed('Revised scope','Kestrelbank','Both priced, prioritised, and in writing');
-        advance('date_ask','priya',`Send it over. And the screens matter more than the radio, since you ask. Nobody's ever asked me to choose before. They just quietly do one badly.`);
+        filed('Cost baseline','Larkfield Foods','One definition rebuilt from source, with the range shown and what drives it');
+        advance('interview','jenny',`Right. The gap is agency labour and how group overhead gets spread — and once you take the allocation out, Ashby is four pounds a tonne worse than the others, not thirteen. That changes the paper entirely. Gerry's in the kitchen, by the way. He runs Ashby, he's come in for the workshop, and nobody booked him a room.`);
       });
   }
 
-  /* ---------- 4. the date ---------- */
-  if(key==='priya'&&s==='date_ask')
-    return say('priya',`One more thing and then I'll leave you alone. The board meets Friday, and I'd love to have the films to show them. That's doable, isn't it?`,
-      [{label:'Let me check and come straight back.',go:function(){
-        advance('date_check','priya',`Good answer. The last person said yes standing exactly where you are, and then didn't deliver.`);
-      }}]);
-
-  if(key==='jenny'&&s==='date_check')
-    return say('jenny',`Friday? That's three days. I need four for the edit — grade, sound, three cuts, and that's if nothing comes back. I can give you one finished cut by Friday, or all three by Tuesday. I can't give you three by Friday — and if you promise it, I'll find out on Thursday night.`,
-      [{label:'One by Friday or three by Tuesday.',go:function(){
-        advance('date_reply','jenny',`That's the choice. And it's hers to make, not yours.`);
-      }}]);
-
-  if(key==='priya'&&s==='date_reply'){
-    return choose('priya',`Well? Friday?`,
+  /* ---------- 4. the interview ---------- */
+  if(key==='dan'&&s==='interview'){
+    return choose('dan',
+      `Gerry Halloran. I run Ashby — twenty-two years. I know what you lot are for: you're the ones who write the number that shuts us. So ask your questions and I'll give you the answers you came for.`,
       [
-       {label:`"We'll make Friday work."`,ok:false,
-        note:`Marvellous.  (You've just committed Jenny's weekend without asking her. She'll do it, and you'll do it again next month, because you got away with it once. Try again?)`},
-       {label:`"Friday, but one cut rather than three — or all three on Tuesday. Which serves the board better?"`,ok:true},
-       {label:`"Production says four days, so Friday isn't possible."`,ok:false,
-        note:`So that's a no, then.  (You relayed a constraint instead of solving a problem. She didn't hire you to forward messages. Try again?)`}
+       {label:`Take him through the interview guide — cost lines, shift patterns, agency spend, the lot.`,ok:false,
+        note:`Forty minutes of one-word answers and nothing you couldn't have pulled off the system. He told you what he thinks is happening and you carried on reading out questions. Try again?`},
+       {label:`Say what the work is actually for, admit what you don't know yet, and ask what he would fix first if somebody gave him a free fortnight and no board.`,ok:true},
+       {label:`Reassure him that nothing has been decided and the analysis is completely objective.`,ok:false,
+        note:`He's heard that twice before, both times from somebody holding a laptop. He'll be perfectly polite and no use to you for the rest of the day. Have another go?`}
       ],function(){
-        filed('Delivery plan','Kestrelbank','One cut Friday, full set Tuesday — client chose');
-        advance('present_work','priya',`One on Friday, then. The board only needs to see the idea, not the whole campaign — I'll take the other two on Tuesday. See you in the meeting room.`);
+        filed('Site interview','Larkfield Foods','The question a site manager answers honestly — what he would fix first, and why nobody has let him');
+        advance('storyline','dan',`...A free fortnight? I'd re-cut the shift pattern and stop paying agency to cover a line we only run four days a week. I've asked twice. It needs a sign-off from group and nobody has ever given me one. — And there's your four pounds a tonne, from a man who's known it for two years. Femi wants to see your deck.`);
       });
   }
 
-  /* ---------- 5. defending work you didn't make ---------- */
-  if(key==='priya'&&s==='present_work'){
-    return choose('priya',
-      `So that's the headline. Your money, before you've got any. Hmm. I don't like it, if I'm honest. My husband wouldn't get it.`,
+  /* ---------- 5. the storyline ---------- */
+  if(key==='mike'&&s==='storyline'){
+    return choose('mike',
+      `Forty pages, and the recommendation is on page thirty-eight. It builds beautifully. What's wrong with it?`,
       [
-       {label:`"Fair enough — we'll change it."`,ok:false,
-        note:`(Mike's face does something complicated. You've just traded a strategically sound line for one man's opinion, and Mike will stop showing you work early. Try again?)`},
-       {label:`"Can I ask what your husband would be doing when he saw it? It's built for someone scrolling at eleven at night who's never chosen a bank."`,ok:true},
-       {label:`"The creative team are the experts here."`,ok:false,
-        note:`Are they. Then why am I in the room?  (Hiding behind the department isn't defending the work. You've told the client her opinion is unwelcome. Try again?)`}
+       {label:`Nothing. They need to see the rigour before they see the answer.`,ok:false,
+        note:`The chief executive reads the first three pages in the car. By page nine somebody asks what your point is, and you spend the meeting defending page four. Try again?`},
+       {label:`Lead with the answer — keep Ashby, here are the three things that close the gap, here is what they cost and here is what would change our mind. The analysis goes behind it.`,ok:true},
+       {label:`Cut it to five pages and drop the analysis. Nobody reads an appendix.`,ok:false,
+        note:`Now you've got a strong claim and nothing holding it up when the finance director pushes. The appendix isn't decoration, it's how you survive the question. Have another go?`}
       ],function(){
-        filed('Campaign approved','Kestrelbank','Strategy defended, taste separated from brief');
-        say('priya',`...He's fifty-one, and he's banked with the same building society since he was nineteen. He isn't who this is for, is he.`,
-          [{label:'No.',go:function(){
-            say('mike',`(Mike says nothing, but he will remember this.)`,
-              [{label:'Continue.',go:function(){
-                advance('crisis_brief','priya',`Run it. All of it. And send me the Tuesday cuts.`);
+        filed('Storyline','Larkfield Foods','Answer first, three moves under it, evidence behind — and what would change the recommendation');
+        advance('client','mike',`That's a deck. Answer, then because, then here is what it would take. And the line saying what would change our mind is the thing that makes the rest believable. Sonia's in the client room. She's read the draft.`);
+      });
+  }
+
+  /* ---------- 6. the client, and the meeting you are not in ---------- */
+  if(key==='owen'&&s==='client'){
+    return choose('owen',
+      `Sonia Vance, chief operating officer. It's good work, genuinely. One thing: can you take the sentence about group overhead out? It isn't what the paper is about, and it'll start a fight.`,
+      [
+       {label:`"Of course — I'll cut it."`,ok:false,
+        note:`(You've just taken the reason Ashby looks expensive out of a paper about closing Ashby. When it surfaces later, and it will, every other number you gave them becomes suspect. Want another go?)`},
+       {label:`"Before I touch it — who is in the room on Thursday, and which part of this are you expecting to be argued with?"`,ok:true},
+       {label:`"I can't remove a finding. It's the central point of the analysis."`,ok:false,
+        note:`Nor can I take it in as it stands. I'll present my own version, then.  (You were right, and you have just lost control of your own work. Try again?)`}
+      ],function(){
+        say('owen',`...The finance director built that overhead model. If the paper says his allocation makes Ashby look thirteen pounds worse than it is, he will spend the entire meeting defending it and nobody will discuss the shift pattern. I'm not trying to hide anything. I'm trying not to lose the meeting.`,
+          [{label:'So it needs to be a decision about Ashby, not a verdict on his model.',go:function(){
+            say('owen',`...That is exactly it. Four firms have sat where you're sitting and not one of them put it that way.`,
+              [{label:'Then the sentence moves, it does not go.',go:function(){
+                filed('Client, understood','Larkfield Foods','A finding kept and reframed, so the meeting is about the decision rather than whose model is wrong');
+                startClock(90);
+                say('kate',`Which is right, and the timing is appalling. The pre-read locks in ninety seconds and Thursday's pack goes with whatever is in it. Femi's in the team room. Go.`,
+                  [{label:'Go.',go:function(){ G.step='crisis_fix'; paintHUD(); closeDlg(); }}]);
               }}]);
           }}]);
       });
   }
 
-  if(key==='mike'&&s==='present_work')
-    return say('mike',`(He's letting you take it. That's the test.)`);
-
-  /* ---------- 6. the difficult call ---------- */
-  if(key==='kate'&&s==='crisis_brief'){
-    startClock(90);
-    return choose('kate',
-      `Stop. The branch screen version went live yesterday morning with last quarter's interest rate on it. One point one, not one point six. It's been on a hundred and forty screens for thirty-one hours. What do you do first?`,
-      [
-       {label:`Work out how it happened, then call her.`,ok:false,
-        note:`Every minute on the story is a minute it's still live, and a minute closer to her finding it herself. The post-mortem comes after. Try again — what first?`},
-       {label:`Call Priya now, with the fix already moving.`,ok:true},
-       {label:`Get Jenny to pull it, then call once it's fixed.`,ok:false,
-        note:`That's the tempting one, and it's the one that ends accounts. You'd arrive with good news and no credibility, because the first thing she asks is when you knew. Have another go?`}
-      ],function(){
-        advance('crisis_call','kate',`Go. Jenny's already pulling them — I did that while you were deciding. Meeting room, phone, now.`);
-      });
+  if(key==='mike'&&s==='crisis_fix'){
+    return choose('mike',`Ninety seconds. What goes on the page?`,[
+      {label:`Cut the overhead line and mention it out loud on Thursday.`,ok:false,
+       note:`A finding that only exists out loud isn't in the paper — and you won't get the floor for it. Try again, quickly.`},
+      {label:`Keep the finding, move it out of the headline into the basis of the numbers, and write the recommendation like-for-like: same rules for all three sites. Shift pattern named as the first move.`,ok:true},
+      {label:`Leave it exactly as drafted and let her manage the room.`,ok:false,
+       note:`You've handed her the fight she told you she would lose, and the decision goes down with it. Have another go?`}
+    ],function(){
+      advance('crisis_show','mike',`In the pack with eleven seconds to spare. Like-for-like on the front page, the allocation explained under basis of preparation, and the shift pattern as move one. Go and show her, before she reads the old draft.`);
+    });
   }
 
-  if(key==='priya'&&s==='crisis_call'){
-    return choose('priya',`This is a surprise. Everything alright?`,
-      [
-       {label:`"I'm so sorry, this is completely unacceptable and I take full responsibility —"`,ok:false,
-        note:`...What's happened? What are we talking about?  (Thirty seconds of apology before she even knows what for. She's now frightened as well as annoyed. Lead with the thing. Try again?)`},
-       {label:`"The branch screens went out with the old rate. They're coming down now, corrected version up within the hour. Then I'll tell you exactly how it happened."`,ok:true},
-       {label:`"There's been an issue at our end with the branch assets — the version control on the screen masters didn't pick up the rate change from —"`,ok:false,
-        note:`I'm going to stop you there. Is it fixed?  (You opened with the explanation. She can't hear any of it until she knows it's handled. Try again?)`}
-      ],function(){
-        stopClock();
-        filed('Incident handled','Kestrelbank','Called first, led with the fix');
-        say('priya',`Right. Right — thank you. Send me the corrected screen once it's up.`,
-          [{label:'Within the hour.',go:function(){
-            say('priya',`...You know, the last agency had something similar. I found it myself, in a branch in Chester, eight days later. That's why they're the last agency.`,
-              [{label:'Understood.',go:function(){
-                say('kate',`That's the job. Not the campaign — that. The client didn't hire you to be perfect, they hired you to be the person who tells them first. Six things on the account and one bad morning handled properly. It's your account now.`,
-                  [{label:'Thank you.',go:function(){ G.step='complete'; paintHUD(); closeDlg(); openCertificate(); }}]);
-              }}]);
+  if(key==='owen'&&s==='crisis_show'){
+    stopClock();
+    return say('owen',`So it says the same thing. It just doesn't say it at him.`,
+      [{label:'And the decision is still the decision.',go:function(){
+        say('owen',`I've had four firms through here. You're the first one who asked who was going to argue with it.`,
+          [{label:'...',go:function(){
+            say('kate',`That's the job. Not the model, not the deck — that. Somebody asks you to take a sentence out, and you go and find out which meeting they're frightened of. Six pieces of work, a site manager who told you the truth, and a pre-read you didn't miss. You're a consultant now.`,
+              [{label:'Thank you.',go:function(){ G.step='complete'; paintHUD(); closeDlg(); openCertificate(); }}]);
           }}]);
-      });
+      }}]);
   }
 
-  /* ---------- Alex: hints ---------- */
+  /* ---------- Anya: hints ---------- */
   if(key==='alex'){
     const h={
-      client_brief:`She's in the lobby. Whatever she asks for, find out what's underneath it before you agree to anything.`,
-      real_brief:`Kate's right there. Tell her what the actual problem is, not what the client asked for.`,
-      brief_creative:`Mike will reject an order. Give him the problem, the evidence and the edges — and don't pick the channel for him.`,
-      scope_email:`Extra work is fine. Extra work you've already agreed to for free isn't.`,
-      scope_cost:`Dan's in the break room. Never quote a client a number you haven't been given.`,
-      scope_reply:`Yes to what she wants, priced. No and of course are both wrong answers.`,
-      date_ask:`Don't answer that standing here. Go and ask the person who has to do the work.`,
-      date_check:`Jenny will give you the real number. She always does, and people always ignore it.`,
-      date_reply:`Give her the trade-off and let her pick. It's her launch.`,
-      present_work:`You didn't write it, but you're selling it. Defend the thinking, not your feelings.`,
-      crisis_brief:`Whatever it is — the first question is never how did this happen.`,
-      crisis_call:`Fix first, apology second, explanation last. In that order.`,
-      complete:`You've had a worse first fortnight than I did. Drink?`
+      brief:`Ruth's in her office. Ask what the benchmark is for before you ask what goes in it.`,
+      question:`A deliverable is not a question. Find the decision underneath it.`,
+      hypothesis:`For each idea, ask what single number would prove it wrong — then go and get that one.`,
+      data:`Three numbers, three definitions. Ask what each one counts before you pick.`,
+      interview:`He thinks you are here to close his site. Say what you are actually doing.`,
+      storyline:`The answer goes first. The rigour goes behind it, where it can still be reached.`,
+      client:`She is not asking you to lie. Ask who is in the room on Thursday.`,
+      crisis_fix:`Keep the finding. Change where it sits, and make the rules the same for all three sites.`,
+      crisis_show:`Go and show her — she has not seen it yet.`,
+      complete:`You kept a finding and kept the client. That is the whole trick. Drink?`
     };
-    return say('alex', h[s] || `Stuck? Tell me what the client asked for and I'll tell you what they want.`);
+    return say('alex', h[s] || `Stuck? Say what decision this changes, and who has to be convinced of it.`);
   }
 
   const idle={
-    kate:`Not now — go and deal with it, then tell me how it went.`,
-    mike:`I'm working on your brief. Let me.`,
-    jenny:`Bring me a date and I'll tell you if it's real.`,
-    dan:`Kettle's on. Ask me before you promise anyone anything.`,
-    priya:`I'll wait. Not for long, mind.`
+    kate:`Nothing new from me — go and finish what you have got.`,
+    mike:`Come back when you can give me the answer in one sentence.`,
+    jenny:`Bring me a definition and I will build you a number.`,
+    dan:`Kettle's on. Twenty-two years, mind.`,
+    owen:`I'll wait. Thursday will not.`
   };
   say(key, idle[key] || `...`);
 }
 
 const TRACK_GLOSSARY=[
-  {t:"brief",l:"a brief",m:"brief",
-   d:"The written statement of what a piece of work has to do: the problem, the evidence, the budget and the edges. An order with a format and a deadline is not one."},
-  {t:"deliverable",l:"a deliverable",m:"deliverable",
-   d:"One named thing you have promised to hand over — six films, three posters. Agreeing deliverables before anyone agrees the problem is how work fails."},
+  {t:"engagement",l:"an engagement",m:"engagement",
+   d:"One piece of work for one client, with a start, an end and a fee. The unit everything in a consultancy is organised around."},
   {t:"scope",l:"scope",m:"scope",
-   d:"Exactly what the fee covers. Everything outside it is real work somebody has to do, so it needs a number and a date rather than a yes."},
-  {t:"estimate",l:"an estimate",m:"estimate",
-   d:"The written price for a piece of work before it starts. A revised one is how extra work stays paid work instead of a favour."},
-  {t:"channel",l:"a channel",m:"channel",
-   d:"Where the work runs — TikTok, radio, branch screens, post. Choosing it before you know the problem is picking the answer first."},
-  {t:"production company",l:"a production company",m:"production company",
-   d:"The firm that makes the films. If a client only wants six videos made, they can hire one directly — the agency is for working out what the videos should be."},
-  {t:"master",l:"a master",m:"master(?:s)?",
-   d:"The finished, approved version of a film or audio piece that every other version is cut from."},
-  {t:"ratio",l:"an aspect ratio",m:"ratio(?:s)?",
-   d:"The shape of the frame — tall for phones, wide for screens. A different ratio is a different edit, not a resize."},
-  {t:"audio mix",l:"an audio mix",m:"audio mix|sound mix",
-   d:"Balancing voice, music and effects for where it will be heard. A cinema mix and a branch-screen mix are not the same work."},
-  {t:"legal rate",l:"the legal rate",m:"legal rate|legal line|interest rate",
-   d:"The interest rate and small print a financial ad is required to show. It has to be the current one, which is how the wrong number ends up on a hundred and forty screens."},
-  {t:"cut",l:"a cut",m:"radio cut|cut(?:s)?",
-   d:"One edited version of a film — a thirty-second cut, a radio cut. Three cuts is three lots of work, not one with variations."},
-  {t:"grade",l:"the grade",m:"grade",
-   d:"The stage where a film’s colour is set. Part of the finishing work that happens after the edit and takes real days."},
-  {t:"studio day",l:"a studio day",m:"studio day(?:s)?|eleven days of studio|days of studio",
-   d:"One day of a designer’s or editor’s time, which is what you are actually spending when you say yes to something."},
-  {t:"round",l:"a round",m:"round(?:s)?",
-   d:"One pass of work going to the client and coming back with comments. Rounds are counted, and quoted for."},
-  {t:"version control",l:"version control",m:"version control",
-   d:"Keeping track of which file is the current one. Without it, last quarter’s rate goes out on a hundred and forty screens."},
-  {t:"post-mortem",l:"a post-mortem",m:"post-mortem|postmortem",
-   d:"The meeting afterwards about how it happened. Valuable, and never the first thing you do while something wrong is still live."},
-  {t:"board",l:"the board",m:"board",
-   d:"The client company’s directors. They meet on a set day, which is why “I need it by Friday” is often real."},
-  {t:"q3",l:"Q3",m:"Q3|Q[1-4]",
-   d:"The third quarter of the financial year. Companies plan and spend in quarters, so “live by end of Q3” is a budget deadline as much as a date."}
+   d:"What the work covers and what it does not, written down and signed. It describes a deliverable; it rarely describes the decision underneath it."},
+  {t:"deliverable",l:"a deliverable",m:"deliverable",
+   d:"A named thing you have promised to hand over — a benchmark, a model, a report. Agreeing one before anyone has agreed the question is the commonest way an engagement wastes its budget."},
+  {t:"benchmark",l:"a benchmark",m:"benchmark(?:ing|s)?",
+   d:"A comparison of your numbers against other people's. It tells you where you stand and never what to do, which is why it is a description rather than a decision."},
+  {t:"steering committee",l:"a steering committee",m:"steering committee|steerco",
+   d:"The group of client people who meet to take the decisions on a project. Missing one usually costs a fortnight, because the next one is a fortnight away."},
+  {t:"pre-read",l:"a pre-read",m:"pre-read",
+   d:"The pack circulated before a meeting so people arrive having read it. It locks at a deadline, and what is in it is what gets discussed."},
+  {t:"pack",l:"a pack",m:"pack",
+   d:"The set of slides that goes to a board or a committee. Once it is out, it is the version everyone remembers."},
+  {t:"deck",l:"a deck",m:"deck",
+   d:"The slides themselves. A consulting deck is not a detective novel: the answer goes at the front."},
+  {t:"hypothesis",l:"a hypothesis",m:"hypothes(?:is|es)",
+   d:"A specific claim about why something is happening, stated so clearly that a single piece of evidence could prove it wrong. If nothing could disprove it, it is an opinion."},
+  {t:"board paper",l:"a board paper",m:"board paper|the board",
+   d:"The written case put to a company's directors for a decision. Short, argued, and read by people who were not in any of the meetings."},
+  {t:"cost per tonne",l:"cost per tonne",m:"cost per tonne",
+   d:"What it costs to make one tonne of product. A unit cost like this is only comparable if everyone counts the same things in it."},
+  {t:"overhead",l:"overhead",m:"overhead(?:s)?",
+   d:"Costs that are not caused by one site or product — head office, IT, insurance. Real money, and somebody has to decide whose number it lands in."},
+  {t:"allocation",l:"an overhead allocation",m:"allocation|allocat(?:e|ed|ing)",
+   d:"The rule that spreads shared costs across sites or products. Change the rule and you change which site looks expensive, without anything actually changing."},
+  {t:"agency labour",l:"agency labour",m:"agency labour|agency(?: spend| to cover)?",
+   d:"Temporary staff hired through an agency, at a higher hourly cost than your own people. Convenient, expensive, and easy to stop noticing."},
+  {t:"baseline",l:"a baseline",m:"baseline|cost baseline",
+   d:"The agreed starting number that everything else is measured against. Building one on a definition you can defend is most of the work."},
+  {t:"like-for-like",l:"like-for-like",m:"like-for-like",
+   d:"Comparing things on the same basis — same rules, same inclusions, same period. Without it, a comparison measures the accounting rather than the business."},
+  {t:"triangulate",l:"triangulating",m:"triangulat(?:e|ed|ing|ion)|range instead of|show the range",
+   d:"Reaching a number from two or three independent directions and seeing whether they agree. It is how you get an honest answer out of imperfect data."},
+  {t:"interview guide",l:"an interview guide",m:"interview guide",
+   d:"The list of questions you take into a client conversation. Useful as a safety net; a bad thing to read out loud while somebody is telling you the answer."},
+  {t:"synthesis",l:"synthesis",m:"synthes(?:is|ise|ised)",
+   d:"Turning a pile of findings into one argument. The step that separates a research report from advice."},
+  {t:"storyline",l:"a storyline",m:"storyline",
+   d:"The order the argument is told in: answer, reasons, evidence, what it would take. Written before the slides, not after them."},
+  {t:"appendix",l:"an appendix",m:"appendi(?:x|ces)",
+   d:"The analysis kept behind the recommendation. Nobody reads it until one person does, in the meeting, out loud."},
+  {t:"basis of preparation",l:"basis of preparation",m:"basis of preparation|basis of the numbers",
+   d:"The page explaining what the numbers include, exclude and assume. Where a finding about definitions belongs when it is true but not the headline."},
+  {t:"finding",l:"a finding",m:"finding(?:s)?",
+   d:"Something the work established that was not known before. It can be moved, reframed or explained; removing one because it is awkward is a different thing entirely."},
+  {t:"sponsor",l:"a sponsor",m:"sponsor",
+   d:"The client executive who owns the project internally and has to sell its conclusions to their colleagues. Usually in rooms you are not in."},
+  {t:"sign-off",l:"a sign-off",m:"sign-off",
+   d:"Formal permission to go ahead. Plenty of obvious improvements sit unmade for years because nobody will give one."},
+  {t:"shift pattern",l:"a shift pattern",m:"shift pattern",
+   d:"How a site's working hours are arranged across the week. Change it and labour cost moves substantially — which is why it is rarely changed without an argument."},
+  {t:"quick win",l:"a quick win",m:"quick win(?:s)?",
+   d:"A change worth doing that can be done soon, usually named to buy credibility for the slower things behind it."},
+  {t:"workshop",l:"a workshop",m:"workshop",
+   d:"A working session where the client's own people do the thinking with you in the room. It fails when it is a presentation with biscuits."}
 ];
-TRACK_DEFS.account={
-    id:'account', name:'Account Management', live:true,
-    title:'Account Chronicles',
-    blurb:'A client who wants the wrong thing, an agency that has to build it, and you in between.',
-    first:'client_brief',
-    roles:{kate:'Account Director', alex:'Account Executive', mike:'Creative Director',
-           jenny:'Production', dan:'Studio & estimates',
-           priya:'Marketing Manager, Kestrelbank', player:'The new account manager'},
-    glossary:TRACK_GLOSSARY,
-  script:function(key){ return accountScript(key); },
-    occupants:function(room){ return accountOccupants(room); },
-    objectives:OBJ_ACCOUNT,
-    opening:{text:`Nine in the morning, and there's already a client in the lobby — which is never a good sign. Priya, from Kestrelbank. She's been waiting eleven minutes.`,
-             label:'Go over.'},
-    certTitle:'ACCOUNT CHRONICLES',
-    timeUp:{who:'kate',line:`Time's gone. She found it herself — a colleague sent her a photo of a branch screen. Go and ring her anyway, and lead with the fix. Late is recoverable. Silent isn't.`},
-    certBody:['ran the Kestrelbank account for a fortnight — took the brief apart, briefed',
-              'creative, priced the scope, held the date, defended work they did not make,',
-              'and made the difficult call first.'],
-    lessons:[
-      {t:'Take the problem, not the order', c:'The first meeting',
-       l:'Clients bring solutions. The ask is a symptom — find out what’s actually not working before you agree to build anything.'},
-      {t:'Never correct a client in the first meeting', c:'The first meeting',
-       l:'You may be right. Being right isn’t the job. Curiosity gets you to the same place without spending the relationship.'},
-      {t:'A brief is a problem with constraints', c:'Briefing creative',
-       l:'Evidence, boundaries, and no pre-chosen solution. An order isn’t a brief — and no constraints isn’t freedom.'},
-      {t:'Price it before you agree to it', c:'Scope creep',
-       l:'Yes to the goal, no to the free work. Never quote a number you haven’t been given, and always put it in writing.'},
-      {t:'Don’t be the department of no', c:'Scope creep',
-       l:'Offer the trade-off, not the obstacle. The client should hear a partner, not an objection.'},
-      {t:'Never commit someone else’s time', c:'The date',
-       l:'Ask the person who has to do the work before you promise the date. They’ll do it once, and resent it for a year.'},
-      {t:'Negotiate the date, not the quality', c:'The date',
-       l:'Make the trade-off visible and let the client choose. It’s their launch.'},
-      {t:'Taste is not a brief', c:'The presentation',
-       l:'Turn I don’t like it into who is this for, without telling anyone they’re wrong. Defend the strategy, concede on preference.'},
-      {t:'Tell them first', c:'The difficult call',
-       l:'Ring early and lead with the fix. The apology comes second, once. The explanation comes last. You’re not paid to be perfect, you’re paid to be the one who tells them.'}
-    ]
-  };
+TRACK_DEFS.consulting={
+  id:'consulting', name:'Consulting', title:'Consulting Chronicles',
+  blurb:'A benchmark nobody needs, three numbers that disagree, and a sentence the client wants taken out.',
+  first:'brief',
+  roles:{mike:'Engagement Manager', kate:'Partner', jenny:'Research Lead',
+         alex:'Consultant', dan:'Site Manager, Larkfield Foods',
+         owen:'Chief Operating Officer, Larkfield Foods', player:'The new consultant'},
+  glossary:TRACK_GLOSSARY,
+  script:function(key){ return consScript(key); },
+  occupants:function(room){ return consOccupants(room); },
+  objectives:OBJ_CONS,
+  opening:{text:`Nine in the morning at Calder and Hale. A client who has asked for a benchmark, a board paper in six weeks about closing a bakery, and a pre-read that locks at five o'clock.`,
+           label:'Find Ruth.'},
+  certTitle:'CONSULTING CHRONICLES',
+  timeUp:{who:'kate',line:`Pre-read's locked. Thursday's pack goes out with the old draft, the finance director spends the meeting defending his model, and nobody discusses the shift pattern. Finish it anyway: missing a deadline you survive; not knowing what you would have written, you don't.`},
+  certBody:['turned a benchmark into the decision underneath it, rebuilt a cost baseline on a',
+            'definition that could be defended, got the truth out of a site manager who expected',
+            'the worst, and kept a finding in the pack by moving it rather than deleting it.'],
+  lessons:[
+    {t:'Scope the decision, not the deliverable', c:'Framing',
+     l:'A signed scope describes a thing to hand over. Ask what decision it feeds, who makes it and when, then design the work backwards from that.'},
+    {t:'A hypothesis needs a way to die', c:'Method',
+     l:'State why you think something is happening, then name the single number that would prove you wrong and go and get that one. Collecting everything first is how a fortnight disappears.'},
+    {t:'Data does not say anything — definitions do', c:'Analysis',
+     l:'Three systems disagreeing by eleven per cent is three definitions, not three errors. Find out what each one counts before you choose.'},
+    {t:'Recognised is not the same as right', c:'Analysis',
+     l:'The number the board already knows carries its own assumptions. Using it because it is familiar hands those assumptions to your conclusion.'},
+    {t:'Show the range, not a false single figure', c:'Analysis',
+     l:'One defensible definition, rebuilt from source, with the spread visible and what drives it. Averaging incompatible numbers produces a fourth thing that measures nothing.'},
+    {t:'The person with the answer has the most to lose', c:'Interviews',
+     l:'Say what the work is for, admit what you do not know, and ask what they would fix given a free fortnight. Reading out an interview guide gets you what was already in the system.'},
+    {t:'Answer first, rigour behind', c:'Communication',
+     l:'The recommendation belongs on page one with the reasons under it. Nobody arrives at page thirty-eight with an open mind, and the appendix is how you survive the question.'},
+    {t:'Say what would change your mind', c:'Communication',
+     l:'Naming the evidence that would overturn your recommendation is what makes the rest of it believable.'},
+    {t:'Your client is selling this in a room you are not in', c:'Clients',
+     l:'A request to cut a sentence is usually a fear about a meeting. Ask who will be there and which part they expect to be attacked.'},
+    {t:'Move a finding, never remove it', c:'Integrity',
+     l:'Out of the headline and into the basis of preparation is a different act from deleting it. One keeps the paper honest; the other makes every other number suspect.'}
+  ]
+};
 
 
 /* ==========================================================================
@@ -1916,18 +2541,18 @@ TRACK_DEFS.account={
 
 /* ---- three player figures, built from the same CAST fields -------------- */
 CAST.p_a={name:'You', role:'The new one', where:'Lobby',
-  accent:'#e4ded2', top:'#4a6a86', topDk:'#3a5468', style:'overshirt', tee:'#f2ece0',
-  legs:'#33405c', legsDk:'#26314a', shoe:'#e8e2d6',
+  accent:'#e4ded2', top:'#28313f', topDk:'#1d2530', style:'suit', tee:'#f4f6f8', tie:'#7d1f2b',
+  legs:'#2a3140', legsDk:'#1e2431', shoe:'#2b2621',
   skin:'#c08a5e', skinDk:'#9c6c45', hair:'#241c16', hairHi:'#3c2f24', cut:'short',
   specs:false, prop:null, build:1.04, bw:23, beard:false};
 CAST.p_b={name:'You', role:'The new one', where:'Lobby',
-  accent:'#e4ded2', top:'#6d4a63', topDk:'#523849', style:'knit', tee:'#6d4a63',
-  legs:'#a8a49c', legsDk:'#8d8981', shoe:'#33302b',
+  accent:'#e4ded2', top:'#3a3f48', topDk:'#2b2f36', style:'blazer', tee:'#dbe6ee',
+  legs:'#2f3239', legsDk:'#23262b', shoe:'#33302b',
   skin:'#8d5f38', skinDk:'#6d4626', hair:'#1e1710', hairHi:'#3a2c1e', cut:'long',
   specs:false, prop:null, build:0.98, bw:20, beard:false};
 CAST.p_c={name:'You', role:'The new one', where:'Lobby',
-  accent:'#e4ded2', top:'#2f7d78', topDk:'#215b57', style:'overshirt', tee:'#f2ece0',
-  legs:'#5e6a4f', legsDk:'#48523c', shoe:'#e8e2d6',
+  accent:'#e4ded2', top:'#4c515b', topDk:'#3a3e47', style:'suit', tee:'#f4f6f8', tie:'#22364f',
+  legs:'#3a3e47', legsDk:'#2c2f36', shoe:'#2b2621',
   skin:'#f0c8a0', skinDk:'#cfa079', hair:'#3a2a1c', hairHi:'#5a4430', cut:'undercut',
   specs:true, prop:null, build:1.00, bw:21, beard:false};
 
@@ -1988,7 +2613,7 @@ const TRACK_FILES={
   mechanical:'mechanical-chronicles.html',
   chemical:'chemical-chronicles.html',
 };
-const FIRST_LIVE=TRACK_ORDER.filter(function(id){ return TRACKS[id].live; })[0]||'copywriting';
+const FIRST_LIVE=TRACK_ORDER.filter(function(id){ return TRACKS[id].live; })[0]||'engineering';
 let TRACK=TRACKS[FIRST_LIVE];
 let pendingTrack=FIRST_LIVE;
 
@@ -2102,10 +2727,10 @@ function paintTracks(){
 /* ---- certificate -------------------------------------------------------- */
 function certName(){ return (G.playerName||'').toUpperCase(); }
 function drawCertificate(g,w,h){
-  g.fillStyle='#f4efe4'; g.fillRect(0,0,w,h);
-  g.strokeStyle='#d8a33c'; g.lineWidth=3; g.strokeRect(16,16,w-32,h-32);
-  g.strokeStyle='#c9bda6'; g.lineWidth=1; g.strokeRect(26,26,w-52,h-52);
-  g.textAlign='center'; g.fillStyle='#6a6355';
+  g.fillStyle='#f6f8fb'; g.fillRect(0,0,w,h);
+  g.strokeStyle='#1f6feb'; g.lineWidth=3; g.strokeRect(16,16,w-32,h-32);
+  g.strokeStyle='#c6d2e0'; g.lineWidth=1; g.strokeRect(26,26,w-52,h-52);
+  g.textAlign='center'; g.fillStyle='#5b6673';
   g.font='600 15px "Space Grotesk", sans-serif';
   g.fillText(TRACK.certTitle||'CHRONICLES', w/2, 78);
   g.font='400 14px "DM Sans", sans-serif';
@@ -2116,22 +2741,22 @@ function drawCertificate(g,w,h){
   if(n.length>22) fs=34;
   if(n.length>30) fs=27;
   if(n.length>36) fs=23;
-  g.fillStyle='#1a1815'; g.font='600 '+fs+'px "Space Grotesk", sans-serif';
+  g.fillStyle='#10161d'; g.font='600 '+fs+'px "Space Grotesk", sans-serif';
   g.fillText(n, w/2, 174);
-  g.strokeStyle='#d8a33c'; g.lineWidth=2;
+  g.strokeStyle='#1f6feb'; g.lineWidth=2;
   g.beginPath(); g.moveTo(w/2-150,192); g.lineTo(w/2+150,192); g.stroke();
 
-  g.fillStyle='#4a453c'; g.font='400 14px "DM Sans", sans-serif';
+  g.fillStyle='#3d4855'; g.font='400 14px "DM Sans", sans-serif';
   (TRACK.certBody||[]).forEach(function(L,i){ g.fillText(L, w/2, 224+i*22); });
 
-  g.font='400 12px "DM Sans", sans-serif'; g.fillStyle='#6a6355';
+  g.font='400 12px "DM Sans", sans-serif'; g.fillStyle='#5b6673';
   G.portfolio.forEach(function(p,i){ g.fillText(p.title+' — '+p.client, w/2, 312+i*19); });
 
-  g.font='italic 400 26px "DM Sans", cursive, sans-serif'; g.fillStyle='#1a1815';
+  g.font='italic 400 26px "DM Sans", cursive, sans-serif'; g.fillStyle='#10161d';
   g.fillText('Harsha Satish', w/2, h-78);
-  g.strokeStyle='#c9bda6'; g.lineWidth=1;
+  g.strokeStyle='#c6d2e0'; g.lineWidth=1;
   g.beginPath(); g.moveTo(w/2-110,h-64); g.lineTo(w/2+110,h-64); g.stroke();
-  g.font='400 11px "DM Sans", sans-serif'; g.fillStyle='#6a6355';
+  g.font='400 11px "DM Sans", sans-serif'; g.fillStyle='#5b6673';
   g.fillText('Creator, '+(TRACK.title||'Chronicles'), w/2, h-46);
   g.textAlign='left';
 }
