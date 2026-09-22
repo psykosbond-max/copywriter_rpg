@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
-<title>Data Chronicles</title>
+<title>Electrical Chronicles</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
@@ -147,7 +147,7 @@
 <body>
 <div class="wrap">
   <div class="top">
-    <h1 id="gameTitle">Data Chronicles</h1>
+    <h1 id="gameTitle">Electrical Chronicles</h1>
     <div class="hud">
       <span id="clock"></span>
       <button id="folioBtn">Work log (<span id="folioCount">0</span>)</button>
@@ -166,7 +166,7 @@
     <button id="coachGo" type="button">Got it</button>
   </div>
   <div class="stage">
-    <canvas id="c" width="1600" height="960" role="img" aria-label="Engineering floor"></canvas>
+    <canvas id="c" width="1600" height="960" role="img" aria-label="Works floor"></canvas>
   </div>
   <div id="dlg"></div>
   <div class="pad">
@@ -180,10 +180,10 @@
 </div>
 
 <div class="veil" id="menu"><div class="inner center">
-  <h2 id="menuTitle">Data Chronicles</h2>
-  <p class="lede" id="menuLede">A day on a product team, and a number somebody has already decided.</p>
+  <h2 id="menuTitle">Electrical Chronicles</h2>
+  <p class="lede" id="menuLede">A day at an engineering works, and a reset button that would have burnt out a motor.</p>
   <button id="btnPlay" class="primary">Play game</button>
-  <button id="btnLearn" class="ghost">Learn data science</button>
+  <button id="btnLearn" class="ghost">Learn electrical engineering</button>
   <button id="btnTracks" class="ghost">Choose another track</button>
 </div></div>
 
@@ -891,215 +891,774 @@ function whiteboardTech(x,y,w,h,seed){            /* boxes and arrows, not doodl
 /* ==========================================================================
    ROOMS
    ========================================================================== */
+/* ==========================================================================
+   HALLAM WORKS — the things an engineering company has on its floors.
+   Same vocabulary as the rest of the building: flat top-down shapes, one soft
+   shadow, a highlight along the top edge, and collisions pushed by anything
+   you should not be able to walk through.
+   ========================================================================== */
+
+Object.assign(P,{
+  galv:'#9aa3ac', galvHi:'#b4bcc4', galvDk:'#6f7881',
+  stain:'#c3c9cf', stainHi:'#dde2e6',
+  hazard:'#e3b341', hazardDk:'#a8821f', hiviz:'#d9e36a',
+  copper:'#b87333', copperHi:'#d79458', brass:'#b5a642',
+  oil:'#3b4038', oilDk:'#2a2e28', rust:'#8a5a3b',
+  drumBlue:'#3f6fa8', drumRed:'#a8443a', drumYel:'#c9a227', drumWhite:'#dfe3e7',
+  labWhite:'#e9edf0', labTop:'#2f3a40', glassG:'#bcd6cc', liquidA:'#8fd18a',
+  liquidB:'#f0c674', liquidC:'#7fa8c4', pipe:'#8b949e', pipeDk:'#5c636b'
+});
+
+/* --- floors -------------------------------------------------------------- */
+function bayFloor(seed){                       /* epoxy, with a walkway painted on */
+  const R=seeded(seed);
+  r(FX,FY,FW,FH,'#5f666e');
+  for(let i=0;i<620;i++){ const cx=FX+R()*FW, cy=FY+R()*FH;
+    X.globalAlpha=.04+R()*.06; X.fillStyle=R()>.5?'#ffffff':'#20242a';
+    X.beginPath(); X.ellipse(cx,cy,1+R()*3,1+R()*2,0,0,Math.PI*2); X.fill(); }
+  X.globalAlpha=1;
+  X.strokeStyle='#4a5057'; X.lineWidth=1.2;                    /* bay joints */
+  for(let x=FX+190;x<FX+FW;x+=190){ X.beginPath(); X.moveTo(x,FY); X.lineTo(x,FY+FH); X.stroke(); }
+  const wy=FY+FH-84;                                            /* the walkway */
+  X.globalAlpha=.16; r(FX,wy,FW,52,'#e3b341'); X.globalAlpha=1;
+  r(FX,wy,FW,4.5,P.hazard); r(FX,wy+48,FW,4.5,P.hazard);
+  X.globalAlpha=.5;
+  for(let x=FX;x<FX+FW;x+=22){ r(x,wy+4.5,11,3,P.hazardDk); r(x+11,wy+44.5,11,3,P.hazardDk); }
+  X.globalAlpha=1;
+  grain(FX,FY,FW,FH,.04);
+}
+function labFloor(seed){                       /* welded vinyl, coved, very clean */
+  const R=seeded(seed);
+  r(FX,FY,FW,FH,'#cfd8d6');
+  for(let i=0;i<900;i++){ const cx=FX+R()*FW, cy=FY+R()*FH;
+    X.globalAlpha=.1+R()*.12; X.fillStyle=R()>.4?'#ffffff':'#9fb0ad';
+    X.beginPath(); X.ellipse(cx,cy,.8+R()*1.6,.8+R()*1.3,0,0,Math.PI*2); X.fill(); }
+  X.globalAlpha=1;
+  X.strokeStyle='#b9c6c3'; X.lineWidth=1.3;                   /* welded seams */
+  for(let x=FX+200;x<FX+FW;x+=200){ X.beginPath(); X.moveTo(x,FY); X.lineTo(x,FY+FH); X.stroke(); }
+  X.globalAlpha=.5; r(FX,FY+FH-30,FW,2,'#9fb0ad'); X.globalAlpha=1;
+  grain(FX,FY,FW,FH,.04);
+}
+function shopFloor(seed){                      /* sealed concrete, patched, bay lines */
+  const R=seeded(seed);
+  r(FX,FY,FW,FH,'#8f9298');
+  for(let i=0;i<2000;i++){ const cx=FX+R()*FW, cy=FY+R()*FH;
+    X.globalAlpha=.05+R()*.13; X.fillStyle=R()>.55?'#ffffff':'#4e5257';
+    X.beginPath(); X.ellipse(cx,cy,1+R()*3.4,1+R()*2.4,0,0,Math.PI*2); X.fill(); }
+  X.globalAlpha=.16; X.fillStyle=P.oil;                        /* old oil patches */
+  [[180,300,60,26],[520,380,44,18],[360,140,34,14]].forEach(function(o){
+    X.beginPath(); X.ellipse(o[0],o[1],o[2],o[3],0,0,Math.PI*2); X.fill(); });
+  X.globalAlpha=1;
+  X.strokeStyle='#787c82'; X.lineWidth=1.4;
+  for(let y=FY+150;y<FY+FH;y+=150){ X.beginPath(); X.moveTo(FX,y); X.lineTo(FX+FW,y); X.stroke(); }
+  grain(FX,FY,FW,FH,.06);
+}
+
+/* --- walls and boards ---------------------------------------------------- */
+function certWall(x,y,w,h,seed){               /* framed certificates and approvals */
+  box(x,y,w,h,'#2f363d',2);
+  const R=seeded(seed), n=Math.floor(w/48);
+  for(let i=0;i<n;i++){
+    const fx=x+8+i*((w-12)/n);
+    rr(fx,y+7,((w-12)/n)-10,h-14,1,'#e8ecef');
+    r(fx+4,y+12,((w-12)/n)-18,2,'#8d98a6');
+    r(fx+4,y+18,((w-12)/n)-22,1.4,'#b9c2cb');
+    rr(fx+5,y+h-24,9,9,4,[P.led,P.cyan,P.hazard][Math.floor(R()*3)]);
+  }
+}
+function diagramWall(x,y,w,h,kind,seed){       /* single line, P&ID or GA, pinned up */
+  box(x,y,w,h,'#f3f5f7',2);
+  const R=seeded(seed);
+  X.save(); X.beginPath(); X.rect(x+4,y+4,w-8,h-8); X.clip();
+  X.strokeStyle='#33404c'; X.lineWidth=1.1;
+  if(kind==='single'){                                          /* electrical */
+    const busY=y+16;
+    X.beginPath(); X.moveTo(x+10,busY); X.lineTo(x+w-10,busY); X.stroke();
+    for(let i=0;i<Math.floor((w-30)/34);i++){
+      const fx=x+18+i*34;
+      X.beginPath(); X.moveTo(fx,busY); X.lineTo(fx,y+h-12); X.stroke();
+      X.strokeRect(fx-5.5,busY+9,11,9);                         /* breaker */
+      if(i%2){ X.beginPath(); X.arc(fx,busY+32,5,0,Math.PI*2); X.stroke(); }  /* motor */
+      else { X.strokeRect(fx-6.5,busY+27,13,10); }
+      if(R()>.6) r(fx-4,y+h-22,8,5,P.hazard);
+    }
+  } else if(kind==='pid'){                                      /* process */
+    const ly=y+h*0.45;
+    X.beginPath(); X.moveTo(x+10,ly); X.lineTo(x+w-10,ly); X.stroke();
+    for(let i=0;i<Math.floor((w-40)/56);i++){
+      const fx=x+24+i*56;
+      X.strokeRect(fx-9.5,ly-22,19,18);                         /* vessel */
+      X.beginPath(); X.moveTo(fx,ly-4); X.lineTo(fx,ly); X.stroke();
+      X.beginPath(); X.moveTo(fx-6,ly+7); X.lineTo(fx,ly); X.lineTo(fx+6,ly+7);
+      X.closePath(); X.stroke();                                /* valve */
+      X.beginPath(); X.arc(fx+26,ly,6,0,Math.PI*2); X.stroke();  /* instrument bubble */
+      X.globalAlpha=.25; r(fx-8,ly-20,15,14,P.liquidC); X.globalAlpha=1;
+    }
+  } else {                                                      /* general arrangement */
+    X.strokeRect(x+16.5,y+12.5,w-56,h-30);
+    X.globalAlpha=.16; r(x+18,y+14,w-59,h-33,P.cyan); X.globalAlpha=1;
+    for(let i=0;i<4;i++){ const fy=y+20+i*((h-40)/4);
+      X.beginPath(); X.moveTo(x+20,fy); X.lineTo(x+w-46,fy); X.stroke(); }
+    X.strokeStyle='#8d98a6';
+    X.beginPath(); X.moveTo(x+16,y+h-9); X.lineTo(x+w-40,y+h-9); X.stroke();  /* dim line */
+    for(const dx of [x+16,x+w-40]){ X.beginPath(); X.moveTo(dx,y+h-13); X.lineTo(dx,y+h-5); X.stroke(); }
+  }
+  X.restore();
+  rr(x+w-34,y+h-26,28,20,1,'#dfe3e7'); r(x+w-31,y+h-21,22,2,'#8d98a6');  /* title block */
+  r(x+w-31,y+h-16,14,1.4,'#b9c2cb');
+}
+function noticeBoard(x,y,w,h,seed){            /* the board everyone walks past */
+  box(x,y,w,h,'#7d6a4f',2); rr(x+4,y+4,w-8,h-8,1,'#d8c9a8');
+  const R=seeded(seed), cols=['#e8ecef','#f7e6a6','#dfe3e7','#cfe3d7'];
+  for(let i=0;i<7;i++){
+    const nw=22+R()*16, nh=13+R()*8;
+    const nx=x+8+R()*(w-nw-16), ny=y+8+R()*(h-nh-16);
+    rr(nx,ny,nw,nh,1,cols[Math.floor(R()*cols.length)]);
+    r(nx+3,ny+3,nw-8,1.6,'#8d98a6'); r(nx+3,ny+7,nw-12,1.2,'#b9c2cb');
+    rr(nx+nw/2-2,ny-2,4,4,2,P.ledR);
+  }
+  r(x+w-46,y+h-26,16,20,P.hazard);                             /* the one nobody reads */
+}
+function screenOnWall(x,y,w,h,kind){
+  box(x,y,w,h,'#1b2027',2);
+  rr(x+3,y+3,w-6,h-6,1,P.screenDk);
+  if(kind==='trend'){
+    X.strokeStyle=P.led; X.lineWidth=1.3;
+    for(let s=0;s<2;s++){
+      X.beginPath();
+      for(let i=0;i<=w-14;i+=6){
+        const yy=y+h/2+(s?8:-8)+Math.sin((i+s*30)/13)*5;
+        i?X.lineTo(x+7+i,yy):X.moveTo(x+7+i,yy);
+      }
+      X.strokeStyle=s?P.cyan:P.led; X.stroke();
+    }
+  } else if(kind==='plan'){
+    r(x+8,y+8,w-16,3,'#4d5865');
+    for(let i=0;i<4;i++){ const by=y+16+i*((h-26)/4);
+      r(x+10+i*9,by,(w-40)*(.5+i*.11),5,[P.cyan,P.led,P.hazard,P.ledR][i]); }
+  } else {
+    r(x+9,y+9,w-18,2.2,'#4d5865'); r(x+9,y+15,w*0.5,2.2,'#39414b');
+    r(x+9,y+21,w*0.7,2.2,'#39414b');
+    rr(x+w-30,y+h-16,20,8,1,P.cyan);
+  }
+}
+
+/* --- office things ------------------------------------------------------- */
+function planChest(x,y,w,h,n){                 /* wide shallow drawers, A0 drawings */
+  box(x,y,w,h,'#4d5560',2); vgrad(x,y,w,5,'#68717e','#4d5560');
+  for(let i=0;i<(n||5);i++){
+    const dy=y+4+i*((h-8)/(n||5));
+    rr(x+4,dy,w-8,((h-8)/(n||5))-3,1,i%2?'#59616c':'#515965');
+    r(x+w/2-9,dy+((h-8)/(n||5)-3)/2-1.2,18,2.4,P.chrome);
+  }
+  rr(x+10,y-9,w-40,9,1,'#e8ecef');                             /* a roll left on top */
+  r(x+14,y-6,w-52,2,'#b9c2cb');
+}
+function drawingBoard(cx,cy,ang){              /* still one in every design office */
+  tilted(cx,cy,116,80,ang||0,(x,y,w,h)=>{
+    softShadow(x,y,w,h);
+    rr(x,y,w,h,2,'#5f6873'); rr(x+3,y+3,w-6,h-6,1,'#e8eaec');
+    X.strokeStyle='#33404c'; X.lineWidth=1.1;
+    X.strokeRect(x+13.5,y+11.5,w-42,h-30);                       /* a drawing on it */
+    X.globalAlpha=.14; r(x+15,y+13,w-45,h-33,P.cyan); X.globalAlpha=1;
+    X.strokeStyle='#9aa6b2'; X.lineWidth=1;
+    for(let i=1;i<4;i++){ X.beginPath(); X.moveTo(x+16,y+11+i*((h-30)/4)); X.lineTo(x+w-30,y+11+i*((h-30)/4)); X.stroke(); }
+    rr(x+w-28,y+h-24,22,16,1,'#dfe3e7'); r(x+w-25,y+h-19,16,1.8,'#8d98a6');
+    r(x+3,y+h-18,w-6,4.5,'#8d98a6');                             /* parallel rule */
+    r(x+3,y+h-15,w-6,1.6,'#c9cfd6');
+    rr(x+w-58,y+h-13,26,4,2,P.hazard);                           /* pencil */
+  });
+}
+function shelfUnit(x,y,w,h,seed){              /* samples, boxes, binders */
+  box(x,y,w,h,'#5f6873',2);
+  const R=seeded(seed);
+  for(let i=0;i<3;i++){
+    const sy=y+5+i*((h-8)/3);
+    r(x+3,sy+((h-8)/3)-5,w-6,2.4,'#7b8492');
+    let bx=x+6;
+    while(bx<x+w-14){
+      const bw=7+R()*9;
+      rr(bx,sy+2,bw,((h-8)/3)-9,1,['#3f6fa8','#a8443a','#c9a227','#4f6b52','#dfe3e7'][Math.floor(R()*5)]);
+      bx+=bw+2.5;
+    }
+  }
+}
+function bootRack(x,y,w,h){
+  box(x,y,w,h,'#4d5560',2);
+  for(let i=0;i<Math.floor(w/26);i++){
+    rr(x+6+i*26,y+6,17,12,2,'#20242a'); rr(x+6+i*26,y+h-20,17,14,2,P.hiviz);
+  }
+}
+function vending(x,y,w,h){
+  box(x,y,w,h,'#2f363d',2);
+  rr(x+4,y+4,w-8,h-22,2,'#101418');
+  const R=seeded(11);
+  for(let i=0;i<4;i++) for(let k=0;k<4;k++)
+    rr(x+9+k*((w-22)/4),y+9+i*((h-36)/4),((w-22)/4)-4,((h-36)/4)-4,1,
+       ['#a8443a','#3f6fa8','#c9a227','#4f6b52'][Math.floor(R()*4)]);
+  rr(x+8,y+h-15,w-16,9,1,P.slateL); rr(x+w-24,y+h-13,14,5,1,P.led);
+}
+function hardHats(cx,cy,n,cols){
+  for(let i=0;i<(n||3);i++){
+    const hx=cx+i*24;
+    X.save(); X.globalAlpha=.22; X.fillStyle='#000';
+    X.beginPath(); X.ellipse(hx,cy+7,11,4.5,0,0,Math.PI*2); X.fill(); X.restore();
+    const col=(cols&&cols[i])||[P.hazard,'#dfe3e7',P.drumBlue][i%3];
+    X.fillStyle=col; X.beginPath(); X.ellipse(hx,cy,11,8.5,0,0,Math.PI*2); X.fill();
+    X.globalAlpha=.25; X.fillStyle='#000';
+    X.beginPath(); X.ellipse(hx,cy+2.5,11,7,0,0,Math.PI*2); X.fill(); X.globalAlpha=1;
+    X.fillStyle=col; X.beginPath(); X.ellipse(hx,cy-1,7.5,5.5,0,0,Math.PI*2); X.fill();
+    X.globalAlpha=.4; X.fillStyle='#fff';
+    X.beginPath(); X.ellipse(hx-2.5,cy-2.5,3.4,2.2,0,0,Math.PI*2); X.fill(); X.globalAlpha=1;
+  }
+}
+
+/* --- shop and bay ------------------------------------------------------- */
+function benchVice(x,y,w,h){                   /* steel bench, vice, tool board */
+  box(x,y,w,h,'#5f6873',3);
+  rr(x+4,y+4,w-8,h-15,2,'#9aa3ac'); vgrad(x+4,y+4,w-8,6,'#b4bcc4','#9aa3ac');
+  X.globalAlpha=.25;
+  const R=seeded(19);
+  for(let i=0;i<40;i++) r(x+8+R()*(w-18),y+8+R()*(h-26),3,1.4,'#5c636b');
+  X.globalAlpha=1;
+  r(x+4,y+h-11,w-8,4,'#4d5560');
+  rr(x+14,y-12,30,18,2,'#3b444f');                               /* vice body */
+  rr(x+18,y-8,20,9,1,P.galv); r(x+27,y-16,4,8,P.chrome);
+  rr(x+w-96,y-14,88,16,1,'#4d5560');                             /* tool board */
+  for(let i=0;i<7;i++) rr(x+w-90+i*12,y-11,5,20,1,[P.chrome,P.galv,'#2b323c'][i%3]);
+  rr(x+w-38,y+h-26,26,15,2,P.hazard); r(x+w-34,y+h-21,18,2,'#8a6a16');
+}
+function toolChest(x,y,w,h){
+  box(x,y,w,h,'#a8443a',2); vgrad(x,y,w,5,'#c2564a','#a8443a');
+  for(let i=0;i<6;i++){ const dy=y+5+i*((h-8)/6);
+    rr(x+4,dy,w-8,((h-8)/6)-3,1,'#96382f'); r(x+w/2-8,dy+2,16,2,P.chrome); }
+  rr(x+2,y+h-4,w-4,4,1,'#20242a');
+}
+function cableDrum(cx,cy,rad,col){
+  X.save(); X.globalAlpha=.24; X.fillStyle='#000';
+  X.beginPath(); X.ellipse(cx,cy+rad*0.55,rad,rad*0.3,0,0,Math.PI*2); X.fill(); X.restore();
+  X.fillStyle='#7d6a4f'; X.beginPath(); X.arc(cx,cy,rad,0,Math.PI*2); X.fill();
+  X.fillStyle='#8f7b5c'; X.beginPath(); X.arc(cx,cy,rad-3,0,Math.PI*2); X.fill();
+  X.strokeStyle=col||'#20242a'; X.lineWidth=3.4;
+  for(let i=rad-7;i>rad*0.3;i-=4){ X.beginPath(); X.arc(cx,cy,i,0,Math.PI*2); X.stroke(); }
+  X.fillStyle='#5f5342'; X.beginPath(); X.arc(cx,cy,rad*0.26,0,Math.PI*2); X.fill();
+  collisions.push([cx-rad,cy-rad,rad*2,rad*2]);
+}
+function pallet(x,y,w,h,load){
+  softShadow(x,y,w,h); rr(x,y,w,h,1,'#a3865c');
+  X.globalAlpha=.5; for(let i=0;i<5;i++) r(x+3+i*((w-6)/5),y+2,((w-6)/5)-4,h-4,'#8a6f4a');
+  X.globalAlpha=1;
+  if(load) rr(x+5,y-12,w-10,h-6,2,load);
+  collisions.push([x,y,w,h]);
+}
+function drum(cx,cy,rad,col){
+  X.save(); X.globalAlpha=.22; X.fillStyle='#000';
+  X.beginPath(); X.ellipse(cx,cy+rad*0.5,rad,rad*0.32,0,0,Math.PI*2); X.fill(); X.restore();
+  X.fillStyle=col; X.beginPath(); X.arc(cx,cy,rad,0,Math.PI*2); X.fill();
+  X.globalAlpha=.35; X.fillStyle='#fff';
+  X.beginPath(); X.arc(cx-rad*0.3,cy-rad*0.3,rad*0.45,0,Math.PI*2); X.fill(); X.globalAlpha=1;
+  X.strokeStyle='#ffffff'; X.globalAlpha=.4; X.lineWidth=1.6;
+  X.beginPath(); X.arc(cx,cy,rad*0.66,0,Math.PI*2); X.stroke(); X.globalAlpha=1;
+  rr(cx-4,cy-rad*0.72,8,7,2,P.galvHi);
+  collisions.push([cx-rad,cy-rad,rad*2,rad*2]);
+}
+function ibcTote(x,y,w,h,liquid){              /* caged tote, sat in a bund */
+  softShadow(x,y,w,h);
+  rr(x-6,y-5,w+12,h+10,2,'#3f4650');                           /* bund */
+  X.globalAlpha=.4; rr(x-3,y-2,w+6,h+4,2,'#2b323c'); X.globalAlpha=1;
+  rr(x,y,w,h,2,'#c9cfd6');
+  X.globalAlpha=.55; rr(x+4,y+4,w-8,h-8,1,liquid||P.liquidA); X.globalAlpha=1;
+  X.strokeStyle=P.galvDk; X.lineWidth=1.6;
+  for(let i=1;i<4;i++){ X.beginPath(); X.moveTo(x+i*(w/4),y); X.lineTo(x+i*(w/4),y+h); X.stroke(); }
+  for(let i=1;i<3;i++){ X.beginPath(); X.moveTo(x,y+i*(h/3)); X.lineTo(x+w,y+i*(h/3)); X.stroke(); }
+  rr(x+w-16,y+h-9,13,7,1,P.hazard);                            /* label */
+  collisions.push([x-6,y-5,w+12,h+10]);
+}
+function gasBottles(x,y,n,col){
+  box(x,y,26+ (n-1)*20,34,'#4d5560',2);
+  for(let i=0;i<n;i++){
+    const cx=x+15+i*20;
+    X.save(); X.globalAlpha=.2; X.fillStyle='#000';
+    X.beginPath(); X.ellipse(cx,y+22,9,4,0,0,Math.PI*2); X.fill(); X.restore();
+    X.fillStyle=col||'#3f6fa8'; X.beginPath(); X.arc(cx,y+17,9,0,Math.PI*2); X.fill();
+    X.globalAlpha=.4; X.fillStyle='#fff'; X.beginPath(); X.arc(cx-3,y+14,4,0,Math.PI*2); X.fill();
+    X.globalAlpha=1; X.fillStyle=P.chrome; X.beginPath(); X.arc(cx,y+17,3.4,0,Math.PI*2); X.fill();
+  }
+  r(x+3,y+3,26+(n-1)*20-6,3,P.hazard);
+}
+function pipeRack(x,y,w,h){
+  box(x,y,w,h,'#5a6068',2);
+  const cols=[P.galv,P.stain,P.copper,P.galvDk];
+  for(let row=0;row<3;row++){
+    const ry=y+7+row*((h-10)/3);
+    for(let i=0;i<Math.floor(w/17);i++){
+      const cx=x+11+i*17;
+      X.fillStyle=cols[(row+i)%cols.length];
+      X.beginPath(); X.arc(cx,ry+5,7,0,Math.PI*2); X.fill();
+      X.fillStyle='#20242a'; X.beginPath(); X.arc(cx,ry+5,3.2,0,Math.PI*2); X.fill();
+      X.globalAlpha=.3; X.fillStyle='#fff';
+      X.beginPath(); X.arc(cx-2,ry+3,3,0,Math.PI*2); X.fill(); X.globalAlpha=1;
+    }
+  }
+}
+function jibCrane(cx,cy,reach){
+  const R=reach||120;
+  X.strokeStyle='#4d5560'; X.lineWidth=9; X.lineCap='round';
+  X.beginPath(); X.moveTo(cx,cy); X.lineTo(cx+R,cy-18); X.stroke();
+  X.strokeStyle=P.hazard; X.lineWidth=3;
+  X.beginPath(); X.moveTo(cx+8,cy-1); X.lineTo(cx+R-6,cy-17); X.stroke();
+  X.fillStyle='#3b444f'; X.beginPath(); X.arc(cx,cy,15,0,Math.PI*2); X.fill();
+  X.fillStyle=P.hazard; X.beginPath(); X.arc(cx,cy,7,0,Math.PI*2); X.fill();
+  X.strokeStyle='#8d98a6'; X.lineWidth=1.6;
+  X.beginPath(); X.moveTo(cx+R-14,cy-16); X.lineTo(cx+R-14,cy+16); X.stroke();
+  rr(cx+R-21,cy+14,14,11,2,P.galvDk);                          /* hook block */
+  collisions.push([cx-15,cy-15,30,30]);
+}
+function hazardBarrier(x,y,w,vertical){
+  if(vertical){
+    for(let i=0;i<Math.floor(w/18);i++){
+      X.fillStyle=i%2?P.hazard:'#20242a'; r(x,y+i*18,6,18,X.fillStyle);
+    }
+    collisions.push([x-2,y,10,w]);
+  } else {
+    for(let i=0;i<Math.floor(w/18);i++){
+      X.fillStyle=i%2?P.hazard:'#20242a'; r(x+i*18,y,18,6,X.fillStyle);
+    }
+    collisions.push([x,y-2,w,10]);
+  }
+}
+
+/* --- electrical --------------------------------------------------------- */
+function mccRow(x,y,w,h,n){                    /* switchgear cubicles in a row */
+  box(x,y,w,h,'#586270',3); vgrad(x,y,w,8,'#6e7987','#586270');
+  const c=n||4;
+  for(let i=0;i<c;i++){
+    const cw=(w-8)/c, cx2=x+4+i*cw;
+    rr(cx2,y+5,cw-5,h-12,2,'#66717f');
+    X.globalAlpha=.35; r(cx2+2,y+7,cw-9,3,'#c9cfd6'); X.globalAlpha=1;
+    rr(cx2+4,y+11,cw-13,12,1,'#181c22');                        /* meter window */
+    r(cx2+7,y+15,cw-22,2,P.cyan);
+    for(let k=0;k<3;k++) rr(cx2+7+k*8,y+27,5,5,2,[P.led,P.hazard,P.ledR][k]);
+    for(let v=0;v<5;v++) r(cx2+6,y+40+v*4,cw-16,2,'#4b545f');   /* louvres */
+    rr(cx2+cw-12,y+h-30,4,16,2,P.chrome);                       /* door handle */
+    rr(cx2+5,y+h-14,cw-15,7,1,'#dfe3e7');                       /* label strip */
+  }
+  r(x+3,y+h-5,w-6,4,'#3b444f');
+}
+function panelOnStand(x,y,w,h,open){
+  box(x,y,w,h,'#7d8794',2); vgrad(x,y,w,7,'#96a0ad','#7d8794');
+  if(open){
+    rr(x+4,y+5,w-8,h-14,1,'#2b323c');                            /* backplate, in shadow */
+    for(let i=0;i<3;i++) r(x+9,y+13+i*((h-40)/3),w-20,3.2,'#4b545f');  /* DIN rails */
+    for(let i=0;i<4;i++){ rr(x+12+i*((w-26)/4),y+10,((w-26)/4)-6,11,1,'#d8dde2');
+      rr(x+14+i*((w-26)/4),y+12,5,4,1,P.hazard); }               /* breakers on the top rail */
+    for(let i=0;i<5;i++) rr(x+12+i*((w-24)/5),y+h-30,((w-24)/5)-5,8,1,'#c9cfd6');  /* terminals */
+    X.strokeStyle=P.hazard; X.lineWidth=2.4; X.lineCap='round';   /* wiring, looped */
+    for(let i=0;i<4;i++){
+      const wx=x+16+i*((w-26)/4);
+      X.strokeStyle=[P.hazard,'#3f6fa8','#20242a','#a8443a'][i];
+      X.beginPath(); X.moveTo(wx,y+22); X.quadraticCurveTo(wx+9,y+h/2,wx+2,y+h-32); X.stroke();
+    }
+    rr(x+w-2,y+3,11,h-6,1,'#96a0ad');                            /* door, swung open */
+    rr(x+w+1,y+9,5,h-18,1,'#7d8794');
+  } else {
+    for(let k=0;k<3;k++) rr(x+10+k*9,y+12,5,5,2,[P.led,P.hazard,P.ledR][k]);
+    rr(x+8,y+25,w-16,12,1,'#181c22'); r(x+11,y+29,w-24,2,P.cyan);
+    for(let v=0;v<4;v++) r(x+9,y+43+v*4,w-18,2,'#5f6873');
+    rr(x+w-13,y+h-28,4,15,2,P.chrome);
+  }
+  r(x+2,y+h-7,w-4,7,'#4d5560');
+  r(x+6,y+h,w-12,5,'#39414b');                                   /* stand */
+}
+function loadBank(x,y,w,h){
+  box(x,y,w,h,'#4f5763',2); vgrad(x,y,w,6,'#646d7a','#4f5763');
+  for(let i=0;i<Math.floor((w-14)/14);i++){
+    rr(x+8+i*14,y+8,9,h-30,1,'#2b323c');
+    X.globalAlpha=.55; r(x+10+i*14,y+11,5,h-36,P.rust); X.globalAlpha=1;
+  }
+  for(let i=0;i<2;i++){                                          /* cooling fans */
+    const fx=x+w/2-26+i*44, fy=y+h-15;
+    X.fillStyle='#2b323c'; X.beginPath(); X.arc(fx,fy,10,0,Math.PI*2); X.fill();
+    X.strokeStyle='#6f7a87'; X.lineWidth=1.3;
+    for(let k=0;k<4;k++){ const a=k*Math.PI/2+.4;
+      X.beginPath(); X.moveTo(fx,fy); X.lineTo(fx+Math.cos(a)*8,fy+Math.sin(a)*8); X.stroke(); }
+  }
+  r(x+4,y+h-4,w-8,3,P.hazard);
+}
+function motorTestBed(cx,cy){
+  const x=cx-84,y=cy-30;
+  box(x,y,168,60,'#525a64',2);                                   /* baseplate */
+  X.globalAlpha=.35; r(x+5,y+5,158,5,'#20242a'); X.globalAlpha=1;
+  for(let i=0;i<6;i++) rr(x+10+i*29,y+50,7,6,1,'#39414b');       /* holding-down bolts */
+  rr(x+12,y+13,62,34,7,'#3f6fa8'); vgrad(x+12,y+13,62,7,'#5285bd','#3f6fa8');
+  for(let i=0;i<8;i++) r(x+16+i*7,y+15,2.6,30,'#35608f');        /* fins */
+  rr(x+18,y+19,16,10,1,'#2b323c'); rr(x+20,y+21,5,4,1,P.led);    /* terminal box */
+  rr(x+72,y+22,14,16,3,'#6f7a87');                               /* coupling guard */
+  X.strokeStyle=P.hazard; X.lineWidth=1.6; X.strokeRect(x+72.5,y+22.5,13,15);
+  rr(x+88,y+15,48,30,4,P.galvDk); vgrad(x+88,y+15,48,6,P.galv,P.galvDk);
+  X.fillStyle=P.chrome; X.beginPath(); X.arc(x+112,y+30,10,0,Math.PI*2); X.fill();
+  X.fillStyle='#5c636b'; X.beginPath(); X.arc(x+112,y+30,4,0,Math.PI*2); X.fill();
+  rr(x+142,y+18,20,22,2,'#2f363d'); rr(x+145,y+22,14,7,1,P.screenLit);
+  r(x+146,y+24,11,1.6,P.led);                                    /* tacho readout */
+}
+function testTrolley(x,y){
+  box(x,y,46,34,'#3b444f',2);
+  rr(x+5,y+4,36,16,2,'#dfe3e7'); rr(x+9,y+7,28,10,1,'#101418');
+  X.strokeStyle=P.led; X.lineWidth=1.2;
+  X.beginPath(); X.moveTo(x+11,y+13); X.lineTo(x+20,y+13); X.lineTo(x+24,y+9);
+  X.lineTo(x+29,y+15); X.lineTo(x+35,y+11); X.stroke();
+  rr(x+6,y+24,14,6,1,P.hazard); rr(x+24,y+24,16,6,1,'#a8443a');
+  X.strokeStyle='#20242a'; X.lineWidth=2.2;
+  X.beginPath(); X.arc(x+38,y+30,7,0,Math.PI*1.4); X.stroke();  /* coiled leads */
+}
+function terminalSamples(x,y,w,h){
+  box(x,y,w,h,'#5f6873',2);
+  const R=seeded(23);
+  for(let row=0;row<2;row++) for(let i=0;i<Math.floor((w-10)/11);i++){
+    rr(x+6+i*11,y+6+row*((h-8)/2),8,((h-8)/2)-6,1,
+       ['#dfe3e7','#3f6fa8','#c9a227','#4f6b52','#a8443a'][Math.floor(R()*5)]);
+  }
+}
+
+/* --- mechanical --------------------------------------------------------- */
+function pumpSkid(x,y,w,h,cut){
+  box(x,y,w,h,'#5a6068',2);                                     /* skid frame */
+  X.strokeStyle='#787f88'; X.lineWidth=2; X.strokeRect(x+3.5,y+3.5,w-7,h-7);
+  const mw=w*0.30, my=y+h*0.18, mh=h*0.64;
+  rr(x+7,my,mw,mh,5,'#3f6fa8'); vgrad(x+7,my,mw,6,'#5285bd','#3f6fa8');   /* motor */
+  for(let i=0;i<7;i++) r(x+11+i*(mw/7.6),my+2,2.2,mh-4,'#35608f');
+  rr(x+11,my+mh*0.3,14,10,1,'#2b323c'); rr(x+13,my+mh*0.3+2,4,4,1,P.led);
+  rr(x+7+mw+2,y+h/2-9,12,18,3,'#6f7a87');                       /* coupling guard */
+  X.strokeStyle=P.hazard; X.lineWidth=1.4; X.strokeRect(x+9.5+mw,y+h/2-8.5,11,17);
+  const cx=x+w*0.66, cy=y+h/2, rad=Math.min(h*0.34,26);
+  X.fillStyle=cut?P.stain:P.galv; X.beginPath(); X.arc(cx,cy,rad,0,Math.PI*2); X.fill();
+  X.globalAlpha=.35; X.fillStyle='#fff';
+  X.beginPath(); X.arc(cx-rad*0.3,cy-rad*0.3,rad*0.5,0,Math.PI*2); X.fill(); X.globalAlpha=1;
+  if(cut){
+    X.fillStyle='#8f99a4'; X.beginPath(); X.arc(cx,cy,rad*0.72,0,Math.PI*2); X.fill();
+    X.strokeStyle='#5c636b'; X.lineWidth=2.2;
+    for(let i=0;i<6;i++){ const a=i*Math.PI/3;
+      X.beginPath(); X.moveTo(cx+Math.cos(a)*4,cy+Math.sin(a)*4);
+      X.quadraticCurveTo(cx+Math.cos(a+.5)*rad*0.5,cy+Math.sin(a+.5)*rad*0.5,
+                         cx+Math.cos(a+.9)*rad*0.68,cy+Math.sin(a+.9)*rad*0.68); X.stroke(); }
+    X.fillStyle=P.chrome; X.beginPath(); X.arc(cx,cy,3.4,0,Math.PI*2); X.fill();
+  } else {
+    X.fillStyle=P.galvDk; X.beginPath(); X.arc(cx,cy,rad*0.36,0,Math.PI*2); X.fill();
+  }
+  r(cx+rad-2,cy-7,w*0.16,14,P.pipe);                            /* discharge and flange */
+  rr(x+w-16,cy-12,10,24,2,P.pipeDk);
+  for(let i=0;i<4;i++) r(x+w-14,cy-9+i*6,6,2,P.chrome);
+  r(cx-9,y+h-8,18,12,P.pipeDk);                                 /* suction, down through the frame */
+  rr(cx-13,y+h+2,26,9,2,P.pipe);
+}
+function heatExchanger(x,y,w,h){
+  box(x,y,w,h,P.stain,2); vgrad(x,y,w,6,P.stainHi,P.stain);
+  for(let i=0;i<Math.floor((w-16)/6);i++) r(x+9+i*6,y+7,3.4,h-16,'#9aa6ae');  /* plate pack */
+  rr(x+2,y+4,6,h-8,1,'#8d98a6'); rr(x+w-8,y+4,6,h-8,1,'#8d98a6');
+  for(let i=0;i<4;i++) r(x+3,y+9+i*((h-20)/4),3,3,P.chrome);    /* tie bars */
+  rr(x-9,y+10,11,9,2,P.pipeDk); rr(x+w-2,y+h-21,11,9,2,P.pipeDk);
+}
+function graniteTable(x,y,w,h){                /* inspection table, height gauge */
+  box(x,y,w,h,'#3b3f45',3); vgrad(x,y,w,6,'#4b5057','#3b3f45');
+  X.globalAlpha=.25;
+  const R=seeded(5);
+  for(let i=0;i<90;i++) r(x+4+R()*(w-8),y+4+R()*(h-8),2,1.6,'#c9cfd6');
+  X.globalAlpha=1;
+  rr(x+w-42,y+6,10,h-14,1,P.chrome);                            /* column */
+  rr(x+w-58,y+16,20,6,1,P.galvHi);                              /* arm */
+  rr(x+12,y+12,28,20,2,'#8d98a6'); rr(x+16,y+16,20,12,1,'#b4bcc4');  /* part */
+}
+function vibKit(x,y){
+  box(x,y,40,26,'#c9a227',2);
+  rr(x+4,y+4,22,12,1,'#20242a'); rr(x+6,y+6,18,8,1,P.screenLit);
+  X.strokeStyle=P.led; X.lineWidth=1.1;
+  X.beginPath();
+  for(let i=0;i<18;i+=2) i?X.lineTo(x+7+i,y+10+Math.sin(i)*3):X.moveTo(x+7,y+10);
+  X.stroke();
+  rr(x+30,y+5,7,16,2,P.chrome);                                 /* accelerometer */
+  X.strokeStyle='#20242a'; X.lineWidth=1.8;
+  X.beginPath(); X.arc(x+34,y+24,6,0,Math.PI); X.stroke();
+}
+function bearingShelf(x,y,w,h){
+  box(x,y,w,h,'#5f6873',2);
+  const R=seeded(31);
+  for(let row=0;row<2;row++) for(let i=0;i<Math.floor((w-8)/22);i++){
+    const cx=x+15+i*22, cy=y+9+row*((h-8)/2);
+    X.fillStyle=P.chrome; X.beginPath(); X.arc(cx,cy+4,9,0,Math.PI*2); X.fill();
+    X.fillStyle='#6f7a87'; X.beginPath(); X.arc(cx,cy+4,5.4,0,Math.PI*2); X.fill();
+    X.fillStyle=P.galvHi;
+    for(let b=0;b<7;b++){ const a=b*Math.PI*2/7+R();
+      X.beginPath(); X.arc(cx+Math.cos(a)*7.2,cy+4+Math.sin(a)*7.2,1.7,0,Math.PI*2); X.fill(); }
+  }
+}
+
+/* --- chemical ----------------------------------------------------------- */
+function fumeCupboard(x,y,w,h){
+  box(x,y,w,h,P.labWhite,2);
+  rr(x+5,y+6,w-10,h-24,1,'#cfd8d6');
+  X.globalAlpha=.55; rr(x+8,y+9,w-16,h-32,1,P.glassG); X.globalAlpha=1;  /* sash */
+  r(x+8,y+h-24,w-16,3,'#9aa6ae');
+  const R=seeded(13);
+  for(let i=0;i<5;i++){                                          /* glassware inside */
+    const gx=x+16+i*((w-30)/5);
+    X.fillStyle=P.glassG; X.globalAlpha=.85;
+    X.beginPath(); X.moveTo(gx,y+h-28); X.lineTo(gx+11,y+h-28); X.lineTo(gx+7,y+h-44);
+    X.lineTo(gx+4,y+h-44); X.closePath(); X.fill();
+    X.globalAlpha=1; r(gx+1,y+h-33,9,5,[P.liquidA,P.liquidB,P.liquidC][Math.floor(R()*3)]);
+  }
+  rr(x+w-34,y+h-16,26,9,1,P.slateL); rr(x+w-30,y+h-14,7,5,1,P.led);  /* airflow alarm */
+  r(x+6,y+2,w-12,4,P.hazard);
+}
+function labBench(x,y,w,h,seed){
+  box(x,y,w,h,P.labWhite,2); vgrad(x,y,w,6,'#f4f7f8',P.labWhite);
+  rr(x+4,y+5,w-8,h-16,1,P.labTop);                               /* epoxy resin top */
+  const R=seeded(seed||3);
+  let bx=x+10;
+  while(bx<x+w-24){
+    const kind=Math.floor(R()*4);
+    if(kind===0){                                                /* conical flask */
+      X.fillStyle=P.glassG; X.globalAlpha=.9;
+      X.beginPath(); X.moveTo(bx,y+h-20); X.lineTo(bx+13,y+h-20); X.lineTo(bx+9,y+h-38);
+      X.lineTo(bx+4,y+h-38); X.closePath(); X.fill(); X.globalAlpha=1;
+      r(bx+1,y+h-26,11,5,[P.liquidA,P.liquidB,P.liquidC][Math.floor(R()*3)]);
+      bx+=20;
+    } else if(kind===1){                                         /* beaker */
+      X.fillStyle=P.glassG; X.globalAlpha=.9; rr(bx,y+h-34,13,15,1,P.glassG); X.globalAlpha=1;
+      r(bx+1,y+h-25,11,5,P.liquidC); bx+=19;
+    } else if(kind===2){                                         /* meter */
+      rr(bx,y+h-36,22,18,2,'#dfe3e7'); rr(bx+3,y+h-33,16,8,1,'#101418');
+      rr(bx+5,y+h-31,5,4,1,P.led); bx+=28;
+    } else {                                                     /* sample bottles */
+      for(let i=0;i<3;i++){ rr(bx+i*8,y+h-30,6,11,1,'#e8ecef'); r(bx+i*8+1,y+h-25,4,5,P.liquidB); }
+      bx+=30;
+    }
+  }
+  r(x+6,y+h-11,w-12,3,'#c3ccca');
+  rr(x+w-18,y+8,12,10,1,P.chrome);                               /* tap and sink */
+  rr(x+w-22,y+20,20,14,2,'#b9c2cb');
+}
+function jarTester(x,y){
+  box(x,y,116,40,'#dfe3e7',2);
+  rr(x+4,y+24,108,12,1,'#b9c2cb');
+  for(let i=0;i<6;i++){
+    const jx=x+10+i*18;
+    X.fillStyle=P.glassG; X.globalAlpha=.9; rr(jx,y+6,13,22,1,P.glassG); X.globalAlpha=1;
+    r(jx+1,y+13,11,14,[P.liquidC,'#9fb9a8','#c7b48a'][i%3]);
+    r(jx+5,y+2,3,10,P.chrome);                                   /* paddle stirrer */
+  }
+  rr(x+4,y-8,108,8,1,'#8d98a6');
+}
+function reactorVessel(cx,cy,rad){
+  X.save(); X.globalAlpha=.24; X.fillStyle='#000';
+  X.beginPath(); X.ellipse(cx,cy+rad*0.6,rad,rad*0.32,0,0,Math.PI*2); X.fill(); X.restore();
+  X.fillStyle=P.stain; X.beginPath(); X.arc(cx,cy,rad,0,Math.PI*2); X.fill();
+  X.fillStyle=P.stainHi; X.globalAlpha=.5;
+  X.beginPath(); X.arc(cx-rad*0.25,cy-rad*0.25,rad*0.55,0,Math.PI*2); X.fill(); X.globalAlpha=1;
+  X.strokeStyle='#8d98a6'; X.lineWidth=2;
+  X.beginPath(); X.arc(cx,cy,rad*0.62,0,Math.PI*2); X.stroke();   /* manway ring */
+  X.fillStyle='#9aa6ae'; X.beginPath(); X.arc(cx,cy,rad*0.22,0,Math.PI*2); X.fill();
+  rr(cx-6,cy-rad-9,12,11,2,P.pipeDk);                             /* agitator drive */
+  r(cx+rad-4,cy-4,16,8,P.pipe); r(cx-rad-12,cy-4,16,8,P.pipe);
+  collisions.push([cx-rad,cy-rad,rad*2,rad*2]);
+}
+function dosingSkid(x,y,w,h){
+  box(x,y,w,h,'#5a6068',2);
+  X.strokeStyle='#787f88'; X.lineWidth=2; X.strokeRect(x+3.5,y+3.5,w-7,h-7);
+  for(let i=0;i<2;i++){                                          /* two dosing pumps */
+    const px=x+12+i*46;
+    rr(px,y+10,32,h-34,3,'#3f6fa8');
+    rr(px+7,y+14,18,10,1,'#20242a'); rr(px+9,y+16,5,4,1,P.led);
+    X.fillStyle=P.stain; X.beginPath(); X.arc(px+16,y+h-16,9,0,Math.PI*2); X.fill();
+  }
+  rr(x+w-42,y+8,32,h-16,2,P.glassG);                             /* calibration column */
+  X.globalAlpha=.6; r(x+w-38,y+22,24,h-32,P.liquidA); X.globalAlpha=1;
+  r(x+8,y+h-8,w-16,5,P.pipe);
+}
+function safetyStation(cx,cy){                 /* shower and eyewash, kept clear */
+  X.save(); X.globalAlpha=.18; X.fillStyle=P.led;
+  X.beginPath(); X.arc(cx,cy,34,0,Math.PI*2); X.fill(); X.restore();
+  X.strokeStyle=P.led; X.lineWidth=2; X.setLineDash([6,5]);
+  X.beginPath(); X.arc(cx,cy,34,0,Math.PI*2); X.stroke(); X.setLineDash([]);
+  X.fillStyle=P.galv; X.beginPath(); X.arc(cx,cy,15,0,Math.PI*2); X.fill();
+  X.fillStyle=P.galvHi; X.beginPath(); X.arc(cx,cy,9,0,Math.PI*2); X.fill();
+  for(let i=0;i<8;i++){ const a=i*Math.PI/4;
+    r(cx+Math.cos(a)*11-1,cy+Math.sin(a)*11-1,2,2,'#5c636b'); }
+  rr(cx+16,cy+6,18,13,2,P.led);                                   /* eyewash bowl */
+  rr(cx+20,cy+9,10,7,1,'#dfe3e7');
+  collisions.push([cx-15,cy-15,30,30]);
+}
+function spillKit(x,y){
+  box(x,y,34,26,P.hazard,2);
+  rr(x+4,y+4,26,10,1,'#8a6a16'); r(x+8,y+17,18,5,'#20242a');
+  rr(x+12,y-7,12,8,2,'#a8443a');
+}
+function sampleFridge(x,y,w,h){
+  box(x,y,w,h,'#dfe3e7',2); vgrad(x,y,w,6,'#eef1f3','#dfe3e7');
+  rr(x+4,y+5,w-8,h-24,1,'#c3ccca');
+  X.globalAlpha=.5; rr(x+7,y+8,w-14,h-32,1,P.glassG); X.globalAlpha=1;
+  for(let row=0;row<2;row++) for(let i=0;i<4;i++)
+    rr(x+11+i*((w-26)/4),y+12+row*14,7,10,1,'#e8ecef');
+  rr(x+w-18,y+h-16,12,9,1,'#101418'); rr(x+w-16,y+h-14,4,5,1,P.cyan);
+  r(x+6,y+h-7,w-12,4,P.slateL);
+}
+
 const ROOMS={
 lobby:{
   name:'Reception', wall:'#dfe3e7', wallHi:'#edf0f3', wallDk:'#c4cad1', skirt:'#2b323c',
-  material:'Terrazzo, a stone reception slab, and a wall of green tiles',
-  desc:'Terrazzo with dark chips, laid true and sealed. One stone slab for a desk with the wordmark behind it, a status board showing every service green except one, low benches instead of a sofa, and a bank of lockers for the people who cycle in.',
-  exits:'Right → Product<br/>Down → Kitchen',
+  material:'Terrazzo, a steel counter, and a finished panel behind glass',
+  desc:'Terrazzo laid true and sealed. A steel counter with the wordmark behind it, a wall of test certificates and type approvals, two cable drums waiting to go out on Thursday, and a finished control panel in a glass case for the people who come to be convinced.',
+  exits:'Right → Project Office<br/>Down → Canteen',
   doors:[{side:'right',at:240},{side:'bottom',at:400}],
   floor(){ terrazzoCool(31); },
   draw(){
-    statusBoard(430,26,300,52);
-    slatWall(96,26,300,52);
-    X.globalAlpha=.9; rr(150,44,190,18,3,'#20262e'); X.globalAlpha=1;  /* wordmark plate */
-    rr(162,50,22,7,1,P.cyan); rr(190,50,98,7,1,'#c7d2de');
-    tilted(400,150,210,62,0,(x,y,w,h)=>{                                 /* stone slab desk */
-      X.save(); X.globalAlpha=.24; X.fillStyle='#000000';
-      if(X.roundRect){X.beginPath();X.roundRect(x+3,y+h-2,w,9,5);X.fill();} X.restore();
-      rr(x,y,w,h,3,'#cbcfd4'); vgrad(x,y,w,9,'#e2e6ea','#cbcfd4');
-      X.globalAlpha=.25;
-      for(let i=0;i<60;i++) r(x+((i*37)%w),y+((i*23)%h),2,2,i%3?'#8d98a6':'#5c6b7a');
-      X.globalAlpha=1;
-      rr(x+w-58,y+14,40,24,2,'#1b2027'); rr(x+16,y+22,30,12,2,'#dfe3e7');
-    });
-    taskChair(400,112,P.slateM);
-    lowBench(560,300,150,P.felt);
-    lowBench(560,372,150,P.moss);
-    tilted(560,336,74,40,0,(x,y,w,h)=>{ rr(x,y,w,h,3,P.birch); vgrad(x,y,w,5,P.birchHi,P.birch);
-      rr(x+14,y+11,26,16,2,'#e8ecef'); rr(x+46,y+14,14,10,2,P.cyan); });
-    lockers(24,150,18,190,6);
-    [[118,352,46,26],[126,330,34,22],[122,310,40,20]].forEach(function(b,i){  /* hardware, delivered */
-      box(b[0],b[1],b[2],b[3], i===1?'#b7a184':'#c7b295', 2);
-      X.globalAlpha=.5; r(b[0]+b[2]/2-1,b[1],2,b[3],'#8d7a5f'); X.globalAlpha=1;
-      rr(b[0]+5,b[1]+5,14,6,1,'#e8ecef');
-    });
-    pot(120,150,1.2,'clay'); pot(700,140,1.15,'cream');
+    certWall(430,26,300,52,9);
+    screenOnWall(96,26,300,52,'plan');
+    box(300,132,200,54,'#c9cfd6',3); vgrad(300,132,200,8,'#dde1e5','#c9cfd6');
+    rr(316,146,34,14,2,'#1b2027'); rr(446,142,40,24,2,'#20242a');
+    rr(322,168,60,8,1,P.cyan);
+    taskChair(400,110,P.slateM);
+    rr(96,150,132,96,3,'#b8c0c8');                     /* glass display case */
+    X.globalAlpha=.32; rr(100,154,124,88,2,P.glass); X.globalAlpha=1;
+    panelOnStand(120,168,84,62,false);
+    lowBench(600,320,150,P.felt);
+    lowBench(600,392,150,P.moss);
+    cableDrum(130,368,30,'#20242a');
+    cableDrum(196,404,22,P.copper);
+    pallet(272,404,64,40,null);
+    pot(716,132,1.15,'cream'); pot(60,300,1.1,'clay');
     grain(FX,FY,FW,FH,.05);
   }},
-
-creative:{
-  name:'Engineering', wall:'#3f4954', wallHi:'#4d5865', wallDk:'#333c47', skirt:'#232a32',
-  material:'Grey-blue carpet tile, bench desks, acoustic slats, two focus booths',
-  desc:'Carpet tile on a strict grid because it gets lifted twice a year. Two bench desks of three, monitors on arms at the same height, a cable spine down the middle with floor boxes, acoustic slats along the back, and two glass booths for the calls nobody wants to take at their desk.',
-  exits:'Left → Product<br/>Down → War Room',
-  doors:[{side:'left',at:240},{side:'bottom',at:400}],
-  floor(){ gridCarpet(47,'#59636f','#616c79','#48515c'); },
-  draw(){
-    slatWall(96,26,240,52);
-    whiteboardTech(352,26,250,52,13);
-    ciScreen(618,26,110,52);
-    cableSpine(150,620,300);
-    benchDesk(330,180,290,3,true);
-    benchDesk(330,384,290,3,true,true);
-    [[232,224],[330,224],[428,224]].forEach(([cx,cy],i)=>taskChair(cx,cy,[P.slateM,P.felt,P.slateM][i]));
-    [[232,340],[330,340],[428,340]].forEach(([cx,cy],i)=>taskChair(cx,cy,[P.felt,P.slateM,P.felt][i]));
-    standDesk(600,180,true);
-    taskChair(600,232,P.slateM);
-    glassBooth(660,290,52,74,true);
-    glassBooth(660,376,52,74,false);
-    box(24,310,18,120,P.slateM,2);                                        /* keyboard shelf */
-    for(let i=0;i<4;i++) rr(27,318+i*29,12,20,1,[P.cyan,'#8fd18a','#f0c674','#e8948e'][i]);
-    pot(96,150,1.1,'clay'); pot(96,392,1.05,'cream');
-    grain(FX,FY,FW,FH,.05);
-  }},
-
 servicing:{
-  name:'Product', wall:'#dfe3e7', wallHi:'#edf0f3', wallDk:'#c4cad1', skirt:'#3b444f',
-  material:'Pale resin floor, sticky-note wall, two four-desk pods',
-  desc:'Poured resin, light, easy to roll a chair across. The roadmap is three swimlanes of sticky notes and the third lane has two notes in it. Two pods of four with acoustic dividers, a sofa nobody sits on facing a screen nobody turns on, and a whiteboard on wheels.',
-  exits:'Left → Reception<br/>Right → Engineering<br/>Down → Ops',
+  name:'Project Office', wall:'#dfe3e7', wallHi:'#edf0f3', wallDk:'#c4cad1', skirt:'#3b444f',
+  material:'Carpet tile, bench desks, and the single line diagram everyone argues over',
+  desc:'Where the job is run rather than drawn. Four desks, a plan chest with the current revision in the top drawer, cable schedules in binders, and a single line diagram on the wall with three amendments pencilled on it.',
+  exits:'Left → Reception<br/>Right → Design Office<br/>Down → Test Bay',
   doors:[{side:'left',at:240},{side:'right',at:240},{side:'bottom',at:400}],
+  floor(){ gridCarpet(47,'#9aa1a8','#a3aab1','#848c94'); },
+  draw(){
+    diagramWall(300,26,320,52,'single',3);
+    screenOnWall(80,26,190,52,'plan');
+    benchDesk(300,216,230,3,true);
+    taskChair(238,262,P.slateM); taskChair(360,262,P.felt);
+    benchDesk(300,352,230,3,true);
+    taskChair(238,306,P.moss); taskChair(360,306,P.slateM);
+    planChest(624,140,130,74,5);
+    shelfUnit(650,280,110,120,7);
+    cableSpine(190,420,284);
+    pot(96,150,1.2,'clay');
+    grain(FX,FY,FW,FH,.05);
+  }},
+creative:{
+  name:'Design Office', wall:'#3f4954', wallHi:'#4d5865', wallDk:'#333c47', skirt:'#232a32',
+  material:'Schematics floor to ceiling, two screens each, and a drawing board nobody will throw out',
+  desc:'Arun and Nell sit here. Schematics across the long wall, two screens on every desk, a drawer unit of terminal and gland samples by the door, and a drawing board in the corner that gets used about twice a year and will never be moved.',
+  exits:'Left → Project Office<br/>Down → Briefing Room',
+  doors:[{side:'left',at:240},{side:'bottom',at:400}],
   floor(){ epoxyFloor(59,'#c6cbd1','#dadfe4'); },
   draw(){
-    stickyWall(110,26,360,52,3);
-    screenWall(500,26,190,52);
-    [[200,150],[600,150]].forEach(([cx,cy])=>{                            /* four-desk pods */
-      benchDesk(cx,cy,176,2,false);
-      rr(cx-86,cy-34,172,7,2,P.felt);                                     /* acoustic divider */
-      taskChair(cx-44,cy+50,P.slateM); taskChair(cx+44,cy+50,P.felt);
-    });
-    tilted(180,340,170,50,0,(x,y,w,h)=>{ rr(x,y,w,h,10,P.felt);
-      X.globalAlpha=.24; rr(x+7,y+5,w-14,10,5,'#ffffff'); X.globalAlpha=1; });
-    tilted(180,406,90,38,0,(x,y,w,h)=>{ rr(x,y,w,h,3,P.birch);
-      vgrad(x,y,w,5,P.birchHi,P.birch); rr(x+18,y+11,34,16,2,'#e8ecef'); });
-    box(596,322,120,10,'#e9ecef',2);                                      /* board on castors */
-    r(600,332,4,26,P.anod); r(708,332,4,26,P.anod);
-    X.strokeStyle='#2f3a46'; X.lineWidth=1.1;
-    X.strokeRect(608.5,325.5,26,5); X.strokeRect(648.5,325.5,26,5);
-    X.beginPath(); X.moveTo(636,328); X.lineTo(646,328); X.stroke();
-    box(456,288,52,40,P.slateM,3);                                         /* printer, jammed */
-    rr(462,282,40,8,2,'#e8ecef'); rr(464,296,36,18,2,'#1b2027');
-    rr(468,300,5,5,1,P.ledA);
-    rr(300,410,54,30,3,'#3f4954');                                         /* recycling, overflowing */
-    for(let i=0;i<5;i++) rr(304+i*10,402+(i%2)*4,8,10,1,'#d9d2c2');
-    lowBench(600,408,120,P.felt);
-    tilted(96,300,74,40,0,function(x,y,w,h){ rr(x,y,w,h,3,P.birch);
-      vgrad(x,y,w,5,P.birchHi,P.birch); rr(x+16,y+12,42,16,2,'#e8ecef'); });
-    pot(700,400,1.15,'clay'); pot(96,150,1.05,'cream');
+    diagramWall(96,26,330,52,'single',5);
+    screenOnWall(470,26,260,52,'trend');
+    benchDesk(320,214,250,3,true);
+    taskChair(250,258,P.slateM); taskChair(390,258,P.felt);
+    benchDesk(320,346,250,3,true);
+    taskChair(250,302,P.moss); taskChair(390,302,P.slateM);
+    terminalSamples(52,300,58,104);
+    drawingBoard(658,306,-0.1);
+    toolChest(700,150,54,84);
+    cableSpine(210,430,280);
+    pot(96,400,1.1,'cream');
     grain(FX,FY,FW,FH,.05);
   }},
-
 studio:{
-  name:'Ops', wall:'#232a32', wallHi:'#2f3740', wallDk:'#1a2027', skirt:'#12161c',
-  material:'Raised access floor, dashboard wall, two racks',
-  desc:'Raised access floor on a 600 grid with one panel still lifted from Tuesday. A wall of graphs, two desks turned to face it rather than each other, and the racks in the corner with their lights going. The darkest room in the building, on purpose — you can read a graph in here.',
-  exits:'Left → Kitchen<br/>Up → Product<br/>Right → War Room',
+  name:'Test Bay', wall:'#232a32', wallHi:'#2f3740', wallDk:'#1a2027', skirt:'#12161c',
+  material:'Epoxy with walkway lines, a row of cubicles, and a motor on the bed',
+  desc:'Bea runs this. A row of switchgear cubicles down the long wall, one panel open on a stand with its door swung out, a motor coupled to the test bed, a load bank, and a hazard barrier round everything that is energised. The walkway lines are painted on and they are not decorative.',
+  exits:'Left → Canteen<br/>Up → Project Office<br/>Right → Briefing Room',
   doors:[{side:'left',at:240},{side:'top',at:400},{side:'right',at:240}],
-  floor(){ accessFloor(71); },
+  floor(){ bayFloor(71); },
   draw(){
-    dashWall(126,26,244,52,17); dashWall(430,26,244,52,23);
-    rr(96,244,60,60,2,'#1b2027');                                          /* the lifted panel */
-    X.strokeStyle=P.ledA; X.lineWidth=1.4; X.strokeRect(96.5,244.5,59,59);
-    X.globalAlpha=.5; for(let i=0;i<5;i++){ X.strokeStyle=[P.cyan,P.led,P.ledA][i%3];
-      X.lineWidth=1.6; X.beginPath(); X.moveTo(104,252+i*11); X.bezierCurveTo(122,248+i*11,130,268+i*11,148,258+i*11); X.stroke(); }
-    X.globalAlpha=1;
-    benchDesk(340,300,260,3,true);
-    [[254,356],[340,356],[426,356]].forEach(([cx,cy])=>taskChair(cx,cy,P.slateM));
-    rack(636,300,52,152,5); rack(700,300,52,152,9);
-    X.globalAlpha=.5; r(636,454,116,4,'#12161c'); X.globalAlpha=1;
-    box(520,392,80,58,'#2b323c',3);                                        /* spares and a UPS */
-    rr(526,398,30,20,2,P.slateL); rr(562,398,30,20,2,P.slateL);
-    rr(526,422,66,20,2,'#1b2027'); rr(530,428,8,8,1,P.led);
-    tilted(160,392,104,44,0,(x,y,w,h)=>{ rr(x,y,w,h,3,P.slateM);
-      vgrad(x,y,w,5,P.slateL,P.slateM); rr(x+16,y+12,30,20,2,P.slateL);
-      rr(x+56,y+16,24,14,2,'#1b2027'); });
-    taskChair(160,440,P.felt);
-    pendant(300,86,'#cfe3ff',P.slateD); pendant(500,86,'#cfe3ff',P.slateD);
+    pendant(240,96,'#e8eef5',P.slateD); pendant(560,96,'#e8eef5',P.slateD);
+    mccRow(96,40,290,86,4);
+    panelOnStand(470,44,132,92,true);
+    hazardBarrier(452,36,120,false);
+    motorTestBed(280,286);
+    loadBank(600,250,132,86);
+    testTrolley(556,376);
+    cableDrum(120,376,32,'#20242a');
+    benchVice(206,382,160,44);
+    hardHats(226,376,2,[P.hazard,'#dfe3e7']);
+    gasBottles(664,384,2,'#4f6b52');
+    pallet(452,392,66,42,P.galv);
+    screenOnWall(640,40,104,58,'trend');
     grain(FX,FY,FW,FH,.06);
   }},
-
 breakroom:{
-  name:'Kitchen', wall:'#dfe3e7', wallHi:'#edf0f3', wallDk:'#c4cad1', skirt:'#3b444f',
-  material:'Pale tile, a counter, an island, and the build on the wall',
-  desc:'Pale tile in a small format, a counter with the machine everybody has an opinion about, and an island with six stools. The build screen is on the wall by the kettle, which was deliberate — you cannot make a coffee here without finding out whether main is red.',
-  exits:'Up → Reception<br/>Right → Ops',
+  name:'Canteen', wall:'#dfe3e7', wallHi:'#edf0f3', wallDk:'#c4cad1', skirt:'#3b444f',
+  material:'Tile, a long table, and a notice board with one thing on it that matters',
+  desc:'Colin makes the tea in here. A counter with the kettle and a machine nobody has read the instructions for, one long table, a boot rack by the door, and a notice board carrying four out-of-date posters and one toolbox talk from Tuesday.',
+  exits:'Up → Reception<br/>Right → Test Bay',
   doors:[{side:'top',at:400},{side:'right',at:240}],
   floor(){ tileFloor(83,'#d3d7db','#c7ccd1','#9aa1a8',60); },
   draw(){
-    counterRun(96,26,290,52);
-    ciScreen(470,26,150,52);
-    fridge(24,148,56,168);
-    island(330,300,220,86);
-    [250,330,410].forEach((sx,i)=>stool(sx,242,[P.felt,P.cyan,P.moss][i]));
-    [250,330,410].forEach((sx,i)=>stool(sx,364,[P.moss,P.felt,P.cyan][i]));
-    pingPong(620,392);
-    rr(716,182,42,64,4,P.slateM);                                          /* water cooler */
-    rr(722,168,30,20,3,'#bcd4dc');
-    rr(724,228,26,8,2,P.slateL);
-    pot(700,140,1.15,'clay');
+    counterRun(96,30,250,46);
+    noticeBoard(470,26,250,52,5);
+    island(360,300,200,88);
+    stool(280,264,P.felt); stool(360,264,P.moss); stool(440,264,P.slateL);
+    stool(280,340,P.slateL); stool(360,340,P.felt); stool(440,340,P.moss);
+    bootRack(96,392,132,36);
+    vending(656,104,66,96);
+    sampleFridge(660,300,74,96);
+    pot(600,404,1.1,'clay');
     grain(FX,FY,FW,FH,.05);
   }},
-
 meeting:{
-  name:'War Room', wall:'#c4cad1', wallHi:'#d6dbe0', wallDk:'#adb4bc', skirt:'#3b444f',
-  material:'Grey carpet tile, one oval table, a screen and a timeline',
-  desc:'Grey carpet tile, quiet underfoot. One oval table with eight chairs evenly spaced, a screen at one end and a whiteboard at the other still carrying the timeline from last month — 11:42 flag off, 11:44 recovered — which nobody has wiped because it is the best thing anyone has drawn in here.',
-  exits:'Left → Ops<br/>Up → Engineering',
+  name:'Briefing Room', wall:'#c4cad1', wallHi:'#d6dbe0', wallDk:'#adb4bc', skirt:'#3b444f',
+  material:'One table, the programme on the wall, and a screen for the client',
+  desc:'Where Helen sits down with you and where the ninety seconds runs out. An oval table, the programme pinned up with the witness date circled, a screen, and three hard hats left in the middle from this morning.',
+  exits:'Left → Test Bay<br/>Up → Design Office',
   doors:[{side:'left',at:240},{side:'top',at:400}],
   floor(){ gridCarpet(97,'#9aa1a8','#a3aab1','#848c94'); },
   draw(){
-    screenWall(430,26,260,52);
-    box(104,26,280,52,'#f3f5f7',2);                                        /* the incident timeline */
-    X.strokeStyle='#2f3a46'; X.lineWidth=1.4;
-    X.beginPath(); X.moveTo(118,60); X.lineTo(370,60); X.stroke();
-    [[142,P.ledR],[196,P.ledR],[248,P.ledA],[302,P.led],[352,P.led]].forEach(([mx,col],i)=>{
-      X.fillStyle=col; X.beginPath(); X.arc(mx,60,3.4,0,Math.PI*2); X.fill();
-      rr(mx-13,40+(i%2)*9,26,6,1,'#dfe3e7');
-      X.strokeStyle='#7d8791'; X.lineWidth=.8;
-      X.beginPath(); X.moveTo(mx,46+(i%2)*9); X.lineTo(mx,57); X.stroke();
-    });
-    box(760,150,20,150,P.glass,2);
-    X.globalAlpha=.35; r(762,154,16,142,'#dff0f4'); X.globalAlpha=1;
-    ovalTable(400,300,280,120);
-    [300,400,500].forEach((cx,i)=>taskChair(cx,214,[P.slateM,P.felt,P.slateM][i]));
-    [300,400,500].forEach((cx,i)=>taskChair(cx,392,[P.felt,P.slateM,P.felt][i]));
-    taskChair(232,300,P.slateM); taskChair(568,300,P.felt);
-    rr(96,378,46,56,3,P.slateM);                                           /* monitor on a trolley */
-    rr(100,366,38,22,2,'#1b2027');
-    pot(700,400,1.1,'clay');
+    diagramWall(96,26,246,56,'single',11);
+    screenOnWall(470,26,260,56,'plan');
     pendant(330,104,'#e8eef5',P.slateD); pendant(470,104,'#e8eef5',P.slateD);
+    ovalTable(400,300,300,152);
+    taskChair(296,214,P.slateM); taskChair(348,206,P.felt); taskChair(500,214,P.slateM);
+    taskChair(240,300,P.moss); taskChair(560,300,P.moss);
+    taskChair(300,388,P.slateM); taskChair(400,394,P.felt); taskChair(500,388,P.slateM);
+    hardHats(356,296,3,[P.hazard,'#dfe3e7',P.drumBlue]);
+    pot(716,404,1.1,'clay');
     grain(FX,FY,FW,FH,.05);
   }}
 };
 
 const CAST={
- mike:{name:'Ravi', role:'Staff Data Scientist', where:'Engineering',
+ mike:{name:'Arun', role:'Principal Electrical Engineer', where:'Design Office',
    accent:'#fbbf24', top:'#c9852f', topDk:'#a06a22', style:'overshirt', tee:'#f2ece0',
    legs:'#33405c', legsDk:'#26314a', shoe:'#e8e2d6',
    skin:'#c98a56', skinDk:'#a26c3f', hair:'#5a5148', hairHi:'#7d7266', cut:'curls',
    specs:true, prop:'notebook', build:1.04, bw:23, beard:true},
- kate:{name:'Nadia', role:'Product Lead', where:'Product',
+ kate:{name:'Maggie', role:'Engineering Director', where:'Project Office',
    accent:'#f472b6', top:'#6d4a63', topDk:'#523849', style:'blazer', tee:'#f2ece0',
    legs:'#2c2a26', legsDk:'#1f1e1b', shoe:'#33302b',
    skin:'#e8b98c', skinDk:'#c2955f', hair:'#2b1f18', hairHi:'#463228', cut:'long',
    specs:false, prop:'tablet', build:1.0, bw:20, beard:false},
- jenny:{name:'Jen', role:'Data Platform', where:'Ops',
+ jenny:{name:'Bea', role:'Production Manager', where:'Test Bay',
    accent:'#34d399', top:'#2f7d78', topDk:'#215b57', style:'hoodie', tee:'#2f7d78',
    legs:'#5e6a4f', legsDk:'#48523c', shoe:'#e08265',
    skin:'#8d5f38', skinDk:'#6d4626', hair:'#1e1710', hairHi:'#3a2c1e', cut:'puff',
    specs:false, prop:'camera', build:0.98, bw:22, beard:false},
- alex:{name:'Sam', role:'Senior Analyst', where:'Engineering',
+ alex:{name:'Nell', role:'Graduate Engineer', where:'Design Office',
    accent:'#38bdf8', top:'#e08265', topDk:'#b8624a', style:'knit', tee:'#e08265',
    legs:'#a8a49c', legsDk:'#8d8981', shoe:'#33302b',
    skin:'#f0c8a0', skinDk:'#cfa079', hair:'#3a2a1c', hairHi:'#5a4430', cut:'undercut',
    specs:true, prop:'coffee', build:0.96, bw:19, beard:false},
- dan:{name:'Theo', role:'Analytics Engineering', where:'Kitchen',
+ dan:{name:'Colin', role:'Maintenance Fitter', where:'Canteen',
    accent:'#a78bfa', top:'#7d9070', topDk:'#5f6f54', style:'tee', tee:'#7d9070',
    legs:'#3f4a5c', legsDk:'#2f3747', shoe:'#f2ece0',
    skin:'#a0673a', skinDk:'#7d4c28', hair:'#22201d', hairHi:'#3a352d', cut:'beanie',
    specs:false, prop:'mug', build:1.02, bw:21, beard:true},
- player:{name:'You', role:'The new analyst', where:'Reception',
+ player:{name:'You', role:'The new electrical engineer', where:'Reception',
    accent:'#e4ded2', top:'#4a6a86', topDk:'#3a5468', style:'overshirt', tee:'#f2ece0',
    legs:'#33405c', legsDk:'#26314a', shoe:'#e8e2d6',
    skin:'#c08a5e', skinDk:'#9c6c45', hair:'#241c16', hairHi:'#3c2f24', cut:'short',
@@ -1918,166 +2477,149 @@ window.CC.coll=function(){ return baked().coll; };
 
 
 /* ==========================================================================
-   DESIGN FUNDAMENTALS TRACK — content only
+   ELECTRICAL ENGINEERING TRACK — content only
    ========================================================================== */
 
-CAST.owen={name:'Diane', role:'VP Revenue', where:'War Room',
-   accent:'#f472b6', top:'#5c4a63', topDk:'#453749', style:'blazer', tee:'#e6edf3',
+CAST.owen={name:'Helen', role:'Asset Manager, Wearside Water', where:'Briefing Room',
+   accent:'#38bdf8', top:'#3f4a5c', topDk:'#2f3747', style:'blazer', tee:'#e6edf3',
    legs:'#2c2a26', legsDk:'#1f1e1b', shoe:'#33302b',
-   skin:'#e8b98c', skinDk:'#c2955f', hair:'#4a4038', hairHi:'#6b5e52', cut:'short',
+   skin:'#f0c8a0', skinDk:'#cfa079', hair:'#3a2a1c', hairHi:'#5a4430', cut:'long',
    specs:true, prop:'tablet', build:1.0, bw:20, beard:false};
 
-const OBJ_DATA={
-  data_brief:'Get the question from Nadia in Product',
-  metric:'Ravi is on the Engineering floor — agree what churn means first',
-  confound:'Theo in the Kitchen has a chart he is excited about',
-  survivorship:'Back to Ravi. Something is missing from your data, by definition',
-  simpson:'Jen in Ops — conversion is up and down at the same time',
-  ab_test:'Theo again, and he wants to ship the experiment',
-  leakage:'Jen in Ops. Ninety-four per cent accuracy is the problem, not the result',
-  stakeholder:'Diane is waiting in the War Room',
-  crisis_fix:'Ops. Jen. Quickly',
-  crisis_show:'Back to Diane in the War Room',
-  complete:'You are an analyst now'
+const OBJ_ELEC={
+  panel_brief:'Get the panel brief from Maggie in the Project Office',
+  load_cable:'Arun is in the Design Office — site want a bigger cable',
+  motor_start:'Arun again. The lead pump trips every second start',
+  discrimination:'Bea is in the Test Bay with the station fault records',
+  isolation:'Colin is in the Canteen, and he has read the programme for Friday',
+  panel_build:'Back to Bea. The panel came back from inspection with a list',
+  client:'Helen is waiting in the Briefing Room',
+  crisis_fix:'Test Bay. Bea. Quickly',
+  crisis_show:'Back to Helen in the Briefing Room',
+  complete:'You are an electrical engineer now'
 };
 
-function dataOccupants(room){
+function elecOccupants(room){
   const s=G.step;
-  const withDiane=['stakeholder','crisis_fix','crisis_show'].indexOf(s)>=0;
+  const withHelen=['client','crisis_fix','crisis_show'].indexOf(s)>=0;
   if(room==='lobby')     return [];
   if(room==='servicing') return [['kate',400,306,'down']];
   if(room==='creative')  return [['mike',260,258,'right'],['alex',560,268,'left']];
   if(room==='studio')    return [['jenny',400,196,'down']];
   if(room==='breakroom') return [['dan',650,268,'down']];
-  if(room==='meeting')   return withDiane?[['owen',400,196,'down']]:[];
+  if(room==='meeting')   return withHelen?[['owen',400,196,'down']]:[];
   return [];
 }
 
-function dataScript(key){
+function elecScript(key){
   const s=G.step;
 
-  /* ---------- the question ---------- */
-  if(key==='kate'&&s==='data_brief')
-    return say('kate',`Hi — Nadia, product. Welcome aboard. Churn's up four points this quarter, and we put prices up in February, so everyone's already decided what happened. Diane needs something for the board on Thursday. What she'll ask you for is a number. What she needs is to know whether to roll the price rise back.`,
-      [{label:`Those aren't the same request.`,go:function(){
-        say('kate',`No, they're not — and you'll find that out the hard way at about four o'clock. Ravi's on the floor. Start with him, because three teams in this building count churn three different ways, and two of them are wrong for this question.`,
-          [{label:'On my way.',go:function(){ advance('metric'); }}]);
+  /* ---------- the brief ---------- */
+  if(key==='kate'&&s==='panel_brief')
+    return say('kate',`Hi — I'm Maggie, engineering director. Welcome to Hallam Works. We design and build the control panels and pump skids that end up in water treatment works and food factories. You're on the Wearside Water job from this morning: one pumping station, two forty-five kilowatt pumps, one panel. It witnesses at five o'clock with their inspector standing next to it.`,
+      [{label:'What has gone wrong with it?',go:function(){
+        say('kate',`Three things, and every one of them is somebody's guess. Site want a bigger cable. The lead pump trips about every second start. And the panel came back from inspection with a list. Arun's in the Design Office — start with the cable, because that's the one they've already ordered.`,
+          [{label:'On my way.',go:function(){ advance('load_cable'); }}]);
       }}]);
 
-  /* ---------- 1. the metric ---------- */
-  if(key==='mike'&&s==='metric'){
+  /* ---------- 1. sizing a cable ---------- */
+  if(key==='mike'&&s==='load_cable'){
     return choose('mike',
-      `Ravi, staff data scientist — good to have you. Before you open anything: finance count churn as revenue lost over revenue at the start of the month. Support count any account that raises a cancellation. The dashboard counts logins going to zero for thirty days. All three say churn, and they disagree by nine points. Which do you use?`,
+      `Arun Pillai — principal electrical, which mostly means I ask where the number came from. Good to have you. Site have asked for the next size up of cable out to the wet well. A hundred and eighty metres, buried in a duct with three other circuits, and they reckon volt drop is why the pump struggles. Do we send them a bigger cable?`,
       [
-       {label:`The dashboard figure — it's what the company already looks at, so the numbers will match what people expect.`,ok:false,
-        note:`Consistent with a number nobody chose for this purpose. Thirty days of no logins includes every seasonal business that's shut for the winter. Want to try another?`},
-       {label:`Whichever is highest, so we're being conservative about the size of the problem.`,ok:false,
-        note:`Picking the number that makes the best story is the thing you're here to stop other people doing. Try again?`},
-       {label:`Work back from the decision. She's deciding whether to reverse a price rise, so it's revenue retained by cohort, measured from the month each account signed — and write the definition into the analysis so people can argue with it.`,ok:true}
+       {label:`Yes. It's cheap next to a site visit, and it makes the complaint go away.`,ok:false,
+        note:`A hundred and eighty metres of it, and we still wouldn't know what's wrong. A bigger cable fixes volt drop and nothing else — if the trip is the starter, we've bought copper to hide it. Want to try another?`},
+       {label:`Work out the design current first, then volt drop over the hundred and eighty metres, then derate for four circuits in one duct at that ground temperature — and check the protective device can still clear a fault at the far end.`,ok:true},
+       {label:`Fit a larger breaker instead, so it stops tripping on start.`,ok:false,
+        note:`Now the cable is protected by a device that needs more current before it notices anything, and a fault at the far end might never clear at all. You've weakened the protection to quieten a symptom. Try again?`}
       ],function(){
-        filed('Metric definition','Meridian churn','Revenue retention by signup cohort, chosen from the decision and written down');
-        advance('confound','mike',`Right. Choosing a metric is a decision, not a lookup, and the decision it serves is the only thing that makes one choice better than another. Write the definition where people can see it, or in six weeks someone will quote your number for something it can't answer. Theo's in the kitchen with a chart he's very pleased about.`);
+        filed('Cable sizing','Wearside Water','Design current, volt drop, derating for the duct, and the protective device checked at the far end');
+        advance('motor_start','mike',`That's it. A cable is sized four times over — the current it carries, the volt drop at the end of it, what's packed around it, and whether the fuse can still see a fault through it. Ours passes on three and fails on the derating. So they do need a bigger cable, and now we can tell them why. Right. That trip.`);
       });
   }
 
-  /* ---------- 2. the confounder ---------- */
-  if(key==='dan'&&s==='confound'){
-    return choose('dan',
-      `Theo, analytics engineering. Look at this. Accounts with the mobile app installed churn thirty-one per cent less. Thirty-one. I've already written the slide — push the app harder, churn goes down. Tell me I'm a genius.`,
-      [
-       {label:`It's a big effect on a big sample, so recommend the app push and monitor churn afterwards.`,ok:false,
-        note:`It's a big effect on the wrong question. You'd be spending a quarter's roadmap on something that might be entirely backwards. Want to try another?`},
-       {label:`Ask what else is true of accounts that install the app, compare like with like on size and engagement — and say plainly that only a randomised rollout settles which way the arrow points.`,ok:true},
-       {label:`Dismiss it — correlation isn't causation, so it tells us nothing.`,ok:false,
-        note:`Too far the other way. It's a real pattern and worth chasing; it just isn't a cause yet. Correlation isn't causation is the beginning of the work, not a way out of it. Have another go?`}
-      ],function(){
-        filed('Confounder check','Meridian churn','App effect explained by account size and engagement; experiment proposed');
-        advance('survivorship','dan',`Ah. It's the busy multi-practitioner accounts that install it, and they were never going to leave. Engaged people install apps; apps don't create engaged people — not by thirty-one points, anyway. Ravi's after you. Something about your data being missing on purpose.`);
-      });
-  }
-
-  /* ---------- 3. survivorship ---------- */
-  if(key==='mike'&&s==='survivorship'){
+  /* ---------- 2. starting a motor ---------- */
+  if(key==='mike'&&s==='motor_start'){
     return choose('mike',
-      `Two things in your working. Your satisfaction scores come from the onboarding survey, which only fires on the last step of onboarding. And your feature-usage table was rebuilt in March from currently active accounts. So you're about to conclude that satisfied, feature-using accounts churn less.`,
+      `Same pump. Forty-five kilowatts, direct on line, and it trips the overload about one start in two. The site electrician has already wound the overload setting up twice. What's actually happening?`,
       [
-       {label:`Note both as limitations in an appendix and carry on with the conclusion.`,ok:false,
-        note:`A limitation in an appendix is a conclusion in the summary. Your survey can't contain anyone who gave up during onboarding, and your usage table can't contain anyone who already left — so of course the survivors look happy and busy. Try again?`},
-       {label:`Recognise that both sources exclude the very people the question is about, go back for a source that includes churned accounts, and weight or reframe rather than concluding from survivors.`,ok:true},
-       {label:`Increase the sample — pull twelve months instead of three, which will dilute the bias.`,ok:false,
-        note:`Twelve months of the same missing people. More data with the same hole in it is just a more confident wrong answer. Have another go?`}
+       {label:`Wind the overload up one more mark. It clearly needs the headroom.`,ok:false,
+        note:`That's the third time somebody's done that, and each time the motor got a bit less protection. An overload that never trips is a heater with a label on it. Have another go?`},
+       {label:`Find out whether it's inrush, the wrong protection curve, or the pump starting against a valve that hasn't opened yet — then pick the start method and set the protection to the motor's own curve.`,ok:true},
+       {label:`Fit a variable speed drive. It'll soft-start it and we can trim the duty later.`,ok:false,
+        note:`Quite possibly the right kit, bought before the question. A drive brings harmonics, a cable length limit and screened cable nobody has ordered — and if the valve is still shut, it trips anyway. Try again?`}
       ],function(){
-        filed('Survivorship check','Meridian churn','Survivor-only sources identified and replaced with full-population history');
-        advance('simpson','mike',`Yes. Ask who's definitionally absent from every table you touch — and the answer is usually the people you're asking about. Jen's in Ops, and she's got conversion going up and down at the same time.`);
+        filed('Motor starting','Wearside Water','Cause established before the cure — start method and protection matched to the motor curve');
+        advance('discrimination','mike',`Good. The actuator is slower than the pump, so it starts against a closed valve — that's a high-torque start, not a sick motor. Soft starter, an interlock so it waits for the valve, and protection set to the motor curve instead of to the patience of whoever is on site. Bea's in the Test Bay with the station's fault records, and they make no sense at all.`);
       });
   }
 
-  /* ---------- 4. the mix shift ---------- */
-  if(key==='jenny'&&s==='simpson'){
+  /* ---------- 3. discrimination ---------- */
+  if(key==='jenny'&&s==='discrimination'){
     return choose('jenny',
-      `Jen, data platform. So: trial-to-paid conversion is up two points overall this quarter. And it's down in clinics, down in salons, down in garages, down in other — every single segment. Both of those are correct. Explain it, or you can't use either.`,
+      `Bea Novak, production — nice to meet you. Look at this. Last month a float switch shorted in the wet well. Two amp circuit. The whole station went dark: both pumps, the panel, the telemetry, the lot. How do we stop that happening again?`,
       [
-       {label:`The overall figure is the one that matters — segments are noisy at that size.`,ok:false,
-        note:`You've picked the number you liked and called the rest noise. They aren't noise; they're every segment we have. Try again?`},
-       {label:`The mix changed — we got a lot more of whichever segment converts best, so the total rose while each segment fell. Report the mix shift and the per-segment trend together, because the average is hiding the story.`,ok:true},
-       {label:`It's a data quality problem — the segments must be double-counting somewhere.`,ok:false,
-        note:`Tempting, and no. This happens with perfectly clean data, and it's got a name. Have another go?`}
+       {label:`Put a bigger fuse on the float circuit so a small fault doesn't blow it.`,ok:false,
+        note:`The little fuse wasn't the problem. The problem is that the big one upstream went first, and it will do it again on any fault down there. Try again?`},
+       {label:`Grade the protection: prove the earth fault loop impedance at the float, and make the nearest device clear that fault well before the one upstream — checked against the curves, not the labels on the door.`,ok:true},
+       {label:`Put a one-second delay on every device upstream, so the little ones always win the race.`,ok:false,
+        note:`You've bought discrimination by making every fault last a second longer — including the one somebody is holding at the time. Grade it where the curves cross. Have another go?`}
       ],function(){
-        filed('Mix analysis','Meridian conversion','Simpson\u2019s paradox identified — clinic share up, every segment down');
-        advance('ab_test','jenny',`Correct — marketing went hard at clinics in January, clinics convert best, and the weighted average went up while we got worse at everything. An aggregate is a weighted average of things you chose not to look at. Theo's found statistical significance, by the way, and he's ready to ship.`);
+        filed('Discrimination','Wearside Water','Protection graded on the curves, loop impedance proved at the far end');
+        advance('isolation','jenny',`Right. A fault should be cleared by the device nearest to it, and you prove that on the curves rather than hoping. That float circuit now takes out the float circuit. Colin's in the canteen — he's read the commissioning programme and he has something to say about Friday.`);
       });
   }
 
-  /* ---------- 5. the experiment ---------- */
-  if(key==='dan'&&s==='ab_test'){
+  /* ---------- 4. safe isolation ---------- */
+  if(key==='dan'&&s==='isolation'){
     return choose('dan',
-      `The new pricing page test. Day three, p equals nought point nought four, variant's up eleven per cent. Nadia's asking whether we can call it. Our pre-registered plan said two weeks and eighteen thousand sessions, and we're at four thousand.`,
+      `Colin Baxter, maintenance fitter — I'm the one they send when it goes off at three in the morning. The programme has me testing the interlocks on Friday afternoon with the panel live, because the slot's tight. Commissioning say gloves and a face shield and I'll be fine. Will I?`,
       [
-       {label:`Ship it — significance is significance, and two more weeks of a worse page costs money.`,ok:false,
-        note:`You've stopped at the exact moment the noise was flattering. Peek often enough and a coin looks significant — which is why we wrote the plan down before we started. Try again?`},
-       {label:`Keep it running and check daily — if it stays significant, ship early with confidence.`,ok:false,
-        note:`Checking daily and stopping when you like the answer is the same mistake with more steps. Have another go?`},
-       {label:`Run to the pre-registered sample and stop rule, report the effect with its interval rather than just the p-value, and note that eleven per cent on day three will shrink.`,ok:true}
+       {label:`It's a couple of readings. Gloves, shield, take your time.`,ok:false,
+        note:`So you've authorised live working because the programme is tight. That sentence is in every report I've ever read about somebody getting hurt. Want to try another?`},
+       {label:`No. Isolate it, lock it off with your own lock, prove dead with a proving unit, and do every test that can be done dead. Anything that genuinely needs it energised goes on a permit, with a risk assessment and a second person.`,ok:true},
+       {label:`Then Friday's off, and the programme will have to move.`,ok:false,
+        note:`Correct, and no use to anybody. The tests still have to happen and now I'm the one ringing the client. Start with which ones we can do dead. Try again?`}
       ],function(){
-        filed('Experiment discipline','Meridian pricing test','Ran to the pre-registered stop rule; effect reported with interval');
-        advance('leakage','dan',`Fine. It settled at three per cent — still worth having, and a completely different conversation about the roadmap than eleven. Jen wants you. She says your churn model is too good.`);
+        filed('Safe isolation','Hallam Works','Isolate, lock, prove dead — the two genuinely live tests moved onto a permit');
+        advance('panel_build','dan',`Thank you. Nine of the eleven tests can be done dead, and the two that can't are a permit with two of us and a plan. And for the record, the programme didn't authorise anything — programmes never do. Bea's got the inspection list, by the way. It's longer than you'd like.`);
       });
   }
 
-  /* ---------- 6. leakage and base rates ---------- */
-  if(key==='jenny'&&s==='leakage'){
+  /* ---------- 5. the panel itself ---------- */
+  if(key==='jenny'&&s==='panel_build'){
     return choose('jenny',
-      `So your churn model reports ninety-four per cent accuracy. Churn in this population runs at about six per cent. Two of your features are days since last login, computed as of today, and cancellation_reason_is_null. And you split train and test randomly across two years. Go on then.`,
+      `Inspection list, three items. The enclosure is IP54 and it's going into a pump house that gets hosed down. There's four hundred volt and instrument wiring sharing one trunking. And the emergency stop goes into the PLC and comes back out of an output. Tell me what we're doing about them.`,
       [
-       {label:`Ninety-four per cent on a six per cent base rate is roughly predict nobody churns, so switch to precision, recall and a proper baseline comparison.`,ok:false,
-        note:`Right about the base rate — and you've left both time bombs in. Your cancellation-reason feature is the answer written on the back of the card, and a random split lets the model learn from next March to predict last January. Try again?`},
-       {label:`Drop the features that are only knowable after the outcome, split by time so training never sees the future, and judge it on precision and recall against the base-rate baseline rather than accuracy.`,ok:true},
-       {label:`Retrain with class weights to handle the imbalance and keep the feature set — the model should learn to discount weak signals itself.`,ok:false,
-        note:`You've fixed the imbalance and kept the leak. A model with the outcome in its inputs will happily learn it, weighted or not. Have another go?`}
+       {label:`Fit a fan in the door, label the trunking properly, and note the emergency stop in the manual.`,ok:false,
+        note:`A fan in an IP54 door in a washdown room, a label that does nothing about induced noise, and a stop button that works only while software is having a good day. Three problems, three plasters. Try again?`},
+       {label:`IP66 enclosure sized for the heat it actually dissipates at that ambient, power and signal segregated with a gap and crossings at right angles, and the emergency stop hardwired through a safety relay to the contactor coils — the PLC gets a contact for indication only.`,ok:true},
+       {label:`Move the lot into a bigger enclosure. That deals with the heat and gives us room to separate things.`,ok:false,
+        note:`Two out of three, and the one you've left is the one that stops a person. Have another go?`}
       ],function(){
-        filed('Model validation','Meridian churn model','Post-outcome features removed, time-based split, precision and recall against base rate');
-        advance('stakeholder','jenny',`Good. It scores far worse, and it's now worth something. Accuracy on a rare event is a vanity metric, a feature that only exists after the event is the answer on the back of the card, and a random split over time is quiet time travel. Right — Diane's in the war room and she wants a number.`);
+        filed('Panel design','Wearside Water','IP66 for washdown, heat calculated, power and signal segregated, emergency stop hardwired through a safety relay');
+        advance('client','jenny',`That's a panel. Safety doesn't go through software — it goes through contacts you can see and a relay you can test. And an enclosure is sized by the heat inside it and the weather outside it, not by what's on the shelf. Helen's here from Wearside, and she's brought a request.`);
       });
   }
 
-  /* ---------- 7. the stakeholder who knows the answer ---------- */
-  if(key==='owen'&&s==='stakeholder'){
+  /* ---------- 6. the client, and what she actually needs ---------- */
+  if(key==='owen'&&s==='client'){
     return choose('owen',
-      `Diane, revenue. I've got fifteen minutes. I need the slide that shows the February price rise didn't drive the churn — because I've read the cohorts and I don't think it did, and I'd rather not spend Thursday being shouted at by people who haven't. Can you get me that number?`,
+      `Helen Ashworth, asset manager at Wearside. The panel looks smart, genuinely. One thing though — can you add a remote reset? When that pump trips at three in the morning, Colin drives forty minutes to press a button and forty minutes home. I'd rather press it from my desk.`,
       [
-       {label:`"I can — I'll pull the comparison that supports it."`,ok:false,
-        note:`(You've just agreed to find evidence for a conclusion. If the data goes the other way, you now have to choose between your analysis and your credibility — and you set that trap yourself. Want another go?)`},
-       {label:`"I can tell you what the data supports, which might not be that. What decision is Thursday actually making — whether to reverse the rise?"`,ok:true},
-       {label:`"I can't produce a number to support a conclusion you've already reached."`,ok:false,
-        note:`Nor can I use that. I'll go with my own reading, then.  (Correct, and you've just removed the only careful person from the decision. Try again?)`}
+       {label:`"Of course — I'll wire a reset in from the telemetry."`,ok:false,
+        note:`(You've just agreed to restart a tripped pump from forty miles away without asking what tripped it. The first time it's a rag round the impeller, you'll restart it four times into a blockage. Want another go?)`},
+       {label:`"Before I wire anything — what does Colin find when he gets there? Is it the same trip every time?"`,ok:true},
+       {label:`"You can't remote-reset a motor protection trip. It's there for a reason."`,ok:false,
+        note:`I'm sure it is. I'll put the request to your director in writing, then.  (You were right, and you've left her with a three in the morning problem and nobody to solve it with. Try again?)`}
       ],function(){
-        say('owen',`...Whether to reverse it, yes. And if we reverse it we lose the margin that pays for next year's hiring, so I'd rather be right than comfortable. What does it actually say?`,
-          [{label:'Mostly what you think. Not entirely.',go:function(){
-            say('owen',`Go on.`,
-              [{label:'Retention held in four segments and fell hard in two.',go:function(){
-                filed('Question, translated','Meridian','Reframed from "prove it wasn\u2019t the price" to "should we reverse it"');
+        say('owen',`...A rag round the impeller, mostly. Or a pair of jeans — it's a combined sewer up there. He clears it, presses reset, and off it goes. Sometimes it's nothing and it just needed the button.`,
+          [{label:'So a reset from your desk would restart it into the blockage.',go:function(){
+            say('owen',`...Which is what I've been asking four suppliers for. Not one of them asked me what he finds when he gets there.`,
+              [{label:'Then the button was never the fix.',go:function(){
+                filed('Requirement, translated','Wearside Water','The ask was a reset button; the need was not driving out for a trip nobody can diagnose');
                 startClock(90);
-                say('kate',`Which is the honest answer and a terrible moment for it, because the board pack locks in ninety seconds. Jen's in Ops — get one chart in there. Go.`,
+                say('kate',`Which is the right answer at the worst possible moment. The panel witnesses at five, the inspector is in the yard, and that logic has to be in it before he opens the door. Bea's in the Test Bay. Go.`,
                   [{label:'Go.',go:function(){ G.step='crisis_fix'; paintHUD(); closeDlg(); }}]);
               }}]);
           }}]);
@@ -2085,150 +2627,159 @@ function dataScript(key){
   }
 
   if(key==='jenny'&&s==='crisis_fix'){
-    return choose('jenny',`One chart, ninety seconds. What goes in?`,[
-      {label:`The headline number — churn attributable to price isn't significant overall — with the segment detail in the appendix.`,ok:false,
-       note:`That's a true sentence that will be read as the price rise was fine. And the two segments where it bit are the two she's about to make a decision about. Try again?`},
-      {label:`Retention by cohort before and after February with the intervals shown, the two segments where it fell called out on the same chart, and one line on what this can't tell us.`,ok:true},
-      {label:`A clean single-line chart of overall retention — anything more and a board audience stops looking.`,ok:false,
-       note:`Simplify the presentation, not the finding. You'd be hiding the only part of this that changes what they do. Have another go?`}
+    return choose('jenny',`Ninety seconds. What am I wiring?`,[
+      {label:`Remote reset straight to the start contactor, with a five-minute lockout.`,ok:false,
+       note:`Five minutes later it starts into the same rag, and five after that, and then the motor is scrap. Try again — quickly.`},
+      {label:`Remote restart only for a thermal overload, twice, an hour apart — and a blockage or high-torque trip locks out, alarms with the reason, and can only be reset at the panel. Emergency stop stays hardwired either way.`,ok:true},
+      {label:`Automatic restart after any trip, and send an alarm so somebody can look at it later.`,ok:false,
+       note:`The alarm lands at the same three in the morning, by which time the pump has been arguing with a pair of jeans since midnight. Have another go?`}
     ],function(){
-      advance('crisis_show','jenny',`In the pack with eleven seconds to spare. Cohorts, intervals, the two bad segments named, and a sentence saying what it can't answer. Go and show her.`);
+      advance('crisis_show','jenny',`Wired, tested, terminals tight — eleven seconds on the clock. Two resets from the desk for the trip that deserves one, and a lockout with a reason for the trip that doesn't. Go and show her, before the inspector reaches the door.`);
     });
   }
 
   if(key==='owen'&&s==='crisis_show'){
     stopClock();
-    return say('owen',`So I keep the rise, and I go in on Thursday with the two segments we hurt and what we're doing about them.`,
-      [{label:'And with what the chart cannot tell you.',go:function(){
-        say('owen',`That line is the reason I'll be believed. I asked you for a number and you gave me a decision — nobody in this building does that.`,
+    return say('owen',`So it tells me which trip it was. And if it's the rag, it won't let me pretend it isn't.`,
+      [{label:'And Colin gets told what he is driving to.',go:function(){
+        say('owen',`Four suppliers said yes to the button. You're the first one who asked what he finds when he gets there.`,
           [{label:'...',go:function(){
-            say('kate',`That's the job. Not the model, not the p-value — that. Someone asked you to prove something, and your first move was to find out what they were deciding. Seven pieces of work, a model you made worse on purpose, and a board pack you didn't miss. You're an analyst now.`,
+            say('kate',`That's the job. Not the cable sizing, not the safety relay — that. Somebody hands you a solution and you go and find out what the problem was. Six pieces of work, a witness test you didn't miss, and an inspector who found nothing. You're an electrical engineer now.`,
               [{label:'Thank you.',go:function(){ G.step='complete'; paintHUD(); closeDlg(); openCertificate(); }}]);
           }}]);
       }}]);
   }
 
-  /* ---------- Sam: hints ---------- */
+  /* ---------- Nell: hints ---------- */
   if(key==='alex'){
     const h={
-      data_brief:`Nadia's in Product. Ask what gets decided, not what gets reported.`,
-      metric:`Three definitions, nine points apart. Pick from the decision, then write it down.`,
-      confound:`Ask what else is true of the people in the flattering group.`,
-      survivorship:`Ask who can't possibly be in the table you're querying.`,
-      simpson:`Up overall, down in every segment. Something about the mix changed.`,
-      ab_test:`We wrote the stopping rule down for exactly this moment.`,
-      leakage:`Six per cent base rate. Work out what predict nobody churns would score.`,
-      stakeholder:`She's asking for a conclusion. Find out what she's deciding.`,
-      crisis_fix:`One chart, the uncertainty visible, and the bit she needs to act on.`,
-      crisis_show:`Go and show her — she hasn't seen it yet.`,
-      complete:`You got a VP to ask for a decision instead of a number. Pub?`
+      panel_brief:`Maggie's in the Project Office. Ask what witnesses at five, and who is standing next to it.`,
+      load_cable:`Four checks on a cable, not one. They have only mentioned volt drop.`,
+      motor_start:`Ask what the pump is starting against before you touch the overload.`,
+      discrimination:`A two amp fault took out forty-five kilowatts. Look at the curves, not the labels.`,
+      isolation:`He is asking you to authorise live working. The right answer is not the brave one.`,
+      panel_build:`Washdown, heat, segregation — and the one item that stops a person.`,
+      client:`She has asked for a button. Find out what Colin finds when he gets there.`,
+      crisis_fix:`Not every trip deserves a reset. Say which ones do, and what happens to the rest.`,
+      crisis_show:`Go and show her — she has not seen it yet.`,
+      complete:`You got a client to un-ask for a reset button. First time here. Pub?`
     };
-    return say('alex', h[s] || `Stuck? Ask what decision changes depending on the answer, and work back from there.`);
+    return say('alex', h[s] || `Stuck? Say out loud what current flows, for how long, and what notices. Start there.`);
   }
 
   const idle={
-    kate:`Nothing new from me — go and finish what you've got.`,
-    mike:`Come back when you can tell me who's missing from the table.`,
-    jenny:`Bring me something with an interval on it and we'll get on fine.`,
-    dan:`Kettle's on. I've unpublished the app slide, before you ask.`,
-    owen:`I'll wait. Fifteen minutes, mind.`
+    kate:`Nothing new from me — go and finish what you have got.`,
+    mike:`Come back when you can tell me where the number came from.`,
+    jenny:`Bring me something I can build and test and we will get on fine.`,
+    dan:`Kettle's on. And I'm still not working on it live, mind.`,
+    owen:`I'll wait. Five o'clock, though.`
   };
   say(key, idle[key] || `...`);
 }
 
 const TRACK_GLOSSARY=[
-  {t:"churn",l:"churn",m:"churn",
-   d:"Customers leaving. Simple to say and surprisingly hard to define — finance, support and your dashboard will each count it differently."},
-  {t:"metric",l:"a metric",m:"metric",
-   d:"A number you have chosen to measure, with a written definition behind it. Choosing one is a decision, not a lookup."},
-  {t:"cohort",l:"a cohort",m:"cohort",
-   d:"A group who started at the same time — everyone who signed up in March. Comparing cohorts is how you see whether something changed after February."},
-  {t:"retention",l:"retention",m:"retention",
-   d:"The share of a cohort still with you after a given time. The other side of churn, and usually the more honest way to look at it."},
-  {t:"dashboard",l:"a dashboard",m:"dashboard",
-   d:"A screen of standing charts everyone in the company looks at. Its definitions were chosen by someone, once, for some other purpose."},
-  {t:"correlation",l:"correlation",m:"correlation",
-   d:"Two things moving together. Real, worth chasing, and completely silent about which one caused the other."},
-  {t:"causation",l:"causation",m:"causation",
-   d:"One thing actually making the other happen. Only a randomised experiment, or a very careful argument, gets you there."},
-  {t:"confounder",l:"a confounder",m:"confound(?:er|ers|ing)|like with like",
-   d:"A third thing that explains both. Busy clinics install the app and busy clinics stay — so “busy” is doing the work, not the app."},
-  {t:"randomised rollout",l:"a randomised rollout",m:"randomised rollout|randomised",
-   d:"Giving something to a random half of people and withholding it from the rest, so the only difference between the groups is the thing you did."},
-  {t:"survivorship bias",l:"survivorship bias",m:"survivorship bias|survivors?",
-   d:"Only being able to see the ones who made it. A survey that fires at the end of onboarding cannot contain anybody who gave up during it."},
-  {t:"sample",l:"a sample",m:"sample",
-   d:"The slice of people your numbers actually came from. More data with the same hole in it is just a more confident wrong answer."},
-  {t:"segment",l:"a segment",m:"segment",
-   d:"A slice of customers grouped by something you care about — clinics, salons, garages. Totals can move the opposite way to every segment in them."},
-  {t:"mix",l:"a mix shift",m:"mix shift|the mix",
-   d:"The make-up of your customers changing. Get more of the segment that converts best and the total rises while every segment falls."},
-  {t:"weighted average",l:"a weighted average",m:"weighted average|aggregate",
-   d:"An average where bigger groups count for more. Every company total is one, which is why it can hide the story completely."},
-  {t:"significance",l:"statistical significance",m:"statistical significance|significan(?:ce|t)",
-   d:"A judgement that a result is unlikely to be chance alone. It says nothing about whether the effect is big, or whether it will last."},
-  {t:"p-value",l:"a p-value",m:"p-value|p equals",
-   d:"How surprising your result would be if nothing were really happening. Below nought point nought five is the usual convention — a convention, not a law."},
-  {t:"pre-registered",l:"a pre-registered plan",m:"pre-registered",
-   d:"Writing down before the experiment how long it runs, how many people you need and when you will stop — so the result cannot be chosen afterwards."},
-  {t:"peeking",l:"peeking",m:"peek(?:ing|s)?",
-   d:"Checking an experiment over and over and stopping when you like the answer. Peek often enough and a fair coin looks significant."},
-  {t:"interval",l:"a confidence interval",m:"confidence interval|interval(?:s)?",
-   d:"The range your estimate could plausibly be, rather than one confident number. Eleven per cent on day three usually has an enormous one."},
-  {t:"base rate",l:"the base rate",m:"base rate",
-   d:"How often the thing happens anyway. If six per cent of customers churn, guessing “nobody churns” scores ninety-four per cent and knows nothing."},
-  {t:"accuracy",l:"accuracy",m:"accuracy",
-   d:"The share of predictions a model gets right. On a rare event it flatters uselessly — which is why precision and recall exist."},
-  {t:"precision",l:"precision and recall",m:"precision(?: and recall)?|recall",
-   d:"Precision: of the accounts you flagged, how many really churned. Recall: of the ones who churned, how many you caught. Together they say something accuracy cannot."},
-  {t:"leak",l:"data leakage",m:"leakage|the leak|leak",
-   d:"A model being given something it could only know after the outcome — like a cancellation reason. It scores brilliantly and predicts nothing."},
-  {t:"split",l:"a train/test split",m:"train and test|split(?:ting)?",
-   d:"Holding some data back to test a model on. Split at random over two years and the model learns from next March to predict last January."},
-  {t:"class weights",l:"class weights",m:"class weights",
-   d:"Telling a model to take the rare outcome more seriously. It fixes imbalance and does nothing about a feature that gives the answer away."},
-  {t:"board",l:"the board pack",m:"board pack|the board",
-   d:"The set of slides prepared for the company’s directors before they meet. It locks at a deadline, and what is in it is what gets discussed."}
+  {t:"design current",l:"design current",m:"design current",
+   d:"The current a circuit will actually carry in normal use, worked out from the load rather than read off the motor plate and rounded up."},
+  {t:"volt drop",l:"volt drop",m:"volt drop|voltage drop",
+   d:"Voltage lost along the length of a cable. Too much of it and equipment at the far end gets less than it needs, however healthy the supply looks at the panel."},
+  {t:"derating",l:"derating",m:"derat(?:e|ed|ing)",
+   d:"Cutting the current a cable is allowed to carry because of where it sits — bunched with other circuits, buried in a warm duct, or run through insulation. A cable in free air and the same cable in a duct are not the same cable."},
+  {t:"protective device",l:"a protective device",m:"protective device|breaker|fuse",
+   d:"The fuse or circuit breaker that disconnects a circuit when the current says something is wrong. Sizing it is a promise about how fast a fault will be cleared."},
+  {t:"inrush",l:"inrush",m:"inrush",
+   d:"The large current a motor pulls in the first moments of starting, several times its running current. Normal, brief, and the cause of a great many nuisance trips."},
+  {t:"overload",l:"an overload relay",m:"overload(?: relay| setting)?",
+   d:"The device that protects a motor from drawing too much current for too long. Winding its setting up to stop a trip removes the protection rather than fixing the cause."},
+  {t:"direct on line",l:"direct on line",m:"direct on line|DOL",
+   d:"Starting a motor by simply connecting it straight to full voltage. Cheapest, hardest on everything, and the reason big pumps often need something gentler."},
+  {t:"soft starter",l:"a soft starter",m:"soft start(?:er|ing)?|soft-start",
+   d:"A device that ramps the voltage up so a motor accelerates gently instead of slamming to full speed. It reduces the mechanical and electrical shock of starting."},
+  {t:"vfd",l:"a variable speed drive",m:"variable speed drive|VFD|VSD|drive",
+   d:"Electronics that vary a motor's speed by varying the frequency it is fed. Very useful, and it brings its own requirements: screened cable, cable length limits and harmonics."},
+  {t:"harmonics",l:"harmonics",m:"harmonics",
+   d:"Distortion that some electronics push back into the supply. It heats cables and transformers and upsets sensitive equipment sharing the same board."},
+  {t:"protection curve",l:"a protection curve",m:"protection curve|trip curve|the curves|curves",
+   d:"A graph of how much current a device will tolerate for how long before it disconnects. Two devices are graded by comparing their curves, not their ratings."},
+  {t:"discrimination",l:"discrimination",m:"discrimination|grade(?:d|s)? the protection|grading",
+   d:"Arranging protection so a fault is cleared by the device nearest to it, and nothing upstream notices. Without it a two amp fault can switch off an entire site."},
+  {t:"earth fault loop impedance",l:"earth fault loop impedance",m:"earth fault loop impedance|loop impedance",
+   d:"How much the path of an earth fault resists the current that has to flow to trip the protection. Too high at the far end of a long run and the device never sees enough current to operate in time."},
+  {t:"safe isolation",l:"safe isolation",m:"safe isolation|isolate(?:d)?|isolation",
+   d:"The procedure for making equipment genuinely dead before working on it: identify it, switch it off, lock it off with your own lock, then prove it dead at the point of work."},
+  {t:"proving unit",l:"a proving unit",m:"proving unit|prove dead|proved dead",
+   d:"A small device used to check that your voltage tester is working, before and after you test. A tester that has quietly failed will tell you a live panel is dead."},
+  {t:"permit",l:"a permit to work",m:"permit(?: to work)?",
+   d:"A written authorisation for a specific piece of dangerous work, naming who does it, what is isolated, what is still live and who is watching. It exists because verbal agreement is not evidence."},
+  {t:"lock off",l:"locking off",m:"lock(?:s|ed|ing)? it off|lock off|lock-off",
+   d:"Fitting your own padlock to an isolator so nobody can switch it back on while you are inside. Your lock, your key, in your pocket."},
+  {t:"ip rating",l:"an IP rating",m:"IP\\d\\d|IP rating",
+   d:"Two digits saying how well an enclosure keeps out solid things and water. IP54 shrugs off splashes; IP66 survives being hosed down, which is what happens in a pump house."},
+  {t:"enclosure",l:"an enclosure",m:"enclosure",
+   d:"The cabinet a panel lives in. It is sized by the heat the kit inside gives off and the conditions outside it, not by what is in the stores."},
+  {t:"segregation",l:"segregation",m:"segregat(?:e|ed|ion)",
+   d:"Keeping power cables and signal cables physically apart, and crossing them at right angles where they must meet, so the big ones do not induce noise into the small ones."},
+  {t:"trunking",l:"trunking",m:"trunking",
+   d:"The rectangular ducting that carries cables around a panel or a building. Convenient, and the usual reason power and signal end up lying against each other."},
+  {t:"emergency stop",l:"an emergency stop",m:"emergency stop|E-stop",
+   d:"The button that must stop machinery whatever else is broken. It belongs in hardwired contacts, because it has to work when the software does not."},
+  {t:"safety relay",l:"a safety relay",m:"safety relay",
+   d:"A relay built and certified to fail safely, used to turn an emergency stop into power actually being removed. It can be tested, and it does not run a program."},
+  {t:"contactor",l:"a contactor",m:"contactor",
+   d:"A large switch operated by a coil, used to start and stop motors. Drop the coil and the contacts open, which is how an emergency stop removes power."},
+  {t:"plc",l:"a PLC",m:"PLC",
+   d:"The small industrial computer that runs a plant's sequence — which pump, which valve, in what order. Excellent at logic, and never the thing you trust to stop a machine."},
+  {t:"interlock",l:"an interlock",m:"interlock(?:s|ed|ing)?",
+   d:"A condition that has to be true before something is allowed to happen — the valve open before the pump starts, the guard closed before the motor turns."},
+  {t:"telemetry",l:"telemetry",m:"telemetry",
+   d:"The link that reports what a remote site is doing back to a control room, and sometimes carries instructions the other way. It is how a pumping station forty miles away raises an alarm."},
+  {t:"actuator",l:"an actuator",m:"actuator",
+   d:"The motor or cylinder that drives a valve open and shut. Its speed matters: a pump that starts before the valve has opened is working against a closed door."},
+  {t:"wet well",l:"a wet well",m:"wet well",
+   d:"The chamber at a pumping station that collects incoming sewage or water for the pumps to lift. Also where the rags, wipes and occasional pair of jeans collect."},
+  {t:"witness test",l:"a witness test",m:"witness(?:es|ed)?(?: test)?|factory acceptance test|FAT",
+   d:"A test run with the customer's inspector standing next to it, signing off that the panel does what the specification says before it leaves the works."},
+  {t:"thermal overload",l:"a thermal overload trip",m:"thermal overload",
+   d:"A trip caused by a motor running hotter than it should for longer than it should. Often recoverable once it has cooled, which is why it is the one trip worth resetting remotely."}
 ];
-TRACK_DEFS.data={
-  id:'data', name:'Data Science', title:'Data Chronicles',
-  blurb:'Churn is up four points, everyone already knows why, and the board meets Thursday.',
-  first:'data_brief',
-  roles:{mike:'Staff Data Scientist', kate:'Product Lead', jenny:'Data Platform',
-         alex:'Senior Analyst', dan:'Analytics Engineering',
-         owen:'VP Revenue', player:'The new analyst'},
+TRACK_DEFS.electrical={
+  id:'electrical', name:'Electrical Engineering', title:'Electrical Chronicles',
+  blurb:'A cable nobody sized, a pump that trips on start, and a reset button that would burn out a motor.',
+  first:'panel_brief',
+  roles:{mike:'Principal Electrical Engineer', kate:'Engineering Director', jenny:'Production Manager',
+         alex:'Graduate Engineer', dan:'Maintenance Fitter',
+         owen:'Asset Manager, Wearside Water', player:'The new electrical engineer'},
   glossary:TRACK_GLOSSARY,
-  script:function(key){ return dataScript(key); },
-  occupants:function(room){ return dataOccupants(room); },
-  objectives:OBJ_DATA,
-  opening:{text:`Nine in the morning at Meridian. Churn's up four points, the price rise in February has already been convicted by everyone in the building, and the board pack locks at five.`,
-           label:'Find Nadia.'},
-  certTitle:'DATA CHRONICLES',
-  timeUp:{who:'kate',line:`Pack's locked. Diane goes in with her own reading and the two segments we hurt go unmentioned. Finish it anyway — missing a deadline you survive; not knowing what you'd have put in the chart, you don't.`},
-  certBody:['investigated four points of churn at Meridian — metric definition, confounding,',
-            'survivorship, mix shift, experiment discipline and a leaking model — and turned',
-            'a request to prove a conclusion into the decision it was actually for.'],
+  script:function(key){ return elecScript(key); },
+  occupants:function(room){ return elecOccupants(room); },
+  objectives:OBJ_ELEC,
+  opening:{text:`Nine in the morning at Hallam Works. A panel that witnesses at five with the client's inspector next to it, a pump that trips every second start, and a bigger cable somebody has already ordered.`,
+           label:'Find Maggie.'},
+  certTitle:'ELECTRICAL CHRONICLES',
+  timeUp:{who:'kate',line:`Five o'clock. The inspector has gone home, the panel goes back on the test bay until he can come again — a fortnight — and Colin drives out every time it rains. Finish it anyway: missing a witness test you survive; not knowing what you would have wired, you don't.`},
+  certBody:['sized a cable four ways, found out what a pump was really starting against, graded',
+            'the protection, kept a fitter off a live panel and got an emergency stop out of',
+            'software — then turned a reset button into logic that knows which trip it was.'],
   lessons:[
-    {t:'Choose the metric from the decision', c:'Definitions',
-     l:'Three teams counted churn three ways, nine points apart. The question being decided is the only thing that makes one definition better than another. Write yours down.'},
-    {t:'Ask what else is true of that group', c:'Confounding',
-     l:'App installers churned 31% less because busy accounts install apps. Correlation isn’t causation is the start of the work, not a way out of it.'},
-    {t:'Only randomisation settles direction', c:'Confounding',
-     l:'Matching on what you can see narrows it down. An experiment is what tells you which way the arrow points.'},
-    {t:'Ask who can’t be in the table', c:'Survivorship',
-     l:'An onboarding survey excludes everyone who quit onboarding; a table rebuilt from active accounts excludes everyone who left. More rows with the same hole is just a more confident wrong answer.'},
-    {t:'An average hides what you didn’t split by', c:'Mix',
-     l:'Conversion rose overall and fell in every segment, because the mix changed. Report the trend and the mix together, or neither.'},
-    {t:'Write the stopping rule before you look', c:'Experiments',
-     l:'Peek often enough and a coin reaches significance. Day-three effects shrink: 11% became 3%, which is a different roadmap conversation.'},
-    {t:'Report the interval, not just the verdict', c:'Experiments',
-     l:'A p-value says probably something. The effect size and its range tell you what to do about it.'},
-    {t:'Accuracy on a rare event is a vanity metric', c:'Models',
-     l:'94% on a 6% base rate is roughly predict nobody churns. Compare against that baseline, with precision and recall.'},
-    {t:'A feature that only exists afterwards is the answer on the back of the card', c:'Models',
-     l:'Cancellation reason, closure timestamps, anything computed as of today. And split by time — a random split across two years is quiet time travel.'},
-    {t:'Asked to prove something? Find out what’s being decided', c:'Stakeholders',
-     l:'Agreeing to support a conclusion traps you; refusing takes you out of the room. Ask what changes depending on the answer, then say what the data can and can’t tell them.'}
+    {t:'A cable is sized four times over', c:'Cables',
+     l:'Design current, volt drop at the far end, derating for whatever is packed around it, and whether the protective device can still see a fault through it. Three out of four is a cable that fails in service.'},
+    {t:'Find the cause before you buy the cure', c:'Motors',
+     l:'A bigger fuse, a wound-up overload and a new drive all quieten the same symptom. A pump starting against a valve that has not opened yet carries on regardless.'},
+    {t:'An overload that never trips is a heater', c:'Protection',
+     l:'Every notch up is protection taken away from a motor somebody has to pay for. Set it to the motor curve, not to the patience of the person on site.'},
+    {t:'The nearest device should clear the fault', c:'Protection',
+     l:'Grade protection where the curves cross. A blanket delay upstream buys discrimination by making every fault last longer, including the one somebody is holding.'},
+    {t:'The programme never authorises live working', c:'Safety',
+     l:'Isolate, lock off with your own lock, prove dead with a proving unit. Whatever genuinely cannot be done dead goes on a permit, with a risk assessment and a second person.'},
+    {t:'Safety does not go through software', c:'Safety',
+     l:'An emergency stop belongs in hardwired contacts and a safety relay you can test. A PLC output is an opinion about what ought to happen next.'},
+    {t:'An enclosure is sized by heat and weather', c:'Panels',
+     l:'Add up what the kit dissipates, pick the rating for the room it lives in, and leave bending room at the glands. A fan in the door of a washdown panel is two faults, not one.'},
+    {t:'Keep power and signal apart', c:'Panels',
+     l:'A label does nothing about induced noise. Separate them, cross at right angles where they must meet, and screen what needs screening.'},
+    {t:'Ask what they find when they get there', c:'Clients',
+     l:'A reset button is a solution. Forty minutes in the car at three in the morning is the problem, and the two want completely different designs.'},
+    {t:'Not every trip deserves a reset', c:'Design',
+     l:'Let the harmless trip be reset from a desk. Make the trip that means damage lock out, alarm with the reason, and wait for somebody with a tool.'}
   ]
 };
 
@@ -2309,7 +2860,7 @@ const TRACK_FILES={
   mechanical:'mechanical-chronicles.html',
   chemical:'chemical-chronicles.html',
 };
-const FIRST_LIVE=TRACK_ORDER.filter(function(id){ return TRACKS[id].live; })[0]||'data';
+const FIRST_LIVE=TRACK_ORDER.filter(function(id){ return TRACKS[id].live; })[0]||'engineering';
 let TRACK=TRACKS[FIRST_LIVE];
 let pendingTrack=FIRST_LIVE;
 

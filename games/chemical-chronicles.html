@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
-<title>Data Chronicles</title>
+<title>Chemical Chronicles</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
@@ -147,7 +147,7 @@
 <body>
 <div class="wrap">
   <div class="top">
-    <h1 id="gameTitle">Data Chronicles</h1>
+    <h1 id="gameTitle">Chemical Chronicles</h1>
     <div class="hud">
       <span id="clock"></span>
       <button id="folioBtn">Work log (<span id="folioCount">0</span>)</button>
@@ -166,7 +166,7 @@
     <button id="coachGo" type="button">Got it</button>
   </div>
   <div class="stage">
-    <canvas id="c" width="1600" height="960" role="img" aria-label="Engineering floor"></canvas>
+    <canvas id="c" width="1600" height="960" role="img" aria-label="Works floor"></canvas>
   </div>
   <div id="dlg"></div>
   <div class="pad">
@@ -180,10 +180,10 @@
 </div>
 
 <div class="veil" id="menu"><div class="inner center">
-  <h2 id="menuTitle">Data Chronicles</h2>
-  <p class="lede" id="menuLede">A day on a product team, and a number somebody has already decided.</p>
+  <h2 id="menuTitle">Chemical Chronicles</h2>
+  <p class="lede" id="menuLede">A day at an engineering works, and a dose nobody should turn up.</p>
   <button id="btnPlay" class="primary">Play game</button>
-  <button id="btnLearn" class="ghost">Learn data science</button>
+  <button id="btnLearn" class="ghost">Learn chemical engineering</button>
   <button id="btnTracks" class="ghost">Choose another track</button>
 </div></div>
 
@@ -891,215 +891,773 @@ function whiteboardTech(x,y,w,h,seed){            /* boxes and arrows, not doodl
 /* ==========================================================================
    ROOMS
    ========================================================================== */
+/* ==========================================================================
+   HALLAM WORKS — the things an engineering company has on its floors.
+   Same vocabulary as the rest of the building: flat top-down shapes, one soft
+   shadow, a highlight along the top edge, and collisions pushed by anything
+   you should not be able to walk through.
+   ========================================================================== */
+
+Object.assign(P,{
+  galv:'#9aa3ac', galvHi:'#b4bcc4', galvDk:'#6f7881',
+  stain:'#c3c9cf', stainHi:'#dde2e6',
+  hazard:'#e3b341', hazardDk:'#a8821f', hiviz:'#d9e36a',
+  copper:'#b87333', copperHi:'#d79458', brass:'#b5a642',
+  oil:'#3b4038', oilDk:'#2a2e28', rust:'#8a5a3b',
+  drumBlue:'#3f6fa8', drumRed:'#a8443a', drumYel:'#c9a227', drumWhite:'#dfe3e7',
+  labWhite:'#e9edf0', labTop:'#2f3a40', glassG:'#bcd6cc', liquidA:'#8fd18a',
+  liquidB:'#f0c674', liquidC:'#7fa8c4', pipe:'#8b949e', pipeDk:'#5c636b'
+});
+
+/* --- floors -------------------------------------------------------------- */
+function bayFloor(seed){                       /* epoxy, with a walkway painted on */
+  const R=seeded(seed);
+  r(FX,FY,FW,FH,'#5f666e');
+  for(let i=0;i<620;i++){ const cx=FX+R()*FW, cy=FY+R()*FH;
+    X.globalAlpha=.04+R()*.06; X.fillStyle=R()>.5?'#ffffff':'#20242a';
+    X.beginPath(); X.ellipse(cx,cy,1+R()*3,1+R()*2,0,0,Math.PI*2); X.fill(); }
+  X.globalAlpha=1;
+  X.strokeStyle='#4a5057'; X.lineWidth=1.2;                    /* bay joints */
+  for(let x=FX+190;x<FX+FW;x+=190){ X.beginPath(); X.moveTo(x,FY); X.lineTo(x,FY+FH); X.stroke(); }
+  const wy=FY+FH-84;                                            /* the walkway */
+  X.globalAlpha=.16; r(FX,wy,FW,52,'#e3b341'); X.globalAlpha=1;
+  r(FX,wy,FW,4.5,P.hazard); r(FX,wy+48,FW,4.5,P.hazard);
+  X.globalAlpha=.5;
+  for(let x=FX;x<FX+FW;x+=22){ r(x,wy+4.5,11,3,P.hazardDk); r(x+11,wy+44.5,11,3,P.hazardDk); }
+  X.globalAlpha=1;
+  grain(FX,FY,FW,FH,.04);
+}
+function labFloor(seed){                       /* welded vinyl, coved, very clean */
+  const R=seeded(seed);
+  r(FX,FY,FW,FH,'#cfd8d6');
+  for(let i=0;i<900;i++){ const cx=FX+R()*FW, cy=FY+R()*FH;
+    X.globalAlpha=.1+R()*.12; X.fillStyle=R()>.4?'#ffffff':'#9fb0ad';
+    X.beginPath(); X.ellipse(cx,cy,.8+R()*1.6,.8+R()*1.3,0,0,Math.PI*2); X.fill(); }
+  X.globalAlpha=1;
+  X.strokeStyle='#b9c6c3'; X.lineWidth=1.3;                   /* welded seams */
+  for(let x=FX+200;x<FX+FW;x+=200){ X.beginPath(); X.moveTo(x,FY); X.lineTo(x,FY+FH); X.stroke(); }
+  X.globalAlpha=.5; r(FX,FY+FH-30,FW,2,'#9fb0ad'); X.globalAlpha=1;
+  grain(FX,FY,FW,FH,.04);
+}
+function shopFloor(seed){                      /* sealed concrete, patched, bay lines */
+  const R=seeded(seed);
+  r(FX,FY,FW,FH,'#8f9298');
+  for(let i=0;i<2000;i++){ const cx=FX+R()*FW, cy=FY+R()*FH;
+    X.globalAlpha=.05+R()*.13; X.fillStyle=R()>.55?'#ffffff':'#4e5257';
+    X.beginPath(); X.ellipse(cx,cy,1+R()*3.4,1+R()*2.4,0,0,Math.PI*2); X.fill(); }
+  X.globalAlpha=.16; X.fillStyle=P.oil;                        /* old oil patches */
+  [[180,300,60,26],[520,380,44,18],[360,140,34,14]].forEach(function(o){
+    X.beginPath(); X.ellipse(o[0],o[1],o[2],o[3],0,0,Math.PI*2); X.fill(); });
+  X.globalAlpha=1;
+  X.strokeStyle='#787c82'; X.lineWidth=1.4;
+  for(let y=FY+150;y<FY+FH;y+=150){ X.beginPath(); X.moveTo(FX,y); X.lineTo(FX+FW,y); X.stroke(); }
+  grain(FX,FY,FW,FH,.06);
+}
+
+/* --- walls and boards ---------------------------------------------------- */
+function certWall(x,y,w,h,seed){               /* framed certificates and approvals */
+  box(x,y,w,h,'#2f363d',2);
+  const R=seeded(seed), n=Math.floor(w/48);
+  for(let i=0;i<n;i++){
+    const fx=x+8+i*((w-12)/n);
+    rr(fx,y+7,((w-12)/n)-10,h-14,1,'#e8ecef');
+    r(fx+4,y+12,((w-12)/n)-18,2,'#8d98a6');
+    r(fx+4,y+18,((w-12)/n)-22,1.4,'#b9c2cb');
+    rr(fx+5,y+h-24,9,9,4,[P.led,P.cyan,P.hazard][Math.floor(R()*3)]);
+  }
+}
+function diagramWall(x,y,w,h,kind,seed){       /* single line, P&ID or GA, pinned up */
+  box(x,y,w,h,'#f3f5f7',2);
+  const R=seeded(seed);
+  X.save(); X.beginPath(); X.rect(x+4,y+4,w-8,h-8); X.clip();
+  X.strokeStyle='#33404c'; X.lineWidth=1.1;
+  if(kind==='single'){                                          /* electrical */
+    const busY=y+16;
+    X.beginPath(); X.moveTo(x+10,busY); X.lineTo(x+w-10,busY); X.stroke();
+    for(let i=0;i<Math.floor((w-30)/34);i++){
+      const fx=x+18+i*34;
+      X.beginPath(); X.moveTo(fx,busY); X.lineTo(fx,y+h-12); X.stroke();
+      X.strokeRect(fx-5.5,busY+9,11,9);                         /* breaker */
+      if(i%2){ X.beginPath(); X.arc(fx,busY+32,5,0,Math.PI*2); X.stroke(); }  /* motor */
+      else { X.strokeRect(fx-6.5,busY+27,13,10); }
+      if(R()>.6) r(fx-4,y+h-22,8,5,P.hazard);
+    }
+  } else if(kind==='pid'){                                      /* process */
+    const ly=y+h*0.45;
+    X.beginPath(); X.moveTo(x+10,ly); X.lineTo(x+w-10,ly); X.stroke();
+    for(let i=0;i<Math.floor((w-40)/56);i++){
+      const fx=x+24+i*56;
+      X.strokeRect(fx-9.5,ly-22,19,18);                         /* vessel */
+      X.beginPath(); X.moveTo(fx,ly-4); X.lineTo(fx,ly); X.stroke();
+      X.beginPath(); X.moveTo(fx-6,ly+7); X.lineTo(fx,ly); X.lineTo(fx+6,ly+7);
+      X.closePath(); X.stroke();                                /* valve */
+      X.beginPath(); X.arc(fx+26,ly,6,0,Math.PI*2); X.stroke();  /* instrument bubble */
+      X.globalAlpha=.25; r(fx-8,ly-20,15,14,P.liquidC); X.globalAlpha=1;
+    }
+  } else {                                                      /* general arrangement */
+    X.strokeRect(x+16.5,y+12.5,w-56,h-30);
+    X.globalAlpha=.16; r(x+18,y+14,w-59,h-33,P.cyan); X.globalAlpha=1;
+    for(let i=0;i<4;i++){ const fy=y+20+i*((h-40)/4);
+      X.beginPath(); X.moveTo(x+20,fy); X.lineTo(x+w-46,fy); X.stroke(); }
+    X.strokeStyle='#8d98a6';
+    X.beginPath(); X.moveTo(x+16,y+h-9); X.lineTo(x+w-40,y+h-9); X.stroke();  /* dim line */
+    for(const dx of [x+16,x+w-40]){ X.beginPath(); X.moveTo(dx,y+h-13); X.lineTo(dx,y+h-5); X.stroke(); }
+  }
+  X.restore();
+  rr(x+w-34,y+h-26,28,20,1,'#dfe3e7'); r(x+w-31,y+h-21,22,2,'#8d98a6');  /* title block */
+  r(x+w-31,y+h-16,14,1.4,'#b9c2cb');
+}
+function noticeBoard(x,y,w,h,seed){            /* the board everyone walks past */
+  box(x,y,w,h,'#7d6a4f',2); rr(x+4,y+4,w-8,h-8,1,'#d8c9a8');
+  const R=seeded(seed), cols=['#e8ecef','#f7e6a6','#dfe3e7','#cfe3d7'];
+  for(let i=0;i<7;i++){
+    const nw=22+R()*16, nh=13+R()*8;
+    const nx=x+8+R()*(w-nw-16), ny=y+8+R()*(h-nh-16);
+    rr(nx,ny,nw,nh,1,cols[Math.floor(R()*cols.length)]);
+    r(nx+3,ny+3,nw-8,1.6,'#8d98a6'); r(nx+3,ny+7,nw-12,1.2,'#b9c2cb');
+    rr(nx+nw/2-2,ny-2,4,4,2,P.ledR);
+  }
+  r(x+w-46,y+h-26,16,20,P.hazard);                             /* the one nobody reads */
+}
+function screenOnWall(x,y,w,h,kind){
+  box(x,y,w,h,'#1b2027',2);
+  rr(x+3,y+3,w-6,h-6,1,P.screenDk);
+  if(kind==='trend'){
+    X.strokeStyle=P.led; X.lineWidth=1.3;
+    for(let s=0;s<2;s++){
+      X.beginPath();
+      for(let i=0;i<=w-14;i+=6){
+        const yy=y+h/2+(s?8:-8)+Math.sin((i+s*30)/13)*5;
+        i?X.lineTo(x+7+i,yy):X.moveTo(x+7+i,yy);
+      }
+      X.strokeStyle=s?P.cyan:P.led; X.stroke();
+    }
+  } else if(kind==='plan'){
+    r(x+8,y+8,w-16,3,'#4d5865');
+    for(let i=0;i<4;i++){ const by=y+16+i*((h-26)/4);
+      r(x+10+i*9,by,(w-40)*(.5+i*.11),5,[P.cyan,P.led,P.hazard,P.ledR][i]); }
+  } else {
+    r(x+9,y+9,w-18,2.2,'#4d5865'); r(x+9,y+15,w*0.5,2.2,'#39414b');
+    r(x+9,y+21,w*0.7,2.2,'#39414b');
+    rr(x+w-30,y+h-16,20,8,1,P.cyan);
+  }
+}
+
+/* --- office things ------------------------------------------------------- */
+function planChest(x,y,w,h,n){                 /* wide shallow drawers, A0 drawings */
+  box(x,y,w,h,'#4d5560',2); vgrad(x,y,w,5,'#68717e','#4d5560');
+  for(let i=0;i<(n||5);i++){
+    const dy=y+4+i*((h-8)/(n||5));
+    rr(x+4,dy,w-8,((h-8)/(n||5))-3,1,i%2?'#59616c':'#515965');
+    r(x+w/2-9,dy+((h-8)/(n||5)-3)/2-1.2,18,2.4,P.chrome);
+  }
+  rr(x+10,y-9,w-40,9,1,'#e8ecef');                             /* a roll left on top */
+  r(x+14,y-6,w-52,2,'#b9c2cb');
+}
+function drawingBoard(cx,cy,ang){              /* still one in every design office */
+  tilted(cx,cy,116,80,ang||0,(x,y,w,h)=>{
+    softShadow(x,y,w,h);
+    rr(x,y,w,h,2,'#5f6873'); rr(x+3,y+3,w-6,h-6,1,'#e8eaec');
+    X.strokeStyle='#33404c'; X.lineWidth=1.1;
+    X.strokeRect(x+13.5,y+11.5,w-42,h-30);                       /* a drawing on it */
+    X.globalAlpha=.14; r(x+15,y+13,w-45,h-33,P.cyan); X.globalAlpha=1;
+    X.strokeStyle='#9aa6b2'; X.lineWidth=1;
+    for(let i=1;i<4;i++){ X.beginPath(); X.moveTo(x+16,y+11+i*((h-30)/4)); X.lineTo(x+w-30,y+11+i*((h-30)/4)); X.stroke(); }
+    rr(x+w-28,y+h-24,22,16,1,'#dfe3e7'); r(x+w-25,y+h-19,16,1.8,'#8d98a6');
+    r(x+3,y+h-18,w-6,4.5,'#8d98a6');                             /* parallel rule */
+    r(x+3,y+h-15,w-6,1.6,'#c9cfd6');
+    rr(x+w-58,y+h-13,26,4,2,P.hazard);                           /* pencil */
+  });
+}
+function shelfUnit(x,y,w,h,seed){              /* samples, boxes, binders */
+  box(x,y,w,h,'#5f6873',2);
+  const R=seeded(seed);
+  for(let i=0;i<3;i++){
+    const sy=y+5+i*((h-8)/3);
+    r(x+3,sy+((h-8)/3)-5,w-6,2.4,'#7b8492');
+    let bx=x+6;
+    while(bx<x+w-14){
+      const bw=7+R()*9;
+      rr(bx,sy+2,bw,((h-8)/3)-9,1,['#3f6fa8','#a8443a','#c9a227','#4f6b52','#dfe3e7'][Math.floor(R()*5)]);
+      bx+=bw+2.5;
+    }
+  }
+}
+function bootRack(x,y,w,h){
+  box(x,y,w,h,'#4d5560',2);
+  for(let i=0;i<Math.floor(w/26);i++){
+    rr(x+6+i*26,y+6,17,12,2,'#20242a'); rr(x+6+i*26,y+h-20,17,14,2,P.hiviz);
+  }
+}
+function vending(x,y,w,h){
+  box(x,y,w,h,'#2f363d',2);
+  rr(x+4,y+4,w-8,h-22,2,'#101418');
+  const R=seeded(11);
+  for(let i=0;i<4;i++) for(let k=0;k<4;k++)
+    rr(x+9+k*((w-22)/4),y+9+i*((h-36)/4),((w-22)/4)-4,((h-36)/4)-4,1,
+       ['#a8443a','#3f6fa8','#c9a227','#4f6b52'][Math.floor(R()*4)]);
+  rr(x+8,y+h-15,w-16,9,1,P.slateL); rr(x+w-24,y+h-13,14,5,1,P.led);
+}
+function hardHats(cx,cy,n,cols){
+  for(let i=0;i<(n||3);i++){
+    const hx=cx+i*24;
+    X.save(); X.globalAlpha=.22; X.fillStyle='#000';
+    X.beginPath(); X.ellipse(hx,cy+7,11,4.5,0,0,Math.PI*2); X.fill(); X.restore();
+    const col=(cols&&cols[i])||[P.hazard,'#dfe3e7',P.drumBlue][i%3];
+    X.fillStyle=col; X.beginPath(); X.ellipse(hx,cy,11,8.5,0,0,Math.PI*2); X.fill();
+    X.globalAlpha=.25; X.fillStyle='#000';
+    X.beginPath(); X.ellipse(hx,cy+2.5,11,7,0,0,Math.PI*2); X.fill(); X.globalAlpha=1;
+    X.fillStyle=col; X.beginPath(); X.ellipse(hx,cy-1,7.5,5.5,0,0,Math.PI*2); X.fill();
+    X.globalAlpha=.4; X.fillStyle='#fff';
+    X.beginPath(); X.ellipse(hx-2.5,cy-2.5,3.4,2.2,0,0,Math.PI*2); X.fill(); X.globalAlpha=1;
+  }
+}
+
+/* --- shop and bay ------------------------------------------------------- */
+function benchVice(x,y,w,h){                   /* steel bench, vice, tool board */
+  box(x,y,w,h,'#5f6873',3);
+  rr(x+4,y+4,w-8,h-15,2,'#9aa3ac'); vgrad(x+4,y+4,w-8,6,'#b4bcc4','#9aa3ac');
+  X.globalAlpha=.25;
+  const R=seeded(19);
+  for(let i=0;i<40;i++) r(x+8+R()*(w-18),y+8+R()*(h-26),3,1.4,'#5c636b');
+  X.globalAlpha=1;
+  r(x+4,y+h-11,w-8,4,'#4d5560');
+  rr(x+14,y-12,30,18,2,'#3b444f');                               /* vice body */
+  rr(x+18,y-8,20,9,1,P.galv); r(x+27,y-16,4,8,P.chrome);
+  rr(x+w-96,y-14,88,16,1,'#4d5560');                             /* tool board */
+  for(let i=0;i<7;i++) rr(x+w-90+i*12,y-11,5,20,1,[P.chrome,P.galv,'#2b323c'][i%3]);
+  rr(x+w-38,y+h-26,26,15,2,P.hazard); r(x+w-34,y+h-21,18,2,'#8a6a16');
+}
+function toolChest(x,y,w,h){
+  box(x,y,w,h,'#a8443a',2); vgrad(x,y,w,5,'#c2564a','#a8443a');
+  for(let i=0;i<6;i++){ const dy=y+5+i*((h-8)/6);
+    rr(x+4,dy,w-8,((h-8)/6)-3,1,'#96382f'); r(x+w/2-8,dy+2,16,2,P.chrome); }
+  rr(x+2,y+h-4,w-4,4,1,'#20242a');
+}
+function cableDrum(cx,cy,rad,col){
+  X.save(); X.globalAlpha=.24; X.fillStyle='#000';
+  X.beginPath(); X.ellipse(cx,cy+rad*0.55,rad,rad*0.3,0,0,Math.PI*2); X.fill(); X.restore();
+  X.fillStyle='#7d6a4f'; X.beginPath(); X.arc(cx,cy,rad,0,Math.PI*2); X.fill();
+  X.fillStyle='#8f7b5c'; X.beginPath(); X.arc(cx,cy,rad-3,0,Math.PI*2); X.fill();
+  X.strokeStyle=col||'#20242a'; X.lineWidth=3.4;
+  for(let i=rad-7;i>rad*0.3;i-=4){ X.beginPath(); X.arc(cx,cy,i,0,Math.PI*2); X.stroke(); }
+  X.fillStyle='#5f5342'; X.beginPath(); X.arc(cx,cy,rad*0.26,0,Math.PI*2); X.fill();
+  collisions.push([cx-rad,cy-rad,rad*2,rad*2]);
+}
+function pallet(x,y,w,h,load){
+  softShadow(x,y,w,h); rr(x,y,w,h,1,'#a3865c');
+  X.globalAlpha=.5; for(let i=0;i<5;i++) r(x+3+i*((w-6)/5),y+2,((w-6)/5)-4,h-4,'#8a6f4a');
+  X.globalAlpha=1;
+  if(load) rr(x+5,y-12,w-10,h-6,2,load);
+  collisions.push([x,y,w,h]);
+}
+function drum(cx,cy,rad,col){
+  X.save(); X.globalAlpha=.22; X.fillStyle='#000';
+  X.beginPath(); X.ellipse(cx,cy+rad*0.5,rad,rad*0.32,0,0,Math.PI*2); X.fill(); X.restore();
+  X.fillStyle=col; X.beginPath(); X.arc(cx,cy,rad,0,Math.PI*2); X.fill();
+  X.globalAlpha=.35; X.fillStyle='#fff';
+  X.beginPath(); X.arc(cx-rad*0.3,cy-rad*0.3,rad*0.45,0,Math.PI*2); X.fill(); X.globalAlpha=1;
+  X.strokeStyle='#ffffff'; X.globalAlpha=.4; X.lineWidth=1.6;
+  X.beginPath(); X.arc(cx,cy,rad*0.66,0,Math.PI*2); X.stroke(); X.globalAlpha=1;
+  rr(cx-4,cy-rad*0.72,8,7,2,P.galvHi);
+  collisions.push([cx-rad,cy-rad,rad*2,rad*2]);
+}
+function ibcTote(x,y,w,h,liquid){              /* caged tote, sat in a bund */
+  softShadow(x,y,w,h);
+  rr(x-6,y-5,w+12,h+10,2,'#3f4650');                           /* bund */
+  X.globalAlpha=.4; rr(x-3,y-2,w+6,h+4,2,'#2b323c'); X.globalAlpha=1;
+  rr(x,y,w,h,2,'#c9cfd6');
+  X.globalAlpha=.55; rr(x+4,y+4,w-8,h-8,1,liquid||P.liquidA); X.globalAlpha=1;
+  X.strokeStyle=P.galvDk; X.lineWidth=1.6;
+  for(let i=1;i<4;i++){ X.beginPath(); X.moveTo(x+i*(w/4),y); X.lineTo(x+i*(w/4),y+h); X.stroke(); }
+  for(let i=1;i<3;i++){ X.beginPath(); X.moveTo(x,y+i*(h/3)); X.lineTo(x+w,y+i*(h/3)); X.stroke(); }
+  rr(x+w-16,y+h-9,13,7,1,P.hazard);                            /* label */
+  collisions.push([x-6,y-5,w+12,h+10]);
+}
+function gasBottles(x,y,n,col){
+  box(x,y,26+ (n-1)*20,34,'#4d5560',2);
+  for(let i=0;i<n;i++){
+    const cx=x+15+i*20;
+    X.save(); X.globalAlpha=.2; X.fillStyle='#000';
+    X.beginPath(); X.ellipse(cx,y+22,9,4,0,0,Math.PI*2); X.fill(); X.restore();
+    X.fillStyle=col||'#3f6fa8'; X.beginPath(); X.arc(cx,y+17,9,0,Math.PI*2); X.fill();
+    X.globalAlpha=.4; X.fillStyle='#fff'; X.beginPath(); X.arc(cx-3,y+14,4,0,Math.PI*2); X.fill();
+    X.globalAlpha=1; X.fillStyle=P.chrome; X.beginPath(); X.arc(cx,y+17,3.4,0,Math.PI*2); X.fill();
+  }
+  r(x+3,y+3,26+(n-1)*20-6,3,P.hazard);
+}
+function pipeRack(x,y,w,h){
+  box(x,y,w,h,'#5a6068',2);
+  const cols=[P.galv,P.stain,P.copper,P.galvDk];
+  for(let row=0;row<3;row++){
+    const ry=y+7+row*((h-10)/3);
+    for(let i=0;i<Math.floor(w/17);i++){
+      const cx=x+11+i*17;
+      X.fillStyle=cols[(row+i)%cols.length];
+      X.beginPath(); X.arc(cx,ry+5,7,0,Math.PI*2); X.fill();
+      X.fillStyle='#20242a'; X.beginPath(); X.arc(cx,ry+5,3.2,0,Math.PI*2); X.fill();
+      X.globalAlpha=.3; X.fillStyle='#fff';
+      X.beginPath(); X.arc(cx-2,ry+3,3,0,Math.PI*2); X.fill(); X.globalAlpha=1;
+    }
+  }
+}
+function jibCrane(cx,cy,reach){
+  const R=reach||120;
+  X.strokeStyle='#4d5560'; X.lineWidth=9; X.lineCap='round';
+  X.beginPath(); X.moveTo(cx,cy); X.lineTo(cx+R,cy-18); X.stroke();
+  X.strokeStyle=P.hazard; X.lineWidth=3;
+  X.beginPath(); X.moveTo(cx+8,cy-1); X.lineTo(cx+R-6,cy-17); X.stroke();
+  X.fillStyle='#3b444f'; X.beginPath(); X.arc(cx,cy,15,0,Math.PI*2); X.fill();
+  X.fillStyle=P.hazard; X.beginPath(); X.arc(cx,cy,7,0,Math.PI*2); X.fill();
+  X.strokeStyle='#8d98a6'; X.lineWidth=1.6;
+  X.beginPath(); X.moveTo(cx+R-14,cy-16); X.lineTo(cx+R-14,cy+16); X.stroke();
+  rr(cx+R-21,cy+14,14,11,2,P.galvDk);                          /* hook block */
+  collisions.push([cx-15,cy-15,30,30]);
+}
+function hazardBarrier(x,y,w,vertical){
+  if(vertical){
+    for(let i=0;i<Math.floor(w/18);i++){
+      X.fillStyle=i%2?P.hazard:'#20242a'; r(x,y+i*18,6,18,X.fillStyle);
+    }
+    collisions.push([x-2,y,10,w]);
+  } else {
+    for(let i=0;i<Math.floor(w/18);i++){
+      X.fillStyle=i%2?P.hazard:'#20242a'; r(x+i*18,y,18,6,X.fillStyle);
+    }
+    collisions.push([x,y-2,w,10]);
+  }
+}
+
+/* --- electrical --------------------------------------------------------- */
+function mccRow(x,y,w,h,n){                    /* switchgear cubicles in a row */
+  box(x,y,w,h,'#586270',3); vgrad(x,y,w,8,'#6e7987','#586270');
+  const c=n||4;
+  for(let i=0;i<c;i++){
+    const cw=(w-8)/c, cx2=x+4+i*cw;
+    rr(cx2,y+5,cw-5,h-12,2,'#66717f');
+    X.globalAlpha=.35; r(cx2+2,y+7,cw-9,3,'#c9cfd6'); X.globalAlpha=1;
+    rr(cx2+4,y+11,cw-13,12,1,'#181c22');                        /* meter window */
+    r(cx2+7,y+15,cw-22,2,P.cyan);
+    for(let k=0;k<3;k++) rr(cx2+7+k*8,y+27,5,5,2,[P.led,P.hazard,P.ledR][k]);
+    for(let v=0;v<5;v++) r(cx2+6,y+40+v*4,cw-16,2,'#4b545f');   /* louvres */
+    rr(cx2+cw-12,y+h-30,4,16,2,P.chrome);                       /* door handle */
+    rr(cx2+5,y+h-14,cw-15,7,1,'#dfe3e7');                       /* label strip */
+  }
+  r(x+3,y+h-5,w-6,4,'#3b444f');
+}
+function panelOnStand(x,y,w,h,open){
+  box(x,y,w,h,'#7d8794',2); vgrad(x,y,w,7,'#96a0ad','#7d8794');
+  if(open){
+    rr(x+4,y+5,w-8,h-14,1,'#2b323c');                            /* backplate, in shadow */
+    for(let i=0;i<3;i++) r(x+9,y+13+i*((h-40)/3),w-20,3.2,'#4b545f');  /* DIN rails */
+    for(let i=0;i<4;i++){ rr(x+12+i*((w-26)/4),y+10,((w-26)/4)-6,11,1,'#d8dde2');
+      rr(x+14+i*((w-26)/4),y+12,5,4,1,P.hazard); }               /* breakers on the top rail */
+    for(let i=0;i<5;i++) rr(x+12+i*((w-24)/5),y+h-30,((w-24)/5)-5,8,1,'#c9cfd6');  /* terminals */
+    X.strokeStyle=P.hazard; X.lineWidth=2.4; X.lineCap='round';   /* wiring, looped */
+    for(let i=0;i<4;i++){
+      const wx=x+16+i*((w-26)/4);
+      X.strokeStyle=[P.hazard,'#3f6fa8','#20242a','#a8443a'][i];
+      X.beginPath(); X.moveTo(wx,y+22); X.quadraticCurveTo(wx+9,y+h/2,wx+2,y+h-32); X.stroke();
+    }
+    rr(x+w-2,y+3,11,h-6,1,'#96a0ad');                            /* door, swung open */
+    rr(x+w+1,y+9,5,h-18,1,'#7d8794');
+  } else {
+    for(let k=0;k<3;k++) rr(x+10+k*9,y+12,5,5,2,[P.led,P.hazard,P.ledR][k]);
+    rr(x+8,y+25,w-16,12,1,'#181c22'); r(x+11,y+29,w-24,2,P.cyan);
+    for(let v=0;v<4;v++) r(x+9,y+43+v*4,w-18,2,'#5f6873');
+    rr(x+w-13,y+h-28,4,15,2,P.chrome);
+  }
+  r(x+2,y+h-7,w-4,7,'#4d5560');
+  r(x+6,y+h,w-12,5,'#39414b');                                   /* stand */
+}
+function loadBank(x,y,w,h){
+  box(x,y,w,h,'#4f5763',2); vgrad(x,y,w,6,'#646d7a','#4f5763');
+  for(let i=0;i<Math.floor((w-14)/14);i++){
+    rr(x+8+i*14,y+8,9,h-30,1,'#2b323c');
+    X.globalAlpha=.55; r(x+10+i*14,y+11,5,h-36,P.rust); X.globalAlpha=1;
+  }
+  for(let i=0;i<2;i++){                                          /* cooling fans */
+    const fx=x+w/2-26+i*44, fy=y+h-15;
+    X.fillStyle='#2b323c'; X.beginPath(); X.arc(fx,fy,10,0,Math.PI*2); X.fill();
+    X.strokeStyle='#6f7a87'; X.lineWidth=1.3;
+    for(let k=0;k<4;k++){ const a=k*Math.PI/2+.4;
+      X.beginPath(); X.moveTo(fx,fy); X.lineTo(fx+Math.cos(a)*8,fy+Math.sin(a)*8); X.stroke(); }
+  }
+  r(x+4,y+h-4,w-8,3,P.hazard);
+}
+function motorTestBed(cx,cy){
+  const x=cx-84,y=cy-30;
+  box(x,y,168,60,'#525a64',2);                                   /* baseplate */
+  X.globalAlpha=.35; r(x+5,y+5,158,5,'#20242a'); X.globalAlpha=1;
+  for(let i=0;i<6;i++) rr(x+10+i*29,y+50,7,6,1,'#39414b');       /* holding-down bolts */
+  rr(x+12,y+13,62,34,7,'#3f6fa8'); vgrad(x+12,y+13,62,7,'#5285bd','#3f6fa8');
+  for(let i=0;i<8;i++) r(x+16+i*7,y+15,2.6,30,'#35608f');        /* fins */
+  rr(x+18,y+19,16,10,1,'#2b323c'); rr(x+20,y+21,5,4,1,P.led);    /* terminal box */
+  rr(x+72,y+22,14,16,3,'#6f7a87');                               /* coupling guard */
+  X.strokeStyle=P.hazard; X.lineWidth=1.6; X.strokeRect(x+72.5,y+22.5,13,15);
+  rr(x+88,y+15,48,30,4,P.galvDk); vgrad(x+88,y+15,48,6,P.galv,P.galvDk);
+  X.fillStyle=P.chrome; X.beginPath(); X.arc(x+112,y+30,10,0,Math.PI*2); X.fill();
+  X.fillStyle='#5c636b'; X.beginPath(); X.arc(x+112,y+30,4,0,Math.PI*2); X.fill();
+  rr(x+142,y+18,20,22,2,'#2f363d'); rr(x+145,y+22,14,7,1,P.screenLit);
+  r(x+146,y+24,11,1.6,P.led);                                    /* tacho readout */
+}
+function testTrolley(x,y){
+  box(x,y,46,34,'#3b444f',2);
+  rr(x+5,y+4,36,16,2,'#dfe3e7'); rr(x+9,y+7,28,10,1,'#101418');
+  X.strokeStyle=P.led; X.lineWidth=1.2;
+  X.beginPath(); X.moveTo(x+11,y+13); X.lineTo(x+20,y+13); X.lineTo(x+24,y+9);
+  X.lineTo(x+29,y+15); X.lineTo(x+35,y+11); X.stroke();
+  rr(x+6,y+24,14,6,1,P.hazard); rr(x+24,y+24,16,6,1,'#a8443a');
+  X.strokeStyle='#20242a'; X.lineWidth=2.2;
+  X.beginPath(); X.arc(x+38,y+30,7,0,Math.PI*1.4); X.stroke();  /* coiled leads */
+}
+function terminalSamples(x,y,w,h){
+  box(x,y,w,h,'#5f6873',2);
+  const R=seeded(23);
+  for(let row=0;row<2;row++) for(let i=0;i<Math.floor((w-10)/11);i++){
+    rr(x+6+i*11,y+6+row*((h-8)/2),8,((h-8)/2)-6,1,
+       ['#dfe3e7','#3f6fa8','#c9a227','#4f6b52','#a8443a'][Math.floor(R()*5)]);
+  }
+}
+
+/* --- mechanical --------------------------------------------------------- */
+function pumpSkid(x,y,w,h,cut){
+  box(x,y,w,h,'#5a6068',2);                                     /* skid frame */
+  X.strokeStyle='#787f88'; X.lineWidth=2; X.strokeRect(x+3.5,y+3.5,w-7,h-7);
+  const mw=w*0.30, my=y+h*0.18, mh=h*0.64;
+  rr(x+7,my,mw,mh,5,'#3f6fa8'); vgrad(x+7,my,mw,6,'#5285bd','#3f6fa8');   /* motor */
+  for(let i=0;i<7;i++) r(x+11+i*(mw/7.6),my+2,2.2,mh-4,'#35608f');
+  rr(x+11,my+mh*0.3,14,10,1,'#2b323c'); rr(x+13,my+mh*0.3+2,4,4,1,P.led);
+  rr(x+7+mw+2,y+h/2-9,12,18,3,'#6f7a87');                       /* coupling guard */
+  X.strokeStyle=P.hazard; X.lineWidth=1.4; X.strokeRect(x+9.5+mw,y+h/2-8.5,11,17);
+  const cx=x+w*0.66, cy=y+h/2, rad=Math.min(h*0.34,26);
+  X.fillStyle=cut?P.stain:P.galv; X.beginPath(); X.arc(cx,cy,rad,0,Math.PI*2); X.fill();
+  X.globalAlpha=.35; X.fillStyle='#fff';
+  X.beginPath(); X.arc(cx-rad*0.3,cy-rad*0.3,rad*0.5,0,Math.PI*2); X.fill(); X.globalAlpha=1;
+  if(cut){
+    X.fillStyle='#8f99a4'; X.beginPath(); X.arc(cx,cy,rad*0.72,0,Math.PI*2); X.fill();
+    X.strokeStyle='#5c636b'; X.lineWidth=2.2;
+    for(let i=0;i<6;i++){ const a=i*Math.PI/3;
+      X.beginPath(); X.moveTo(cx+Math.cos(a)*4,cy+Math.sin(a)*4);
+      X.quadraticCurveTo(cx+Math.cos(a+.5)*rad*0.5,cy+Math.sin(a+.5)*rad*0.5,
+                         cx+Math.cos(a+.9)*rad*0.68,cy+Math.sin(a+.9)*rad*0.68); X.stroke(); }
+    X.fillStyle=P.chrome; X.beginPath(); X.arc(cx,cy,3.4,0,Math.PI*2); X.fill();
+  } else {
+    X.fillStyle=P.galvDk; X.beginPath(); X.arc(cx,cy,rad*0.36,0,Math.PI*2); X.fill();
+  }
+  r(cx+rad-2,cy-7,w*0.16,14,P.pipe);                            /* discharge and flange */
+  rr(x+w-16,cy-12,10,24,2,P.pipeDk);
+  for(let i=0;i<4;i++) r(x+w-14,cy-9+i*6,6,2,P.chrome);
+  r(cx-9,y+h-8,18,12,P.pipeDk);                                 /* suction, down through the frame */
+  rr(cx-13,y+h+2,26,9,2,P.pipe);
+}
+function heatExchanger(x,y,w,h){
+  box(x,y,w,h,P.stain,2); vgrad(x,y,w,6,P.stainHi,P.stain);
+  for(let i=0;i<Math.floor((w-16)/6);i++) r(x+9+i*6,y+7,3.4,h-16,'#9aa6ae');  /* plate pack */
+  rr(x+2,y+4,6,h-8,1,'#8d98a6'); rr(x+w-8,y+4,6,h-8,1,'#8d98a6');
+  for(let i=0;i<4;i++) r(x+3,y+9+i*((h-20)/4),3,3,P.chrome);    /* tie bars */
+  rr(x-9,y+10,11,9,2,P.pipeDk); rr(x+w-2,y+h-21,11,9,2,P.pipeDk);
+}
+function graniteTable(x,y,w,h){                /* inspection table, height gauge */
+  box(x,y,w,h,'#3b3f45',3); vgrad(x,y,w,6,'#4b5057','#3b3f45');
+  X.globalAlpha=.25;
+  const R=seeded(5);
+  for(let i=0;i<90;i++) r(x+4+R()*(w-8),y+4+R()*(h-8),2,1.6,'#c9cfd6');
+  X.globalAlpha=1;
+  rr(x+w-42,y+6,10,h-14,1,P.chrome);                            /* column */
+  rr(x+w-58,y+16,20,6,1,P.galvHi);                              /* arm */
+  rr(x+12,y+12,28,20,2,'#8d98a6'); rr(x+16,y+16,20,12,1,'#b4bcc4');  /* part */
+}
+function vibKit(x,y){
+  box(x,y,40,26,'#c9a227',2);
+  rr(x+4,y+4,22,12,1,'#20242a'); rr(x+6,y+6,18,8,1,P.screenLit);
+  X.strokeStyle=P.led; X.lineWidth=1.1;
+  X.beginPath();
+  for(let i=0;i<18;i+=2) i?X.lineTo(x+7+i,y+10+Math.sin(i)*3):X.moveTo(x+7,y+10);
+  X.stroke();
+  rr(x+30,y+5,7,16,2,P.chrome);                                 /* accelerometer */
+  X.strokeStyle='#20242a'; X.lineWidth=1.8;
+  X.beginPath(); X.arc(x+34,y+24,6,0,Math.PI); X.stroke();
+}
+function bearingShelf(x,y,w,h){
+  box(x,y,w,h,'#5f6873',2);
+  const R=seeded(31);
+  for(let row=0;row<2;row++) for(let i=0;i<Math.floor((w-8)/22);i++){
+    const cx=x+15+i*22, cy=y+9+row*((h-8)/2);
+    X.fillStyle=P.chrome; X.beginPath(); X.arc(cx,cy+4,9,0,Math.PI*2); X.fill();
+    X.fillStyle='#6f7a87'; X.beginPath(); X.arc(cx,cy+4,5.4,0,Math.PI*2); X.fill();
+    X.fillStyle=P.galvHi;
+    for(let b=0;b<7;b++){ const a=b*Math.PI*2/7+R();
+      X.beginPath(); X.arc(cx+Math.cos(a)*7.2,cy+4+Math.sin(a)*7.2,1.7,0,Math.PI*2); X.fill(); }
+  }
+}
+
+/* --- chemical ----------------------------------------------------------- */
+function fumeCupboard(x,y,w,h){
+  box(x,y,w,h,P.labWhite,2);
+  rr(x+5,y+6,w-10,h-24,1,'#cfd8d6');
+  X.globalAlpha=.55; rr(x+8,y+9,w-16,h-32,1,P.glassG); X.globalAlpha=1;  /* sash */
+  r(x+8,y+h-24,w-16,3,'#9aa6ae');
+  const R=seeded(13);
+  for(let i=0;i<5;i++){                                          /* glassware inside */
+    const gx=x+16+i*((w-30)/5);
+    X.fillStyle=P.glassG; X.globalAlpha=.85;
+    X.beginPath(); X.moveTo(gx,y+h-28); X.lineTo(gx+11,y+h-28); X.lineTo(gx+7,y+h-44);
+    X.lineTo(gx+4,y+h-44); X.closePath(); X.fill();
+    X.globalAlpha=1; r(gx+1,y+h-33,9,5,[P.liquidA,P.liquidB,P.liquidC][Math.floor(R()*3)]);
+  }
+  rr(x+w-34,y+h-16,26,9,1,P.slateL); rr(x+w-30,y+h-14,7,5,1,P.led);  /* airflow alarm */
+  r(x+6,y+2,w-12,4,P.hazard);
+}
+function labBench(x,y,w,h,seed){
+  box(x,y,w,h,P.labWhite,2); vgrad(x,y,w,6,'#f4f7f8',P.labWhite);
+  rr(x+4,y+5,w-8,h-16,1,P.labTop);                               /* epoxy resin top */
+  const R=seeded(seed||3);
+  let bx=x+10;
+  while(bx<x+w-24){
+    const kind=Math.floor(R()*4);
+    if(kind===0){                                                /* conical flask */
+      X.fillStyle=P.glassG; X.globalAlpha=.9;
+      X.beginPath(); X.moveTo(bx,y+h-20); X.lineTo(bx+13,y+h-20); X.lineTo(bx+9,y+h-38);
+      X.lineTo(bx+4,y+h-38); X.closePath(); X.fill(); X.globalAlpha=1;
+      r(bx+1,y+h-26,11,5,[P.liquidA,P.liquidB,P.liquidC][Math.floor(R()*3)]);
+      bx+=20;
+    } else if(kind===1){                                         /* beaker */
+      X.fillStyle=P.glassG; X.globalAlpha=.9; rr(bx,y+h-34,13,15,1,P.glassG); X.globalAlpha=1;
+      r(bx+1,y+h-25,11,5,P.liquidC); bx+=19;
+    } else if(kind===2){                                         /* meter */
+      rr(bx,y+h-36,22,18,2,'#dfe3e7'); rr(bx+3,y+h-33,16,8,1,'#101418');
+      rr(bx+5,y+h-31,5,4,1,P.led); bx+=28;
+    } else {                                                     /* sample bottles */
+      for(let i=0;i<3;i++){ rr(bx+i*8,y+h-30,6,11,1,'#e8ecef'); r(bx+i*8+1,y+h-25,4,5,P.liquidB); }
+      bx+=30;
+    }
+  }
+  r(x+6,y+h-11,w-12,3,'#c3ccca');
+  rr(x+w-18,y+8,12,10,1,P.chrome);                               /* tap and sink */
+  rr(x+w-22,y+20,20,14,2,'#b9c2cb');
+}
+function jarTester(x,y){
+  box(x,y,116,40,'#dfe3e7',2);
+  rr(x+4,y+24,108,12,1,'#b9c2cb');
+  for(let i=0;i<6;i++){
+    const jx=x+10+i*18;
+    X.fillStyle=P.glassG; X.globalAlpha=.9; rr(jx,y+6,13,22,1,P.glassG); X.globalAlpha=1;
+    r(jx+1,y+13,11,14,[P.liquidC,'#9fb9a8','#c7b48a'][i%3]);
+    r(jx+5,y+2,3,10,P.chrome);                                   /* paddle stirrer */
+  }
+  rr(x+4,y-8,108,8,1,'#8d98a6');
+}
+function reactorVessel(cx,cy,rad){
+  X.save(); X.globalAlpha=.24; X.fillStyle='#000';
+  X.beginPath(); X.ellipse(cx,cy+rad*0.6,rad,rad*0.32,0,0,Math.PI*2); X.fill(); X.restore();
+  X.fillStyle=P.stain; X.beginPath(); X.arc(cx,cy,rad,0,Math.PI*2); X.fill();
+  X.fillStyle=P.stainHi; X.globalAlpha=.5;
+  X.beginPath(); X.arc(cx-rad*0.25,cy-rad*0.25,rad*0.55,0,Math.PI*2); X.fill(); X.globalAlpha=1;
+  X.strokeStyle='#8d98a6'; X.lineWidth=2;
+  X.beginPath(); X.arc(cx,cy,rad*0.62,0,Math.PI*2); X.stroke();   /* manway ring */
+  X.fillStyle='#9aa6ae'; X.beginPath(); X.arc(cx,cy,rad*0.22,0,Math.PI*2); X.fill();
+  rr(cx-6,cy-rad-9,12,11,2,P.pipeDk);                             /* agitator drive */
+  r(cx+rad-4,cy-4,16,8,P.pipe); r(cx-rad-12,cy-4,16,8,P.pipe);
+  collisions.push([cx-rad,cy-rad,rad*2,rad*2]);
+}
+function dosingSkid(x,y,w,h){
+  box(x,y,w,h,'#5a6068',2);
+  X.strokeStyle='#787f88'; X.lineWidth=2; X.strokeRect(x+3.5,y+3.5,w-7,h-7);
+  for(let i=0;i<2;i++){                                          /* two dosing pumps */
+    const px=x+12+i*46;
+    rr(px,y+10,32,h-34,3,'#3f6fa8');
+    rr(px+7,y+14,18,10,1,'#20242a'); rr(px+9,y+16,5,4,1,P.led);
+    X.fillStyle=P.stain; X.beginPath(); X.arc(px+16,y+h-16,9,0,Math.PI*2); X.fill();
+  }
+  rr(x+w-42,y+8,32,h-16,2,P.glassG);                             /* calibration column */
+  X.globalAlpha=.6; r(x+w-38,y+22,24,h-32,P.liquidA); X.globalAlpha=1;
+  r(x+8,y+h-8,w-16,5,P.pipe);
+}
+function safetyStation(cx,cy){                 /* shower and eyewash, kept clear */
+  X.save(); X.globalAlpha=.18; X.fillStyle=P.led;
+  X.beginPath(); X.arc(cx,cy,34,0,Math.PI*2); X.fill(); X.restore();
+  X.strokeStyle=P.led; X.lineWidth=2; X.setLineDash([6,5]);
+  X.beginPath(); X.arc(cx,cy,34,0,Math.PI*2); X.stroke(); X.setLineDash([]);
+  X.fillStyle=P.galv; X.beginPath(); X.arc(cx,cy,15,0,Math.PI*2); X.fill();
+  X.fillStyle=P.galvHi; X.beginPath(); X.arc(cx,cy,9,0,Math.PI*2); X.fill();
+  for(let i=0;i<8;i++){ const a=i*Math.PI/4;
+    r(cx+Math.cos(a)*11-1,cy+Math.sin(a)*11-1,2,2,'#5c636b'); }
+  rr(cx+16,cy+6,18,13,2,P.led);                                   /* eyewash bowl */
+  rr(cx+20,cy+9,10,7,1,'#dfe3e7');
+  collisions.push([cx-15,cy-15,30,30]);
+}
+function spillKit(x,y){
+  box(x,y,34,26,P.hazard,2);
+  rr(x+4,y+4,26,10,1,'#8a6a16'); r(x+8,y+17,18,5,'#20242a');
+  rr(x+12,y-7,12,8,2,'#a8443a');
+}
+function sampleFridge(x,y,w,h){
+  box(x,y,w,h,'#dfe3e7',2); vgrad(x,y,w,6,'#eef1f3','#dfe3e7');
+  rr(x+4,y+5,w-8,h-24,1,'#c3ccca');
+  X.globalAlpha=.5; rr(x+7,y+8,w-14,h-32,1,P.glassG); X.globalAlpha=1;
+  for(let row=0;row<2;row++) for(let i=0;i<4;i++)
+    rr(x+11+i*((w-26)/4),y+12+row*14,7,10,1,'#e8ecef');
+  rr(x+w-18,y+h-16,12,9,1,'#101418'); rr(x+w-16,y+h-14,4,5,1,P.cyan);
+  r(x+6,y+h-7,w-12,4,P.slateL);
+}
+
 const ROOMS={
 lobby:{
   name:'Reception', wall:'#dfe3e7', wallHi:'#edf0f3', wallDk:'#c4cad1', skirt:'#2b323c',
-  material:'Terrazzo, a stone reception slab, and a wall of green tiles',
-  desc:'Terrazzo with dark chips, laid true and sealed. One stone slab for a desk with the wordmark behind it, a status board showing every service green except one, low benches instead of a sofa, and a bank of lockers for the people who cycle in.',
-  exits:'Right → Product<br/>Down → Kitchen',
+  material:'Terrazzo, a steel counter, and a dosing skid behind glass',
+  desc:'Terrazzo laid true and sealed. A steel counter with the wordmark behind it, a wall of test certificates and type approvals, two cable drums waiting to go out on Thursday, and a dosing skid in a glass case with the calibration column still full, for the people who come to be convinced.',
+  exits:'Right → Project Office<br/>Down → Canteen',
   doors:[{side:'right',at:240},{side:'bottom',at:400}],
   floor(){ terrazzoCool(31); },
   draw(){
-    statusBoard(430,26,300,52);
-    slatWall(96,26,300,52);
-    X.globalAlpha=.9; rr(150,44,190,18,3,'#20262e'); X.globalAlpha=1;  /* wordmark plate */
-    rr(162,50,22,7,1,P.cyan); rr(190,50,98,7,1,'#c7d2de');
-    tilted(400,150,210,62,0,(x,y,w,h)=>{                                 /* stone slab desk */
-      X.save(); X.globalAlpha=.24; X.fillStyle='#000000';
-      if(X.roundRect){X.beginPath();X.roundRect(x+3,y+h-2,w,9,5);X.fill();} X.restore();
-      rr(x,y,w,h,3,'#cbcfd4'); vgrad(x,y,w,9,'#e2e6ea','#cbcfd4');
-      X.globalAlpha=.25;
-      for(let i=0;i<60;i++) r(x+((i*37)%w),y+((i*23)%h),2,2,i%3?'#8d98a6':'#5c6b7a');
-      X.globalAlpha=1;
-      rr(x+w-58,y+14,40,24,2,'#1b2027'); rr(x+16,y+22,30,12,2,'#dfe3e7');
-    });
-    taskChair(400,112,P.slateM);
-    lowBench(560,300,150,P.felt);
-    lowBench(560,372,150,P.moss);
-    tilted(560,336,74,40,0,(x,y,w,h)=>{ rr(x,y,w,h,3,P.birch); vgrad(x,y,w,5,P.birchHi,P.birch);
-      rr(x+14,y+11,26,16,2,'#e8ecef'); rr(x+46,y+14,14,10,2,P.cyan); });
-    lockers(24,150,18,190,6);
-    [[118,352,46,26],[126,330,34,22],[122,310,40,20]].forEach(function(b,i){  /* hardware, delivered */
-      box(b[0],b[1],b[2],b[3], i===1?'#b7a184':'#c7b295', 2);
-      X.globalAlpha=.5; r(b[0]+b[2]/2-1,b[1],2,b[3],'#8d7a5f'); X.globalAlpha=1;
-      rr(b[0]+5,b[1]+5,14,6,1,'#e8ecef');
-    });
-    pot(120,150,1.2,'clay'); pot(700,140,1.15,'cream');
+    certWall(430,26,300,52,9);
+    screenOnWall(96,26,300,52,'plan');
+    box(300,132,200,54,'#c9cfd6',3); vgrad(300,132,200,8,'#dde1e5','#c9cfd6');
+    rr(316,146,34,14,2,'#1b2027'); rr(446,142,40,24,2,'#20242a');
+    rr(322,168,60,8,1,P.cyan);
+    taskChair(400,110,P.slateM);
+    rr(90,146,150,104,3,'#b8c0c8');                    /* glass display case */
+    X.globalAlpha=.32; rr(94,150,142,96,2,P.glass); X.globalAlpha=1;
+    dosingSkid(100,166,132,66);
+    lowBench(600,320,150,P.felt);
+    lowBench(600,392,150,P.moss);
+    drum(134,372,26,P.drumWhite);
+    ibcTote(180,368,86,62,P.liquidA);
+    pallet(272,404,64,40,null);
+    pot(716,132,1.15,'cream'); pot(60,300,1.1,'clay');
     grain(FX,FY,FW,FH,.05);
   }},
-
-creative:{
-  name:'Engineering', wall:'#3f4954', wallHi:'#4d5865', wallDk:'#333c47', skirt:'#232a32',
-  material:'Grey-blue carpet tile, bench desks, acoustic slats, two focus booths',
-  desc:'Carpet tile on a strict grid because it gets lifted twice a year. Two bench desks of three, monitors on arms at the same height, a cable spine down the middle with floor boxes, acoustic slats along the back, and two glass booths for the calls nobody wants to take at their desk.',
-  exits:'Left → Product<br/>Down → War Room',
-  doors:[{side:'left',at:240},{side:'bottom',at:400}],
-  floor(){ gridCarpet(47,'#59636f','#616c79','#48515c'); },
-  draw(){
-    slatWall(96,26,240,52);
-    whiteboardTech(352,26,250,52,13);
-    ciScreen(618,26,110,52);
-    cableSpine(150,620,300);
-    benchDesk(330,180,290,3,true);
-    benchDesk(330,384,290,3,true,true);
-    [[232,224],[330,224],[428,224]].forEach(([cx,cy],i)=>taskChair(cx,cy,[P.slateM,P.felt,P.slateM][i]));
-    [[232,340],[330,340],[428,340]].forEach(([cx,cy],i)=>taskChair(cx,cy,[P.felt,P.slateM,P.felt][i]));
-    standDesk(600,180,true);
-    taskChair(600,232,P.slateM);
-    glassBooth(660,290,52,74,true);
-    glassBooth(660,376,52,74,false);
-    box(24,310,18,120,P.slateM,2);                                        /* keyboard shelf */
-    for(let i=0;i<4;i++) rr(27,318+i*29,12,20,1,[P.cyan,'#8fd18a','#f0c674','#e8948e'][i]);
-    pot(96,150,1.1,'clay'); pot(96,392,1.05,'cream');
-    grain(FX,FY,FW,FH,.05);
-  }},
-
 servicing:{
-  name:'Product', wall:'#dfe3e7', wallHi:'#edf0f3', wallDk:'#c4cad1', skirt:'#3b444f',
-  material:'Pale resin floor, sticky-note wall, two four-desk pods',
-  desc:'Poured resin, light, easy to roll a chair across. The roadmap is three swimlanes of sticky notes and the third lane has two notes in it. Two pods of four with acoustic dividers, a sofa nobody sits on facing a screen nobody turns on, and a whiteboard on wheels.',
-  exits:'Left → Reception<br/>Right → Engineering<br/>Down → Ops',
+  name:'Project Office', wall:'#dfe3e7', wallHi:'#edf0f3', wallDk:'#c4cad1', skirt:'#3b444f',
+  material:'Carpet tile, bench desks, and the P and I diagram everyone argues over',
+  desc:'Where the job is run rather than drawn. Four desks, a plan chest with the current revision in the top drawer, cable schedules in binders, and a P and I diagram on the wall with three amendments pencilled on it.',
+  exits:'Left → Reception<br/>Right → Design Office<br/>Down → Process Lab',
   doors:[{side:'left',at:240},{side:'right',at:240},{side:'bottom',at:400}],
+  floor(){ gridCarpet(47,'#9aa1a8','#a3aab1','#848c94'); },
+  draw(){
+    diagramWall(300,26,320,52,'pid',3);
+    screenOnWall(80,26,190,52,'plan');
+    benchDesk(300,216,230,3,true);
+    taskChair(238,262,P.slateM); taskChair(360,262,P.felt);
+    benchDesk(300,352,230,3,true);
+    taskChair(238,306,P.moss); taskChair(360,306,P.slateM);
+    planChest(624,140,130,74,5);
+    shelfUnit(650,280,110,120,7);
+    cableSpine(190,420,284);
+    pot(96,150,1.2,'clay');
+    grain(FX,FY,FW,FH,.05);
+  }},
+creative:{
+  name:'Design Office', wall:'#3f4954', wallHi:'#4d5865', wallDk:'#333c47', skirt:'#232a32',
+  material:'P and I diagrams floor to ceiling, and the table the HAZOP is held at',
+  desc:'Arun and Nell sit here. Flow diagrams across the long wall, two screens on every desk, shelves of study reports by the door, and the round table in the corner where the HAZOP sat for three days and found the thing nobody had thought about.',
+  exits:'Left → Project Office<br/>Down → Briefing Room',
+  doors:[{side:'left',at:240},{side:'bottom',at:400}],
   floor(){ epoxyFloor(59,'#c6cbd1','#dadfe4'); },
   draw(){
-    stickyWall(110,26,360,52,3);
-    screenWall(500,26,190,52);
-    [[200,150],[600,150]].forEach(([cx,cy])=>{                            /* four-desk pods */
-      benchDesk(cx,cy,176,2,false);
-      rr(cx-86,cy-34,172,7,2,P.felt);                                     /* acoustic divider */
-      taskChair(cx-44,cy+50,P.slateM); taskChair(cx+44,cy+50,P.felt);
-    });
-    tilted(180,340,170,50,0,(x,y,w,h)=>{ rr(x,y,w,h,10,P.felt);
-      X.globalAlpha=.24; rr(x+7,y+5,w-14,10,5,'#ffffff'); X.globalAlpha=1; });
-    tilted(180,406,90,38,0,(x,y,w,h)=>{ rr(x,y,w,h,3,P.birch);
-      vgrad(x,y,w,5,P.birchHi,P.birch); rr(x+18,y+11,34,16,2,'#e8ecef'); });
-    box(596,322,120,10,'#e9ecef',2);                                      /* board on castors */
-    r(600,332,4,26,P.anod); r(708,332,4,26,P.anod);
-    X.strokeStyle='#2f3a46'; X.lineWidth=1.1;
-    X.strokeRect(608.5,325.5,26,5); X.strokeRect(648.5,325.5,26,5);
-    X.beginPath(); X.moveTo(636,328); X.lineTo(646,328); X.stroke();
-    box(456,288,52,40,P.slateM,3);                                         /* printer, jammed */
-    rr(462,282,40,8,2,'#e8ecef'); rr(464,296,36,18,2,'#1b2027');
-    rr(468,300,5,5,1,P.ledA);
-    rr(300,410,54,30,3,'#3f4954');                                         /* recycling, overflowing */
-    for(let i=0;i<5;i++) rr(304+i*10,402+(i%2)*4,8,10,1,'#d9d2c2');
-    lowBench(600,408,120,P.felt);
-    tilted(96,300,74,40,0,function(x,y,w,h){ rr(x,y,w,h,3,P.birch);
-      vgrad(x,y,w,5,P.birchHi,P.birch); rr(x+16,y+12,42,16,2,'#e8ecef'); });
-    pot(700,400,1.15,'clay'); pot(96,150,1.05,'cream');
+    diagramWall(96,26,330,52,'pid',5);
+    screenOnWall(470,26,260,52,'trend');
+    benchDesk(320,214,250,3,true);
+    taskChair(250,258,P.slateM); taskChair(390,258,P.felt);
+    benchDesk(320,346,250,3,true);
+    taskChair(250,302,P.moss); taskChair(390,302,P.slateM);
+    shelfUnit(52,300,72,110,17);
+    ovalTable(660,320,180,120);
+    sampleFridge(690,140,72,96);
+    cableSpine(210,430,280);
+    pot(96,400,1.1,'cream');
     grain(FX,FY,FW,FH,.05);
   }},
-
 studio:{
-  name:'Ops', wall:'#232a32', wallHi:'#2f3740', wallDk:'#1a2027', skirt:'#12161c',
-  material:'Raised access floor, dashboard wall, two racks',
-  desc:'Raised access floor on a 600 grid with one panel still lifted from Tuesday. A wall of graphs, two desks turned to face it rather than each other, and the racks in the corner with their lights going. The darkest room in the building, on purpose — you can read a graph in here.',
-  exits:'Left → Kitchen<br/>Up → Product<br/>Right → War Room',
+  name:'Process Lab', wall:'#dce3e0', wallHi:'#eaefed', wallDk:'#c0cac6', skirt:'#2b3a36',
+  material:'Welded vinyl, a fume cupboard, and a jar test in progress',
+  desc:'Bea runs this. A fume cupboard on the long wall with the sash down, two benches of glassware, a jar test halfway through, the pilot vessel with its agitator running, a tote of hypochlorite sat in its bund, and a safety shower nobody is allowed to stack anything under.',
+  exits:'Left → Canteen<br/>Up → Project Office<br/>Right → Briefing Room',
   doors:[{side:'left',at:240},{side:'top',at:400},{side:'right',at:240}],
-  floor(){ accessFloor(71); },
+  floor(){ labFloor(71); },
   draw(){
-    dashWall(126,26,244,52,17); dashWall(430,26,244,52,23);
-    rr(96,244,60,60,2,'#1b2027');                                          /* the lifted panel */
-    X.strokeStyle=P.ledA; X.lineWidth=1.4; X.strokeRect(96.5,244.5,59,59);
-    X.globalAlpha=.5; for(let i=0;i<5;i++){ X.strokeStyle=[P.cyan,P.led,P.ledA][i%3];
-      X.lineWidth=1.6; X.beginPath(); X.moveTo(104,252+i*11); X.bezierCurveTo(122,248+i*11,130,268+i*11,148,258+i*11); X.stroke(); }
-    X.globalAlpha=1;
-    benchDesk(340,300,260,3,true);
-    [[254,356],[340,356],[426,356]].forEach(([cx,cy])=>taskChair(cx,cy,P.slateM));
-    rack(636,300,52,152,5); rack(700,300,52,152,9);
-    X.globalAlpha=.5; r(636,454,116,4,'#12161c'); X.globalAlpha=1;
-    box(520,392,80,58,'#2b323c',3);                                        /* spares and a UPS */
-    rr(526,398,30,20,2,P.slateL); rr(562,398,30,20,2,P.slateL);
-    rr(526,422,66,20,2,'#1b2027'); rr(530,428,8,8,1,P.led);
-    tilted(160,392,104,44,0,(x,y,w,h)=>{ rr(x,y,w,h,3,P.slateM);
-      vgrad(x,y,w,5,P.slateL,P.slateM); rr(x+16,y+12,30,20,2,P.slateL);
-      rr(x+56,y+16,24,14,2,'#1b2027'); });
-    taskChair(160,440,P.felt);
-    pendant(300,86,'#cfe3ff',P.slateD); pendant(500,86,'#cfe3ff',P.slateD);
+    fumeCupboard(96,36,210,92);
+    labBench(468,40,184,80,29);
+    screenOnWall(664,40,80,58,'trend');
+    reactorVessel(636,220,54);
+    jarTester(96,250);
+    dosingSkid(300,244,156,72);
+    labBench(96,376,210,66,37);
+    ibcTote(360,350,96,68,P.liquidA);
+    safetyStation(520,404);
+    spillKit(572,344);
+    gasBottles(652,354,2,'#4f6b52');
+    drum(700,410,24,P.drumWhite);
     grain(FX,FY,FW,FH,.06);
   }},
-
 breakroom:{
-  name:'Kitchen', wall:'#dfe3e7', wallHi:'#edf0f3', wallDk:'#c4cad1', skirt:'#3b444f',
-  material:'Pale tile, a counter, an island, and the build on the wall',
-  desc:'Pale tile in a small format, a counter with the machine everybody has an opinion about, and an island with six stools. The build screen is on the wall by the kettle, which was deliberate — you cannot make a coffee here without finding out whether main is red.',
-  exits:'Up → Reception<br/>Right → Ops',
+  name:'Canteen', wall:'#dfe3e7', wallHi:'#edf0f3', wallDk:'#c4cad1', skirt:'#3b444f',
+  material:'Tile, a long table, and a notice board with one thing on it that matters',
+  desc:'Colin makes the tea in here. A counter with the kettle and a machine nobody has read the instructions for, one long table, a boot rack by the door, and a notice board carrying four out-of-date posters and one toolbox talk from Tuesday.',
+  exits:'Up → Reception<br/>Right → Process Lab',
   doors:[{side:'top',at:400},{side:'right',at:240}],
   floor(){ tileFloor(83,'#d3d7db','#c7ccd1','#9aa1a8',60); },
   draw(){
-    counterRun(96,26,290,52);
-    ciScreen(470,26,150,52);
-    fridge(24,148,56,168);
-    island(330,300,220,86);
-    [250,330,410].forEach((sx,i)=>stool(sx,242,[P.felt,P.cyan,P.moss][i]));
-    [250,330,410].forEach((sx,i)=>stool(sx,364,[P.moss,P.felt,P.cyan][i]));
-    pingPong(620,392);
-    rr(716,182,42,64,4,P.slateM);                                          /* water cooler */
-    rr(722,168,30,20,3,'#bcd4dc');
-    rr(724,228,26,8,2,P.slateL);
-    pot(700,140,1.15,'clay');
+    counterRun(96,30,250,46);
+    noticeBoard(470,26,250,52,5);
+    island(360,300,200,88);
+    stool(280,264,P.felt); stool(360,264,P.moss); stool(440,264,P.slateL);
+    stool(280,340,P.slateL); stool(360,340,P.felt); stool(440,340,P.moss);
+    bootRack(96,392,132,36);
+    vending(656,104,66,96);
+    sampleFridge(660,300,74,96);
+    pot(600,404,1.1,'clay');
     grain(FX,FY,FW,FH,.05);
   }},
-
 meeting:{
-  name:'War Room', wall:'#c4cad1', wallHi:'#d6dbe0', wallDk:'#adb4bc', skirt:'#3b444f',
-  material:'Grey carpet tile, one oval table, a screen and a timeline',
-  desc:'Grey carpet tile, quiet underfoot. One oval table with eight chairs evenly spaced, a screen at one end and a whiteboard at the other still carrying the timeline from last month — 11:42 flag off, 11:44 recovered — which nobody has wiped because it is the best thing anyone has drawn in here.',
-  exits:'Left → Ops<br/>Up → Engineering',
+  name:'Briefing Room', wall:'#c4cad1', wallHi:'#d6dbe0', wallDk:'#adb4bc', skirt:'#3b444f',
+  material:'One table, the programme on the wall, and a screen for the client',
+  desc:'Where Helen sits down with you and where the ninety seconds runs out. An oval table, the programme pinned up with the sample time circled, a screen, and three hard hats left in the middle from this morning.',
+  exits:'Left → Process Lab<br/>Up → Design Office',
   doors:[{side:'left',at:240},{side:'top',at:400}],
   floor(){ gridCarpet(97,'#9aa1a8','#a3aab1','#848c94'); },
   draw(){
-    screenWall(430,26,260,52);
-    box(104,26,280,52,'#f3f5f7',2);                                        /* the incident timeline */
-    X.strokeStyle='#2f3a46'; X.lineWidth=1.4;
-    X.beginPath(); X.moveTo(118,60); X.lineTo(370,60); X.stroke();
-    [[142,P.ledR],[196,P.ledR],[248,P.ledA],[302,P.led],[352,P.led]].forEach(([mx,col],i)=>{
-      X.fillStyle=col; X.beginPath(); X.arc(mx,60,3.4,0,Math.PI*2); X.fill();
-      rr(mx-13,40+(i%2)*9,26,6,1,'#dfe3e7');
-      X.strokeStyle='#7d8791'; X.lineWidth=.8;
-      X.beginPath(); X.moveTo(mx,46+(i%2)*9); X.lineTo(mx,57); X.stroke();
-    });
-    box(760,150,20,150,P.glass,2);
-    X.globalAlpha=.35; r(762,154,16,142,'#dff0f4'); X.globalAlpha=1;
-    ovalTable(400,300,280,120);
-    [300,400,500].forEach((cx,i)=>taskChair(cx,214,[P.slateM,P.felt,P.slateM][i]));
-    [300,400,500].forEach((cx,i)=>taskChair(cx,392,[P.felt,P.slateM,P.felt][i]));
-    taskChair(232,300,P.slateM); taskChair(568,300,P.felt);
-    rr(96,378,46,56,3,P.slateM);                                           /* monitor on a trolley */
-    rr(100,366,38,22,2,'#1b2027');
-    pot(700,400,1.1,'clay');
+    diagramWall(96,26,246,56,'pid',11);
+    screenOnWall(470,26,260,56,'plan');
     pendant(330,104,'#e8eef5',P.slateD); pendant(470,104,'#e8eef5',P.slateD);
+    ovalTable(400,300,300,152);
+    taskChair(296,214,P.slateM); taskChair(348,206,P.felt); taskChair(500,214,P.slateM);
+    taskChair(240,300,P.moss); taskChair(560,300,P.moss);
+    taskChair(300,388,P.slateM); taskChair(400,394,P.felt); taskChair(500,388,P.slateM);
+    hardHats(356,296,3,[P.hazard,'#dfe3e7',P.drumBlue]);
+    pot(716,404,1.1,'clay');
     grain(FX,FY,FW,FH,.05);
   }}
 };
 
 const CAST={
- mike:{name:'Ravi', role:'Staff Data Scientist', where:'Engineering',
+ mike:{name:'Arun', role:'Principal Process Engineer', where:'Design Office',
    accent:'#fbbf24', top:'#c9852f', topDk:'#a06a22', style:'overshirt', tee:'#f2ece0',
    legs:'#33405c', legsDk:'#26314a', shoe:'#e8e2d6',
    skin:'#c98a56', skinDk:'#a26c3f', hair:'#5a5148', hairHi:'#7d7266', cut:'curls',
    specs:true, prop:'notebook', build:1.04, bw:23, beard:true},
- kate:{name:'Nadia', role:'Product Lead', where:'Product',
+ kate:{name:'Maggie', role:'Engineering Director', where:'Project Office',
    accent:'#f472b6', top:'#6d4a63', topDk:'#523849', style:'blazer', tee:'#f2ece0',
    legs:'#2c2a26', legsDk:'#1f1e1b', shoe:'#33302b',
    skin:'#e8b98c', skinDk:'#c2955f', hair:'#2b1f18', hairHi:'#463228', cut:'long',
    specs:false, prop:'tablet', build:1.0, bw:20, beard:false},
- jenny:{name:'Jen', role:'Data Platform', where:'Ops',
+ jenny:{name:'Bea', role:'Production Manager', where:'Process Lab',
    accent:'#34d399', top:'#2f7d78', topDk:'#215b57', style:'hoodie', tee:'#2f7d78',
    legs:'#5e6a4f', legsDk:'#48523c', shoe:'#e08265',
    skin:'#8d5f38', skinDk:'#6d4626', hair:'#1e1710', hairHi:'#3a2c1e', cut:'puff',
    specs:false, prop:'camera', build:0.98, bw:22, beard:false},
- alex:{name:'Sam', role:'Senior Analyst', where:'Engineering',
+ alex:{name:'Nell', role:'Graduate Engineer', where:'Design Office',
    accent:'#38bdf8', top:'#e08265', topDk:'#b8624a', style:'knit', tee:'#e08265',
    legs:'#a8a49c', legsDk:'#8d8981', shoe:'#33302b',
    skin:'#f0c8a0', skinDk:'#cfa079', hair:'#3a2a1c', hairHi:'#5a4430', cut:'undercut',
    specs:true, prop:'coffee', build:0.96, bw:19, beard:false},
- dan:{name:'Theo', role:'Analytics Engineering', where:'Kitchen',
+ dan:{name:'Colin', role:'Maintenance Fitter', where:'Canteen',
    accent:'#a78bfa', top:'#7d9070', topDk:'#5f6f54', style:'tee', tee:'#7d9070',
    legs:'#3f4a5c', legsDk:'#2f3747', shoe:'#f2ece0',
    skin:'#a0673a', skinDk:'#7d4c28', hair:'#22201d', hairHi:'#3a352d', cut:'beanie',
    specs:false, prop:'mug', build:1.02, bw:21, beard:true},
- player:{name:'You', role:'The new analyst', where:'Reception',
+ player:{name:'You', role:'The new process engineer', where:'Reception',
    accent:'#e4ded2', top:'#4a6a86', topDk:'#3a5468', style:'overshirt', tee:'#f2ece0',
    legs:'#33405c', legsDk:'#26314a', shoe:'#e8e2d6',
    skin:'#c08a5e', skinDk:'#9c6c45', hair:'#241c16', hairHi:'#3c2f24', cut:'short',
@@ -1918,166 +2476,149 @@ window.CC.coll=function(){ return baked().coll; };
 
 
 /* ==========================================================================
-   DESIGN FUNDAMENTALS TRACK — content only
+   CHEMICAL ENGINEERING TRACK — content only
    ========================================================================== */
 
-CAST.owen={name:'Diane', role:'VP Revenue', where:'War Room',
-   accent:'#f472b6', top:'#5c4a63', topDk:'#453749', style:'blazer', tee:'#e6edf3',
+CAST.owen={name:'Helen', role:'Asset Manager, Wearside Water', where:'Briefing Room',
+   accent:'#38bdf8', top:'#3f4a5c', topDk:'#2f3747', style:'blazer', tee:'#e6edf3',
    legs:'#2c2a26', legsDk:'#1f1e1b', shoe:'#33302b',
-   skin:'#e8b98c', skinDk:'#c2955f', hair:'#4a4038', hairHi:'#6b5e52', cut:'short',
+   skin:'#f0c8a0', skinDk:'#cfa079', hair:'#3a2a1c', hairHi:'#5a4430', cut:'long',
    specs:true, prop:'tablet', build:1.0, bw:20, beard:false};
 
-const OBJ_DATA={
-  data_brief:'Get the question from Nadia in Product',
-  metric:'Ravi is on the Engineering floor — agree what churn means first',
-  confound:'Theo in the Kitchen has a chart he is excited about',
-  survivorship:'Back to Ravi. Something is missing from your data, by definition',
-  simpson:'Jen in Ops — conversion is up and down at the same time',
-  ab_test:'Theo again, and he wants to ship the experiment',
-  leakage:'Jen in Ops. Ninety-four per cent accuracy is the problem, not the result',
-  stakeholder:'Diane is waiting in the War Room',
-  crisis_fix:'Ops. Jen. Quickly',
-  crisis_show:'Back to Diane in the War Room',
-  complete:'You are an analyst now'
+const OBJ_CHEM={
+  dose_brief:'Get the dosing brief from Maggie in the Project Office',
+  balance:'Arun is in the Design Office — four per cent of the chemical is missing',
+  compat:'Colin is in the Canteen, and he has seen the new fill points',
+  heat:'Arun again. The exchanger is four degrees short',
+  scaleup:'Bea is in the Process Lab — the recipe that worked in the rig',
+  relief:'Back to Arun. The vessel has a disc on it and nobody has checked why',
+  client:'Helen is waiting in the Briefing Room',
+  crisis_fix:'Process Lab. Bea. Quickly',
+  crisis_show:'Back to Helen in the Briefing Room',
+  complete:'You are a chemical engineer now'
 };
 
-function dataOccupants(room){
+function chemOccupants(room){
   const s=G.step;
-  const withDiane=['stakeholder','crisis_fix','crisis_show'].indexOf(s)>=0;
+  const withHelen=['client','crisis_fix','crisis_show'].indexOf(s)>=0;
   if(room==='lobby')     return [];
   if(room==='servicing') return [['kate',400,306,'down']];
   if(room==='creative')  return [['mike',260,258,'right'],['alex',560,268,'left']];
   if(room==='studio')    return [['jenny',400,196,'down']];
   if(room==='breakroom') return [['dan',650,268,'down']];
-  if(room==='meeting')   return withDiane?[['owen',400,196,'down']]:[];
+  if(room==='meeting')   return withHelen?[['owen',400,196,'down']]:[];
   return [];
 }
 
-function dataScript(key){
+function chemScript(key){
   const s=G.step;
 
-  /* ---------- the question ---------- */
-  if(key==='kate'&&s==='data_brief')
-    return say('kate',`Hi — Nadia, product. Welcome aboard. Churn's up four points this quarter, and we put prices up in February, so everyone's already decided what happened. Diane needs something for the board on Thursday. What she'll ask you for is a number. What she needs is to know whether to roll the price rise back.`,
-      [{label:`Those aren't the same request.`,go:function(){
-        say('kate',`No, they're not — and you'll find that out the hard way at about four o'clock. Ravi's on the floor. Start with him, because three teams in this building count churn three different ways, and two of them are wrong for this question.`,
-          [{label:'On my way.',go:function(){ advance('metric'); }}]);
+  /* ---------- the brief ---------- */
+  if(key==='kate'&&s==='dose_brief')
+    return say('kate',`Hi — I'm Maggie, engineering director. Welcome to Hallam Works. We design and build the dosing rigs and process packages that end up in water treatment works, dairies and breweries. You're on Wearside Water from this morning: a chlorine dosing package for a service reservoir, plus the clean-in-place set that goes with it. They take a compliance sample at five o'clock.`,
+      [{label:'What is wrong with it?',go:function(){
+        say('kate',`Four per cent of the chemical we dose can't be accounted for. The new fill points have gone in next to each other and Colin has gone quiet about it. And the heat exchanger on the CIP set is four degrees short of temperature. Arun's in the Design Office — start with the four per cent, because everyone has already decided it's the meter.`,
+          [{label:'On my way.',go:function(){ advance('balance'); }}]);
       }}]);
 
-  /* ---------- 1. the metric ---------- */
-  if(key==='mike'&&s==='metric'){
+  /* ---------- 1. the mass balance ---------- */
+  if(key==='mike'&&s==='balance'){
     return choose('mike',
-      `Ravi, staff data scientist — good to have you. Before you open anything: finance count churn as revenue lost over revenue at the start of the month. Support count any account that raises a cancellation. The dashboard counts logins going to zero for thirty days. All three say churn, and they disagree by nine points. Which do you use?`,
+      `Arun Pillai — principal process, which mostly means I ask where the number came from. Good to have you. We buy a tanker of sodium hypochlorite, we dose what the meter says, and four per cent of it is unaccounted for by the end of the month. Site want the meter calibrated. Do we calibrate the meter?`,
       [
-       {label:`The dashboard figure — it's what the company already looks at, so the numbers will match what people expect.`,ok:false,
-        note:`Consistent with a number nobody chose for this purpose. Thirty days of no logins includes every seasonal business that's shut for the winter. Want to try another?`},
-       {label:`Whichever is highest, so we're being conservative about the size of the problem.`,ok:false,
-        note:`Picking the number that makes the best story is the thing you're here to stop other people doing. Try again?`},
-       {label:`Work back from the decision. She's deciding whether to reverse a price rise, so it's revenue retained by cohort, measured from the month each account signed — and write the definition into the analysis so people can argue with it.`,ok:true}
+       {label:`Yes — four per cent is about right for a meter that has been in two years.`,ok:false,
+        note:`It might be. And if it isn't, we've spent a day proving a good meter is good while four per cent of a tanker keeps going somewhere. Want to try another?`},
+       {label:`Draw a boundary round the whole package first and account for everything crossing it — what goes in, what is dosed, what goes to drain on a flush, and what the hypochlorite loses to decomposition sitting warm in the tank. Then question the meter.`,ok:true},
+       {label:`Add four per cent to the dose so the residual still comes out right.`,ok:false,
+        note:`Now we're overdosing to cover an unknown, and the day the unknown changes we find out in a compliance sample. Try again?`}
       ],function(){
-        filed('Metric definition','Meridian churn','Revenue retention by signup cohort, chosen from the decision and written down');
-        advance('confound','mike',`Right. Choosing a metric is a decision, not a lookup, and the decision it serves is the only thing that makes one choice better than another. Write the definition where people can see it, or in six weeks someone will quote your number for something it can't answer. Theo's in the kitchen with a chart he's very pleased about.`);
+        filed('Mass balance','Wearside Water','Boundary drawn and every stream accounted for — flushes, drain losses and decomposition — before the instrument was blamed');
+        advance('compat','mike',`That's it. A balance that doesn't close is telling you about a stream you haven't drawn. Two thirds of ours goes down the drain on the daily flush, and the rest decomposes in a tank that sits at twenty-six degrees in summer. The meter was fine. Colin's in the canteen, and he's seen the new fill points.`);
       });
   }
 
-  /* ---------- 2. the confounder ---------- */
-  if(key==='dan'&&s==='confound'){
+  /* ---------- 2. chemical compatibility ---------- */
+  if(key==='dan'&&s==='compat'){
     return choose('dan',
-      `Theo, analytics engineering. Look at this. Accounts with the mobile app installed churn thirty-one per cent less. Thirty-one. I've already written the slide — push the app harder, churn goes down. Tell me I'm a genius.`,
+      `Colin Baxter, maintenance fitter — I'm the one on site when the tanker comes. The new fill points are a metre apart. Hypochlorite on the left, acid on the right, same size coupling on both, same grey cabinet, and the labels are on the inside of the door. Tell me that's fine.`,
       [
-       {label:`It's a big effect on a big sample, so recommend the app push and monitor churn afterwards.`,ok:false,
-        note:`It's a big effect on the wrong question. You'd be spending a quarter's roadmap on something that might be entirely backwards. Want to try another?`},
-       {label:`Ask what else is true of accounts that install the app, compare like with like on size and engagement — and say plainly that only a randomised rollout settles which way the arrow points.`,ok:true},
-       {label:`Dismiss it — correlation isn't causation, so it tells us nothing.`,ok:false,
-        note:`Too far the other way. It's a real pattern and worth chasing; it just isn't a cause yet. Correlation isn't causation is the beginning of the work, not a way out of it. Have another go?`}
+       {label:`It's labelled and the driver has a delivery note. That's the control.`,ok:false,
+        note:`On a wet afternoon, with the labels shut inside the door. Put those two in the same tank and you make chlorine gas in a chamber I stand in. Want to try another?`},
+       {label:`No. Different couplings so the wrong hose physically will not fit, separate bunds so a spill of one cannot reach the other, the fill points moved apart with the labels on the outside, and a delivery procedure with one of ours present.`,ok:true},
+       {label:`Put a bigger warning sign on the cabinet and brief the hauliers.`,ok:false,
+        note:`A sign is an instruction to somebody in a hurry. The coupling is a design that doesn't care how busy they are. Have another go?`}
       ],function(){
-        filed('Confounder check','Meridian churn','App effect explained by account size and engagement; experiment proposed');
-        advance('survivorship','dan',`Ah. It's the busy multi-practitioner accounts that install it, and they were never going to leave. Engaged people install apps; apps don't create engaged people — not by thirty-one points, anyway. Ravi's after you. Something about your data being missing on purpose.`);
+        filed('Chemical compatibility','Wearside Water','Incompatible chemicals separated by coupling, bund and distance rather than by signage');
+        advance('heat','dan',`Thank you. Two incompatible chemicals, one coupling and a driver on his ninth drop: that's not an accident waiting, that's an accident booked in. If the wrong hose can't fit, the wrong thing can't happen. Arun's after you — the exchanger's still four degrees short.`);
       });
   }
 
-  /* ---------- 3. survivorship ---------- */
-  if(key==='mike'&&s==='survivorship'){
+  /* ---------- 3. heat transfer ---------- */
+  if(key==='mike'&&s==='heat'){
     return choose('mike',
-      `Two things in your working. Your satisfaction scores come from the onboarding survey, which only fires on the last step of onboarding. And your feature-usage table was rebuilt in March from currently active accounts. So you're about to conclude that satisfied, feature-using accounts churn less.`,
+      `The CIP set has to reach eighty-five degrees to satisfy the brewery's own procedure. The plate exchanger gets to eighty-one and stops. Steam is at full, the pump is running, and the shift manager wants to turn the steam pressure up. What do we do?`,
       [
-       {label:`Note both as limitations in an appendix and carry on with the conclusion.`,ok:false,
-        note:`A limitation in an appendix is a conclusion in the summary. Your survey can't contain anyone who gave up during onboarding, and your usage table can't contain anyone who already left — so of course the survivors look happy and busy. Try again?`},
-       {label:`Recognise that both sources exclude the very people the question is about, go back for a source that includes churned accounts, and weight or reframe rather than concluding from survivors.`,ok:true},
-       {label:`Increase the sample — pull twelve months instead of three, which will dilute the bias.`,ok:false,
-        note:`Twelve months of the same missing people. More data with the same hole in it is just a more confident wrong answer. Have another go?`}
+       {label:`Turn the steam up. More driving force, more heat.`,ok:false,
+        note:`If the plates are fouled you've raised the temperature of the fouling, and on a caustic circuit you may bake it on harder. Try again?`},
+       {label:`Work out whether it is fouling, flow, or a sizing that was always optimistic — compare the temperature approach now against the day it was commissioned, then clean it and re-rate the duty honestly.`,ok:true},
+       {label:`Run the circuit longer at eighty-one so the total heat delivered is the same.`,ok:false,
+        note:`Their procedure names a temperature because that is what kills the thing they are worried about. Time at the wrong temperature isn't a substitute, and it's their auditor, not ours. Have another go?`}
       ],function(){
-        filed('Survivorship check','Meridian churn','Survivor-only sources identified and replaced with full-population history');
-        advance('simpson','mike',`Yes. Ask who's definitionally absent from every table you touch — and the answer is usually the people you're asking about. Jen's in Ops, and she's got conversion going up and down at the same time.`);
+        filed('Heat transfer','Wearside Water','Approach temperature compared with commissioning data — fouling cleaned and the duty re-rated honestly');
+        advance('scaleup','mike',`Good. The approach was three degrees on day one and it's eleven now, which is fouling, not physics changing its mind. Clean it, then be honest that we sized it with nothing in reserve — four degrees of margin would have cost very little in plate area. Bea's in the Process Lab with the recipe that worked beautifully in the rig.`);
       });
   }
 
-  /* ---------- 4. the mix shift ---------- */
-  if(key==='jenny'&&s==='simpson'){
+  /* ---------- 4. scale-up ---------- */
+  if(key==='jenny'&&s==='scaleup'){
     return choose('jenny',
-      `Jen, data platform. So: trial-to-paid conversion is up two points overall this quarter. And it's down in clinics, down in salons, down in garages, down in other — every single segment. Both of those are correct. Explain it, or you can't use either.`,
+      `Bea Novak, production — nice to meet you. Your cleaning recipe: twenty litres in the lab, perfect. Eight cubic metres in the real vessel and it foams over the top, takes twenty minutes to mix instead of two, and the detergent never gets to the far side. What went wrong?`,
       [
-       {label:`The overall figure is the one that matters — segments are noisy at that size.`,ok:false,
-        note:`You've picked the number you liked and called the rest noise. They aren't noise; they're every segment we have. Try again?`},
-       {label:`The mix changed — we got a lot more of whichever segment converts best, so the total rose while each segment fell. Report the mix shift and the per-segment trend together, because the average is hiding the story.`,ok:true},
-       {label:`It's a data quality problem — the segments must be double-counting somewhere.`,ok:false,
-        note:`Tempting, and no. This happens with perfectly clean data, and it's got a name. Have another go?`}
+       {label:`Nothing — scale it all up in proportion. Ten times the volume, ten times the impeller.`,ok:false,
+        note:`Same shape isn't the same behaviour. The power you need to keep it mixed doesn't scale with the volume, and the surface it foams at doesn't either. Want to try another?`},
+       {label:`Keep the mixing intensity rather than the geometry — match power per unit volume and tip speed, check the mixing time at full size, add the surfactant where it is not falling through air, and prove it at pilot scale before promising a date.`,ok:true},
+       {label:`Add antifoam and turn the agitator up until it mixes in two minutes.`,ok:false,
+        note:`Antifoam in a food plant is another chemical to justify, and a faster agitator shears the emulsion and heats the batch. You've treated two symptoms and learned nothing. Have another go?`}
       ],function(){
-        filed('Mix analysis','Meridian conversion','Simpson\u2019s paradox identified — clinic share up, every segment down');
-        advance('ab_test','jenny',`Correct — marketing went hard at clinics in January, clinics convert best, and the weighted average went up while we got worse at everything. An aggregate is a weighted average of things you chose not to look at. Theo's found statistical significance, by the way, and he's ready to ship.`);
+        filed('Scale-up','Wearside Water','Mixing intensity matched rather than geometry, and proved at pilot scale before a date was given');
+        advance('relief','jenny',`Right. Geometric similarity is not dynamic similarity — the thing that stays the same is how hard you are working each cubic metre, not how the drawing looks. And a recipe that has never been made at size is a hypothesis with a delivery date. Arun wants you back. There's a vessel with a bursting disc on it and nobody can say why.`);
       });
   }
 
-  /* ---------- 5. the experiment ---------- */
-  if(key==='dan'&&s==='ab_test'){
-    return choose('dan',
-      `The new pricing page test. Day three, p equals nought point nought four, variant's up eleven per cent. Nadia's asking whether we can call it. Our pre-registered plan said two weeks and eighteen thousand sessions, and we're at four thousand.`,
+  /* ---------- 5. relief and HAZOP ---------- */
+  if(key==='mike'&&s==='relief'){
+    return choose('mike',
+      `The batch vessel has a bursting disc, sized years ago for the fire case. Since then we've added a pump feeding it, an automatic valve on the outlet, and steam on the jacket. The disc vents straight out at head height beside the sample point. What's your position?`,
       [
-       {label:`Ship it — significance is significance, and two more weeks of a worse page costs money.`,ok:false,
-        note:`You've stopped at the exact moment the noise was flattering. Peek often enough and a coin looks significant — which is why we wrote the plan down before we started. Try again?`},
-       {label:`Keep it running and check daily — if it stays significant, ship early with confidence.`,ok:false,
-        note:`Checking daily and stopping when you like the answer is the same mistake with more steps. Have another go?`},
-       {label:`Run to the pre-registered sample and stop rule, report the effect with its interval rather than just the p-value, and note that eleven per cent on day three will shrink.`,ok:true}
+       {label:`It has relief on it, sized by somebody competent. It's protected.`,ok:false,
+        note:`Sized for a fire, before there was a pump that can fill it against a shut valve. Protection is for the case you have, not the case you had. Try again?`},
+       {label:`Work the deviations through properly — no flow, no outlet, more heat — size the relief for the worst credible case rather than the one on file, and route the discharge somewhere nobody stands.`,ok:true},
+       {label:`Add a high pressure alarm and a trip on the pump, and leave the disc as it is.`,ok:false,
+        note:`Now the last line of defence is the instrument that could be the thing that failed. Alarms are welcome and they are not relief. Have another go?`}
       ],function(){
-        filed('Experiment discipline','Meridian pricing test','Ran to the pre-registered stop rule; effect reported with interval');
-        advance('leakage','dan',`Fine. It settled at three per cent — still worth having, and a completely different conversation about the roadmap than eleven. Jen wants you. She says your churn model is too good.`);
+        filed('Relief and HAZOP','Wearside Water','Deviations worked through, relief sized for the worst credible case, discharge routed away from people');
+        advance('client','mike',`That's the discipline. Walk the deviations one at a time and ask what happens, what notices and what is left — then size for the worst case you can actually reach, and put the discharge where a person is not standing at ten past four with a sample bottle. Helen's here from Wearside, and she's asking for more chlorine.`);
       });
   }
 
-  /* ---------- 6. leakage and base rates ---------- */
-  if(key==='jenny'&&s==='leakage'){
-    return choose('jenny',
-      `So your churn model reports ninety-four per cent accuracy. Churn in this population runs at about six per cent. Two of your features are days since last login, computed as of today, and cancellation_reason_is_null. And you split train and test randomly across two years. Go on then.`,
-      [
-       {label:`Ninety-four per cent on a six per cent base rate is roughly predict nobody churns, so switch to precision, recall and a proper baseline comparison.`,ok:false,
-        note:`Right about the base rate — and you've left both time bombs in. Your cancellation-reason feature is the answer written on the back of the card, and a random split lets the model learn from next March to predict last January. Try again?`},
-       {label:`Drop the features that are only knowable after the outcome, split by time so training never sees the future, and judge it on precision and recall against the base-rate baseline rather than accuracy.`,ok:true},
-       {label:`Retrain with class weights to handle the imbalance and keep the feature set — the model should learn to discount weak signals itself.`,ok:false,
-        note:`You've fixed the imbalance and kept the leak. A model with the outcome in its inputs will happily learn it, weighted or not. Have another go?`}
-      ],function(){
-        filed('Model validation','Meridian churn model','Post-outcome features removed, time-based split, precision and recall against base rate');
-        advance('stakeholder','jenny',`Good. It scores far worse, and it's now worth something. Accuracy on a rare event is a vanity metric, a feature that only exists after the event is the answer on the back of the card, and a random split over time is quiet time travel. Right — Diane's in the war room and she wants a number.`);
-      });
-  }
-
-  /* ---------- 7. the stakeholder who knows the answer ---------- */
-  if(key==='owen'&&s==='stakeholder'){
+  /* ---------- 6. the client, and what she actually needs ---------- */
+  if(key==='owen'&&s==='client'){
     return choose('owen',
-      `Diane, revenue. I've got fifteen minutes. I need the slide that shows the February price rise didn't drive the churn — because I've read the cohorts and I don't think it did, and I'd rather not spend Thursday being shouted at by people who haven't. Can you get me that number?`,
+      `Helen Ashworth, asset manager at Wearside. A sample at the far end of the network came back under our target residual on Tuesday. I'd like you to put the dose up by half — it's easier than explaining another one to the regulator.`,
       [
-       {label:`"I can — I'll pull the comparison that supports it."`,ok:false,
-        note:`(You've just agreed to find evidence for a conclusion. If the data goes the other way, you now have to choose between your analysis and your credibility — and you set that trap yourself. Want another go?)`},
-       {label:`"I can tell you what the data supports, which might not be that. What decision is Thursday actually making — whether to reverse the rise?"`,ok:true},
-       {label:`"I can't produce a number to support a conclusion you've already reached."`,ok:false,
-        note:`Nor can I use that. I'll go with my own reading, then.  (Correct, and you've just removed the only careful person from the decision. Try again?)`}
+       {label:`"Of course — I'll set the dose up fifty per cent this afternoon."`,ok:false,
+        note:`(You've just agreed to push more chlorine into a network without knowing where the last lot went. The taste complaints arrive within a week and the by-product limit is a harder conversation than a low residual. Want another go?)`},
+       {label:`"Before I touch the dose — was it low at the works as well, or only at the far end? And what changed on Tuesday?"`,ok:true},
+       {label:`"Overdosing to hit one sample is how you fail the by-product limit instead."`,ok:false,
+        note:`I'm sure it is. I'll ask the operations team to do it, then.  (Correct, and now the dose goes up anyway and nobody has looked at the cause. Try again?)`}
       ],function(){
-        say('owen',`...Whether to reverse it, yes. And if we reverse it we lose the margin that pays for next year's hiring, so I'd rather be right than comfortable. What does it actually say?`,
-          [{label:'Mostly what you think. Not entirely.',go:function(){
-            say('owen',`Go on.`,
-              [{label:'Retention held in four segments and fell hard in two.',go:function(){
-                filed('Question, translated','Meridian','Reframed from "prove it wasn\u2019t the price" to "should we reverse it"');
+        say('owen',`...Fine at the works. Low only at the far end, and only Tuesday. Which was the day they flushed the main up there, now you make me say it out loud.`,
+          [{label:'So the chlorine was used up by the main, not missing from the dose.',go:function(){
+            say('owen',`...And if I'd put the dose up by half, the whole town would have tasted it for a week to fix one sample in one dead end.`,
+              [{label:'Then the dose was never the problem.',go:function(){
+                filed('Requirement, translated','Wearside Water','A low residual at one point after a flush, not a dosing shortfall — demand explained before the dose was changed');
                 startClock(90);
-                say('kate',`Which is the honest answer and a terrible moment for it, because the board pack locks in ninety seconds. Jen's in Ops — get one chart in there. Go.`,
+                say('kate',`Which is right, and the timing is dreadful. They take the next compliance sample at five, and whatever control we ship has to be in the panel before it goes. Bea's in the Process Lab. Go.`,
                   [{label:'Go.',go:function(){ G.step='crisis_fix'; paintHUD(); closeDlg(); }}]);
               }}]);
           }}]);
@@ -2085,150 +2626,165 @@ function dataScript(key){
   }
 
   if(key==='jenny'&&s==='crisis_fix'){
-    return choose('jenny',`One chart, ninety seconds. What goes in?`,[
-      {label:`The headline number — churn attributable to price isn't significant overall — with the segment detail in the appendix.`,ok:false,
-       note:`That's a true sentence that will be read as the price rise was fine. And the two segments where it bit are the two she's about to make a decision about. Try again?`},
-      {label:`Retention by cohort before and after February with the intervals shown, the two segments where it fell called out on the same chart, and one line on what this can't tell us.`,ok:true},
-      {label:`A clean single-line chart of overall retention — anything more and a board audience stops looking.`,ok:false,
-       note:`Simplify the presentation, not the finding. You'd be hiding the only part of this that changes what they do. Have another go?`}
+    return choose('jenny',`Ninety seconds. What is this rig actually doing to the dose?`,[
+      {label:`Fixed dose, set half higher, and we watch the samples for a month.`,ok:false,
+       note:`That is the thing she just talked herself out of, with a month of the town tasting it. Try again — quickly.`},
+      {label:`Dose to a measured residual with a proper control loop, alarm when the demand jumps instead of chasing it, and log the flush events so a low sample can be explained rather than guessed at.`,ok:true},
+      {label:`Automatic boost whenever a sample comes back low, so it corrects itself.`,ok:false,
+       note:`A sample is hours old and comes from one point in a network. You'd be correcting Tuesday's dead end on Thursday, everywhere. Have another go?`}
     ],function(){
-      advance('crisis_show','jenny',`In the pack with eleven seconds to spare. Cohorts, intervals, the two bad segments named, and a sentence saying what it can't answer. Go and show her.`);
+      advance('crisis_show','jenny',`Loop configured, alarm set on demand rather than dose, flush events logged — eleven seconds spare. Go and show her, before somebody turns a dial.`);
     });
   }
 
   if(key==='owen'&&s==='crisis_show'){
     stopClock();
-    return say('owen',`So I keep the rise, and I go in on Thursday with the two segments we hurt and what we're doing about them.`,
-      [{label:'And with what the chart cannot tell you.',go:function(){
-        say('owen',`That line is the reason I'll be believed. I asked you for a number and you gave me a decision — nobody in this building does that.`,
+    return say('owen',`So it holds the residual where I want it, and it tells me when something in the network started eating it.`,
+      [{label:'And the flush shows up as a flush.',go:function(){
+        say('owen',`I've been asked for more chlorine by three contractors and given it to two of them. You're the first one who asked what changed on Tuesday.`,
           [{label:'...',go:function(){
-            say('kate',`That's the job. Not the model, not the p-value — that. Someone asked you to prove something, and your first move was to find out what they were deciding. Seven pieces of work, a model you made worse on purpose, and a board pack you didn't miss. You're an analyst now.`,
+            say('kate',`That's the job. Not the relief sizing, not the mass balance — that. Somebody hands you a number to turn up and you go and find out what happened. Six pieces of work, a compliance sample you didn't miss, and a town that won't taste it. You're a chemical engineer now.`,
               [{label:'Thank you.',go:function(){ G.step='complete'; paintHUD(); closeDlg(); openCertificate(); }}]);
           }}]);
       }}]);
   }
 
-  /* ---------- Sam: hints ---------- */
+  /* ---------- Nell: hints ---------- */
   if(key==='alex'){
     const h={
-      data_brief:`Nadia's in Product. Ask what gets decided, not what gets reported.`,
-      metric:`Three definitions, nine points apart. Pick from the decision, then write it down.`,
-      confound:`Ask what else is true of the people in the flattering group.`,
-      survivorship:`Ask who can't possibly be in the table you're querying.`,
-      simpson:`Up overall, down in every segment. Something about the mix changed.`,
-      ab_test:`We wrote the stopping rule down for exactly this moment.`,
-      leakage:`Six per cent base rate. Work out what predict nobody churns would score.`,
-      stakeholder:`She's asking for a conclusion. Find out what she's deciding.`,
-      crisis_fix:`One chart, the uncertainty visible, and the bit she needs to act on.`,
-      crisis_show:`Go and show her — she hasn't seen it yet.`,
-      complete:`You got a VP to ask for a decision instead of a number. Pub?`
+      dose_brief:`Maggie's in the Project Office. Ask what happens at five o'clock.`,
+      balance:`Everyone has decided it is the meter. Draw the boundary and count what crosses it.`,
+      compat:`Two chemicals, one size of coupling. Ask what a sign does that a fitting cannot.`,
+      heat:`Ask what the approach temperature was on the day it was commissioned.`,
+      scaleup:`Same shape is not the same behaviour. Ask what stays constant when you scale.`,
+      relief:`It was sized for a fire, before the pump was there. Walk the deviations.`,
+      client:`She has asked for a bigger number. Ask what changed on Tuesday.`,
+      crisis_fix:`Control to a measurement, and alarm on the thing that moved.`,
+      crisis_show:`Go and show her — she has not seen it yet.`,
+      complete:`You talked a utility out of overdosing a whole town. Pub?`
     };
-    return say('alex', h[s] || `Stuck? Ask what decision changes depending on the answer, and work back from there.`);
+    return say('alex', h[s] || `Stuck? Draw the boundary, list what crosses it, and ask what happens if one stream stops.`);
   }
 
   const idle={
-    kate:`Nothing new from me — go and finish what you've got.`,
-    mike:`Come back when you can tell me who's missing from the table.`,
-    jenny:`Bring me something with an interval on it and we'll get on fine.`,
-    dan:`Kettle's on. I've unpublished the app slide, before you ask.`,
-    owen:`I'll wait. Fifteen minutes, mind.`
+    kate:`Nothing new from me — go and finish what you have got.`,
+    mike:`Come back when you can tell me where the number came from.`,
+    jenny:`Bring me a recipe that has been made at size and we will get on fine.`,
+    dan:`Kettle's on. Those fill points are still a metre apart, mind.`,
+    owen:`I'll wait. Five o'clock, though.`
   };
   say(key, idle[key] || `...`);
 }
 
 const TRACK_GLOSSARY=[
-  {t:"churn",l:"churn",m:"churn",
-   d:"Customers leaving. Simple to say and surprisingly hard to define — finance, support and your dashboard will each count it differently."},
-  {t:"metric",l:"a metric",m:"metric",
-   d:"A number you have chosen to measure, with a written definition behind it. Choosing one is a decision, not a lookup."},
-  {t:"cohort",l:"a cohort",m:"cohort",
-   d:"A group who started at the same time — everyone who signed up in March. Comparing cohorts is how you see whether something changed after February."},
-  {t:"retention",l:"retention",m:"retention",
-   d:"The share of a cohort still with you after a given time. The other side of churn, and usually the more honest way to look at it."},
-  {t:"dashboard",l:"a dashboard",m:"dashboard",
-   d:"A screen of standing charts everyone in the company looks at. Its definitions were chosen by someone, once, for some other purpose."},
-  {t:"correlation",l:"correlation",m:"correlation",
-   d:"Two things moving together. Real, worth chasing, and completely silent about which one caused the other."},
-  {t:"causation",l:"causation",m:"causation",
-   d:"One thing actually making the other happen. Only a randomised experiment, or a very careful argument, gets you there."},
-  {t:"confounder",l:"a confounder",m:"confound(?:er|ers|ing)|like with like",
-   d:"A third thing that explains both. Busy clinics install the app and busy clinics stay — so “busy” is doing the work, not the app."},
-  {t:"randomised rollout",l:"a randomised rollout",m:"randomised rollout|randomised",
-   d:"Giving something to a random half of people and withholding it from the rest, so the only difference between the groups is the thing you did."},
-  {t:"survivorship bias",l:"survivorship bias",m:"survivorship bias|survivors?",
-   d:"Only being able to see the ones who made it. A survey that fires at the end of onboarding cannot contain anybody who gave up during it."},
-  {t:"sample",l:"a sample",m:"sample",
-   d:"The slice of people your numbers actually came from. More data with the same hole in it is just a more confident wrong answer."},
-  {t:"segment",l:"a segment",m:"segment",
-   d:"A slice of customers grouped by something you care about — clinics, salons, garages. Totals can move the opposite way to every segment in them."},
-  {t:"mix",l:"a mix shift",m:"mix shift|the mix",
-   d:"The make-up of your customers changing. Get more of the segment that converts best and the total rises while every segment falls."},
-  {t:"weighted average",l:"a weighted average",m:"weighted average|aggregate",
-   d:"An average where bigger groups count for more. Every company total is one, which is why it can hide the story completely."},
-  {t:"significance",l:"statistical significance",m:"statistical significance|significan(?:ce|t)",
-   d:"A judgement that a result is unlikely to be chance alone. It says nothing about whether the effect is big, or whether it will last."},
-  {t:"p-value",l:"a p-value",m:"p-value|p equals",
-   d:"How surprising your result would be if nothing were really happening. Below nought point nought five is the usual convention — a convention, not a law."},
-  {t:"pre-registered",l:"a pre-registered plan",m:"pre-registered",
-   d:"Writing down before the experiment how long it runs, how many people you need and when you will stop — so the result cannot be chosen afterwards."},
-  {t:"peeking",l:"peeking",m:"peek(?:ing|s)?",
-   d:"Checking an experiment over and over and stopping when you like the answer. Peek often enough and a fair coin looks significant."},
-  {t:"interval",l:"a confidence interval",m:"confidence interval|interval(?:s)?",
-   d:"The range your estimate could plausibly be, rather than one confident number. Eleven per cent on day three usually has an enormous one."},
-  {t:"base rate",l:"the base rate",m:"base rate",
-   d:"How often the thing happens anyway. If six per cent of customers churn, guessing “nobody churns” scores ninety-four per cent and knows nothing."},
-  {t:"accuracy",l:"accuracy",m:"accuracy",
-   d:"The share of predictions a model gets right. On a rare event it flatters uselessly — which is why precision and recall exist."},
-  {t:"precision",l:"precision and recall",m:"precision(?: and recall)?|recall",
-   d:"Precision: of the accounts you flagged, how many really churned. Recall: of the ones who churned, how many you caught. Together they say something accuracy cannot."},
-  {t:"leak",l:"data leakage",m:"leakage|the leak|leak",
-   d:"A model being given something it could only know after the outcome — like a cancellation reason. It scores brilliantly and predicts nothing."},
-  {t:"split",l:"a train/test split",m:"train and test|split(?:ting)?",
-   d:"Holding some data back to test a model on. Split at random over two years and the model learns from next March to predict last January."},
-  {t:"class weights",l:"class weights",m:"class weights",
-   d:"Telling a model to take the rare outcome more seriously. It fixes imbalance and does nothing about a feature that gives the answer away."},
-  {t:"board",l:"the board pack",m:"board pack|the board",
-   d:"The set of slides prepared for the company’s directors before they meet. It locks at a deadline, and what is in it is what gets discussed."}
+  {t:"dosing",l:"dosing",m:"dos(?:e|es|ed|ing)",
+   d:"Adding a measured amount of a chemical to a flow — chlorine into water, detergent into a cleaning circuit. The amount is a control decision, not a fixed setting."},
+  {t:"hypochlorite",l:"sodium hypochlorite",m:"sodium hypochlorite|hypochlorite",
+   d:"Liquid bleach, used to disinfect drinking water. It decomposes slowly in storage, faster when it is warm, which is why some of a tanker load quietly disappears."},
+  {t:"residual",l:"a residual",m:"residual",
+   d:"How much disinfectant is still in the water when it reaches the far end of a network. It is the number the regulator cares about, and the thing dosing is aiming at."},
+  {t:"mass balance",l:"a mass balance",m:"mass balance|balance",
+   d:"Adding up everything that goes into a process and everything that comes out. If it does not add up, there is a stream you have not drawn — not usually a lying instrument."},
+  {t:"boundary",l:"a boundary",m:"boundary|boundaries",
+   d:"The line you draw around the part of the plant you are counting. Every stream crossing it has to be accounted for, which is what makes a balance a test rather than an opinion."},
+  {t:"flush",l:"a flush",m:"flush(?:es|ed|ing)?",
+   d:"Running water through a pipe or a main to clear it. It uses up disinfectant and sends chemical to drain, so it shows up in both the balance and the sample results."},
+  {t:"decomposition",l:"decomposition",m:"decompos(?:e|es|ed|ition)",
+   d:"A chemical breaking down on its own in storage. It means what is in the tank is not always as strong as what was delivered."},
+  {t:"compatibility",l:"chemical compatibility",m:"compatibilit(?:y|ies)|incompatible",
+   d:"Which chemicals must never meet. Acid and hypochlorite together give off chlorine gas, so they are kept apart by design rather than by people remembering."},
+  {t:"bund",l:"a bund",m:"bund(?:s|ed|ing)?",
+   d:"A low wall or tray round a tank that holds the contents if it leaks. Two incompatible chemicals need two bunds, so a spill of one cannot reach the other."},
+  {t:"coupling",l:"a coupling",m:"coupling(?:s)?|fill point(?:s)?",
+   d:"The fitting a tanker hose connects to. Making incompatible chemicals use different couplings means the wrong delivery physically cannot be made."},
+  {t:"cip",l:"clean in place",m:"clean-in-place|clean in place|CIP",
+   d:"Cleaning a plant by circulating detergent and hot water through it without taking it apart. It has a recipe: chemical, temperature, flow and time."},
+  {t:"caustic",l:"caustic",m:"caustic",
+   d:"Strong alkali, usually sodium hydroxide, used hot to clean food and drink plant. Highly effective, and it will burn skin and eyes on contact."},
+  {t:"heat exchanger",l:"a heat exchanger",m:"heat exchanger|plate exchanger|exchanger",
+   d:"A device that passes heat from one fluid to another without mixing them — in a plate type, through thin corrugated plates clamped together."},
+  {t:"duty",l:"a duty",m:"duty",
+   d:"How much work a piece of kit has to do — litres per second, kilowatts of heat. Sizing anything starts with an honest duty and some margin."},
+  {t:"fouling",l:"fouling",m:"foul(?:ed|ing|s)?",
+   d:"The film that builds up on a heat transfer surface and stops heat getting through. It is why an exchanger that made temperature on day one falls short two years later."},
+  {t:"approach temperature",l:"approach temperature",m:"approach(?: temperature| was)?",
+   d:"The gap between what you heated something to and how hot the heating medium was. The gap widening over time is the clearest sign of fouling."},
+  {t:"re-rate",l:"re-rating",m:"re-rate(?:d)?|re-rating",
+   d:"Working out honestly what a piece of kit can actually deliver now, rather than what the original datasheet claimed."},
+  {t:"scale-up",l:"scale-up",m:"scale(?:-| )up|scale it all up|at full size",
+   d:"Going from a working bench trial to full production volume. The hard part is that behaviour does not scale the way dimensions do."},
+  {t:"geometric similarity",l:"geometric similarity",m:"geometric similarity|same shape",
+   d:"Making the big vessel the same shape as the small one. It keeps the drawing tidy and it does not keep the mixing, the shear or the foaming the same."},
+  {t:"power per unit volume",l:"power per unit volume",m:"power per unit volume|mixing intensity",
+   d:"How hard the agitator works each cubic metre of liquid. Holding it constant is one of the few things that carries a result from a rig to a real vessel."},
+  {t:"tip speed",l:"tip speed",m:"tip speed",
+   d:"How fast the outer edge of the agitator blade travels. It sets the shear the liquid sees, which is what breaks emulsions and whips up foam."},
+  {t:"mixing time",l:"mixing time",m:"mixing time|mix(?:es|ed|ing)? in",
+   d:"How long a vessel takes to become uniform after something is added. Twenty minutes instead of two means the far side of the tank is doing nothing for most of the cycle."},
+  {t:"surfactant",l:"a surfactant",m:"surfactant|detergent|antifoam",
+   d:"A chemical that changes how a liquid wets and foams. Where it is added matters: dropped through air it foams, injected into flow it does not."},
+  {t:"pilot scale",l:"pilot scale",m:"pilot scale|pilot plant|pilot",
+   d:"An intermediate-size trial between the bench and the plant. It exists so the surprises happen where they are cheap."},
+  {t:"hazop",l:"a HAZOP",m:"HAZOP|deviations|deviation",
+   d:"A structured walk through a process asking what happens if each thing deviates — no flow, more pressure, wrong temperature — and what is left to protect you when it does."},
+  {t:"relief",l:"relief",m:"relief|bursting disc|relief valve",
+   d:"A device that opens to let pressure out before a vessel bursts — a valve, or a disc designed to break. It is the last line of defence and it has to be sized for the worst case you can actually reach."},
+  {t:"fire case",l:"the fire case",m:"fire case",
+   d:"Relief sizing based on a fire outside the vessel boiling the contents. A common design case, and not the same as a pump filling the vessel against a closed valve."},
+  {t:"blocked outlet",l:"a blocked outlet",m:"blocked outlet|no outlet|shut valve|closed valve",
+   d:"A pump running into a vessel whose way out is shut. It is often the worst credible pressure case, and it only exists after somebody adds an automatic valve."},
+  {t:"double block and bleed",l:"double block and bleed",m:"double block and bleed",
+   d:"Two closed valves with a drain between them, so anything leaking past the first has somewhere to go and can be seen. Used where two liquids must never mix."},
+  {t:"spool piece",l:"a spool piece",m:"spool(?: piece)?",
+   d:"A short removable length of pipe. Taking it out leaves an air gap that no valve can accidentally bridge, which is the strongest way to separate two systems."},
+  {t:"cross-connection",l:"a cross-connection",m:"cross-connect(?:ed|ion)?|cross connection",
+   d:"A route by which one system can reach another that it must never reach — cleaning chemical into product, say. A single valve is not a barrier, it is a mistake waiting for a shift change."},
+  {t:"compliance sample",l:"a compliance sample",m:"compliance sample|sample",
+   d:"Water taken at a set point and time and tested against a legal limit. It is a snapshot of one place, hours before anyone reads the result."},
+  {t:"by-product",l:"a by-product",m:"by-product(?:s)?|by-product limit",
+   d:"Something unwanted formed by the treatment itself. Chlorine reacting with organic matter makes compounds that are themselves limited, which is why more dose is not automatically safer."},
+  {t:"regulator",l:"the regulator",m:"regulator",
+   d:"The body that sets and enforces water quality limits, and asks for an explanation when a sample fails."}
 ];
-TRACK_DEFS.data={
-  id:'data', name:'Data Science', title:'Data Chronicles',
-  blurb:'Churn is up four points, everyone already knows why, and the board meets Thursday.',
-  first:'data_brief',
-  roles:{mike:'Staff Data Scientist', kate:'Product Lead', jenny:'Data Platform',
-         alex:'Senior Analyst', dan:'Analytics Engineering',
-         owen:'VP Revenue', player:'The new analyst'},
+TRACK_DEFS.chemical={
+  id:'chemical', name:'Chemical Engineering', title:'Chemical Chronicles',
+  blurb:'Four per cent of a tanker missing, two chemicals on one coupling, and a client who wants to double the dose.',
+  first:'dose_brief',
+  roles:{mike:'Principal Process Engineer', kate:'Engineering Director', jenny:'Production Manager',
+         alex:'Graduate Engineer', dan:'Maintenance Fitter',
+         owen:'Asset Manager, Wearside Water', player:'The new process engineer'},
   glossary:TRACK_GLOSSARY,
-  script:function(key){ return dataScript(key); },
-  occupants:function(room){ return dataOccupants(room); },
-  objectives:OBJ_DATA,
-  opening:{text:`Nine in the morning at Meridian. Churn's up four points, the price rise in February has already been convicted by everyone in the building, and the board pack locks at five.`,
-           label:'Find Nadia.'},
-  certTitle:'DATA CHRONICLES',
-  timeUp:{who:'kate',line:`Pack's locked. Diane goes in with her own reading and the two segments we hurt go unmentioned. Finish it anyway — missing a deadline you survive; not knowing what you'd have put in the chart, you don't.`},
-  certBody:['investigated four points of churn at Meridian — metric definition, confounding,',
-            'survivorship, mix shift, experiment discipline and a leaking model — and turned',
-            'a request to prove a conclusion into the decision it was actually for.'],
+  script:function(key){ return chemScript(key); },
+  occupants:function(room){ return chemOccupants(room); },
+  objectives:OBJ_CHEM,
+  opening:{text:`Nine in the morning at Hallam Works. Four per cent of a tanker of chemical that nobody can account for, two fill points a metre apart, and a compliance sample at five o'clock.`,
+           label:'Find Maggie.'},
+  certTitle:'CHEMICAL CHRONICLES',
+  timeUp:{who:'kate',line:`Five o'clock. They have taken the sample with the old fixed dose in the panel, and somebody in operations has already turned it up by half. Finish it anyway: missing a sample you survive; not knowing what you would have controlled, you don't.`},
+  certBody:['closed a mass balance instead of blaming a meter, separated two chemicals that must',
+            'never meet, read fouling out of an approach temperature, scaled a recipe honestly and',
+            'sized relief for the case that exists — then stopped a town being overdosed for one sample.'],
   lessons:[
-    {t:'Choose the metric from the decision', c:'Definitions',
-     l:'Three teams counted churn three ways, nine points apart. The question being decided is the only thing that makes one definition better than another. Write yours down.'},
-    {t:'Ask what else is true of that group', c:'Confounding',
-     l:'App installers churned 31% less because busy accounts install apps. Correlation isn’t causation is the start of the work, not a way out of it.'},
-    {t:'Only randomisation settles direction', c:'Confounding',
-     l:'Matching on what you can see narrows it down. An experiment is what tells you which way the arrow points.'},
-    {t:'Ask who can’t be in the table', c:'Survivorship',
-     l:'An onboarding survey excludes everyone who quit onboarding; a table rebuilt from active accounts excludes everyone who left. More rows with the same hole is just a more confident wrong answer.'},
-    {t:'An average hides what you didn’t split by', c:'Mix',
-     l:'Conversion rose overall and fell in every segment, because the mix changed. Report the trend and the mix together, or neither.'},
-    {t:'Write the stopping rule before you look', c:'Experiments',
-     l:'Peek often enough and a coin reaches significance. Day-three effects shrink: 11% became 3%, which is a different roadmap conversation.'},
-    {t:'Report the interval, not just the verdict', c:'Experiments',
-     l:'A p-value says probably something. The effect size and its range tell you what to do about it.'},
-    {t:'Accuracy on a rare event is a vanity metric', c:'Models',
-     l:'94% on a 6% base rate is roughly predict nobody churns. Compare against that baseline, with precision and recall.'},
-    {t:'A feature that only exists afterwards is the answer on the back of the card', c:'Models',
-     l:'Cancellation reason, closure timestamps, anything computed as of today. And split by time — a random split across two years is quiet time travel.'},
-    {t:'Asked to prove something? Find out what’s being decided', c:'Stakeholders',
-     l:'Agreeing to support a conclusion traps you; refusing takes you out of the room. Ask what changes depending on the answer, then say what the data can and can’t tell them.'}
+    {t:'A balance that will not close is evidence', c:'Mass balance',
+     l:'It is telling you about a stream you have not drawn — a flush to drain, a vent, a chemical decomposing in a warm tank. Calibrate the instrument after that, not before.'},
+    {t:'Do not dose to cover an unknown', c:'Mass balance',
+     l:'Adding four per cent to hide four per cent works until the unknown changes, and then you find out in a compliance sample.'},
+    {t:'A coupling beats a sign', c:'Safety',
+     l:'Incompatible chemicals are kept apart by fittings that will not mate, separate bunds and distance. Signage is an instruction to somebody in a hurry on their ninth drop.'},
+    {t:'Read fouling out of the approach', c:'Heat transfer',
+     l:'Three degrees of approach on day one and eleven now is a fouled surface, not physics changing its mind. Turning the steam up bakes it on harder.'},
+    {t:'Size for the duty plus some margin', c:'Heat transfer',
+     l:'Four degrees of spare temperature costs very little in plate area at the design stage, and buys years of fouling before anyone rings you.'},
+    {t:'Geometric similarity is not dynamic similarity', c:'Scale-up',
+     l:'Keep the mixing intensity — power per unit volume, tip speed — rather than the shape, and check the mixing time at full size.'},
+    {t:'An unproven recipe is a hypothesis', c:'Scale-up',
+     l:'Something that has only worked in twenty litres has a delivery date and no evidence. Pilot it where the surprises are cheap.'},
+    {t:'Protect the process you have', c:'Relief',
+     l:'Relief sized for a fire years ago does not cover the pump somebody added since. Walk the deviations, size for the worst credible case, and route the discharge where nobody stands.'},
+    {t:'An alarm is not relief', c:'Relief',
+     l:'Trips and alarms are welcome and they can be the thing that failed. The last line of defence has to work without instruments agreeing to help.'},
+    {t:'Ask what changed, not what to turn up', c:'Clients',
+     l:'One low sample at one point after a flush is demand, not a dosing shortfall. Half again on the dose would have been a whole town tasting it to fix a dead end.'}
   ]
 };
 
@@ -2309,7 +2865,7 @@ const TRACK_FILES={
   mechanical:'mechanical-chronicles.html',
   chemical:'chemical-chronicles.html',
 };
-const FIRST_LIVE=TRACK_ORDER.filter(function(id){ return TRACKS[id].live; })[0]||'data';
+const FIRST_LIVE=TRACK_ORDER.filter(function(id){ return TRACKS[id].live; })[0]||'engineering';
 let TRACK=TRACKS[FIRST_LIVE];
 let pendingTrack=FIRST_LIVE;
 
