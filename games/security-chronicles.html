@@ -38,6 +38,12 @@
     background:#1a1f27;color:#e6edf3;border:1px solid #2c3440;border-radius:8px;
     padding:10px 14px;cursor:pointer;transition:.13s;width:100%}
   #dlg .opts button:hover{border-color:#58a6ff;background:#20262f}
+  #dlg p .jt{color:#58a6ff;font-weight:600}
+  #dlg .def{display:block;border-left:2px solid #58a6ff;padding:1px 0 1px 13px}
+  #dlg .def b{display:block;font-family:"Space Grotesk",sans-serif;font-size:12px;
+    letter-spacing:.09em;text-transform:uppercase;color:#58a6ff;margin:0 0 6px}
+  .lesson.gl b{font-size:14px;text-transform:uppercase;letter-spacing:.06em;
+    color:#58a6ff;margin-bottom:5px}
   /* title + portfolio */
   .veil{position:fixed;inset:0;background:rgba(9,12,16,.94);display:flex;
     align-items:center;justify-content:center;padding:24px;z-index:20}
@@ -1317,7 +1323,8 @@ const G={
   started:false, room:'lobby', step:'first_brief',
   px:400, py:392, dir:'up', walking:false, phase:0, playerName:'',
   portfolio:[], deadline:0, deadlineEnd:0, bought:false,
-  keys:{}, touch:{up:false,down:false,left:false,right:false}
+  keys:{}, touch:{up:false,down:false,left:false,right:false},
+  termsSeen:{}, termsLearned:[], termLine:null, termAsking:false, termCount:0
 };
 
 /* ---- where everyone is, by step ---------------------------------------- */
@@ -1326,7 +1333,61 @@ const G={
 let DLG=null;
 const $=id=>document.getElementById(id);
 
+/* ---- jargon checks ------------------------------------------------------
+   Every one of these jobs has words a newcomer has not met, and being quietly
+   lost is how somebody stops playing. So the first time a term comes up in
+   conversation, whoever is speaking stops and asks. One tap if you know it; a
+   plain sentence if you do not, and then the scene carries on exactly where it
+   paused. Four rules keep it out of the way: never the same term twice in a
+   run, never more than one per line, never while a deadline clock is running,
+   and never over narration -- people explain things, the narrator does not.
+   Every term is also listed under What this teaches, for anything waved
+   through at the time.                                                      */
+const TERM_ASK=[
+  'Quick one before I go on \u2014 do you know what <b class="jt">%s</b> means?',
+  'Hang on. Do you know what <b class="jt">%s</b> means?',
+  'Before I carry on \u2014 do you know what <b class="jt">%s</b> means?'
+];
+function termName(e){ return (e.l||e.t).replace(/^(?:a|an|the) /,''); }
+function termMatch(text){
+  const gl=(TRACK&&TRACK.glossary)||[];
+  const plain=String(text).replace(/<[^>]*>/g,'');
+  let best=null, bestAt=1e9, bestLen=0;
+  for(let i=0;i<gl.length;i++){
+    const e=gl[i];
+    if(G.termsSeen[e.t]) continue;
+    if(!e.re) e.re=new RegExp('(?:^|[^A-Za-z0-9])('+(e.m||e.t)+')(?:s|es)?(?![A-Za-z0-9])','i');
+    const m=e.re.exec(plain);
+    if(!m) continue;
+    const at=m.index+(m[0].length-m[1].length-(m[2]?m[2].length:0));
+    if(at<bestAt||(at===bestAt&&m[1].length>bestLen)){ best=e; bestAt=at; bestLen=m[1].length; }
+  }
+  return best;
+}
+/* True when a check was opened instead of the line, and the line is now
+   waiting behind it. */
+function termCheck(speaker,text,options){
+  if(!speaker||G.termAsking||G.deadlineEnd) return false;
+  if(G.termLine===text) return false;
+  const e=termMatch(text);
+  if(!e) return false;
+  G.termsSeen[e.t]=1; G.termLine=text; G.termAsking=true;
+  const resume=function(){ G.termAsking=false; say(speaker,text,options); };
+  rawSay(speaker, TERM_ASK[(G.termCount++)%TERM_ASK.length].replace('%s',termName(e)), [
+    {label:'Yes, I know that one', go:resume},
+    {label:'No \u2014 explain it', go:function(){
+      G.termsLearned.push(e.t);
+      rawSay(speaker,'<span class="def"><b>'+termName(e)+'</b>'+e.d+'</span>',
+        [{label:'Got it \u2014 carry on', go:resume}]);
+    }}
+  ]);
+  return true;
+}
 function say(speaker,text,options){
+  if(termCheck(speaker,text,options)) return;
+  rawSay(speaker,text,options);
+}
+function rawSay(speaker,text,options){
   cancelTravel();
   DLG={speaker:speaker,text:text,options:options&&options.length?options:[{label:'Continue',go:closeDlg}]};
   paintDlg();
@@ -1898,136 +1959,136 @@ function secScript(key){
 
   /* ---------- the report ---------- */
   if(key==='kate'&&s==='sec_brief')
-    return say('kate',`Nadia, CTO. Three things landed this morning. A pen test report with eleven findings. A two-hundred-question security questionnaire from a customer who wants to sign next week. And Jen says there's something odd in the API logs that she doesn't like the shape of.`,
+    return say('kate',`Hi — I'm Nadia, CTO. Welcome aboard. Three things landed this morning and I'll be honest, none of them are small. A pen test came back with eleven findings. A customer who wants to sign next week sent us a two-hundred-question security form. And Jen's spotted something in the API logs she doesn't like.`,
       [{label:'Which one is urgent?',go:function(){
-        say('kate',`Ask me again at lunchtime. Ravi's on the floor — start with him, and start by modelling the thing rather than working down the report in the order a consultant typed it.`,
+        say('kate',`Honestly? Ask me again at lunch. Start with Ravi — he's on the engineering floor. And don't just work down the report top to bottom, in whatever order a consultant typed it. Let's understand the thing first.`,
           [{label:'On my way.',go:function(){ advance('threat_model'); }}]);
       }}]);
 
   /* ---------- 1. threat modelling ---------- */
   if(key==='mike'&&s==='threat_model'){
     return choose('mike',
-      `Ravi, security lead. Before we touch the findings: the bookings export is new and it hands customer data to whoever asks nicely. How do you model it?`,
+      `Hey, I'm Ravi — security lead. Good to have you. Before we dive into the findings: we've got a new bookings export, and right now it'll hand customer data to anyone who asks nicely. Where would you start?`,
       [
-       {label:`Work through the OWASP Top Ten against it and check each item off.`,ok:false,
-        note:`A checklist tells you about categories of bug. It won't tell you that our export runs as a service account with read access to every tenant. Again.`},
-       {label:`Walk the data flow — what data, crossing which trust boundaries, reachable by whom — then ask for each boundary what someone could do, what stops them, and what we would see if they did it.`,ok:true},
-       {label:`Wait for the pen test findings on it — they've just tested the whole product.`,ok:false,
-        note:`A pen test is a sample of what one person found in eight days. It is evidence, not a model. Again.`}
+       {label:`Go through the OWASP Top Ten and tick off each item.`,ok:false,
+        note:`A checklist gives you categories of bug. It won't tell you our export runs as a service account that can read every tenant. Want to try another?`},
+       {label:`Follow the data. What's in it, where does it cross a boundary, who can reach it — and at each point, what would we actually see if someone tried?`,ok:true},
+       {label:`Wait for the pen test findings — they've just tested the whole product.`,ok:false,
+        note:`A pen test is a sample of what one person found in eight days. Useful evidence, but it isn't a model. Have another go?`}
       ],function(){
         filed('Threat model','Meridian export','Data flows, trust boundaries, and what we would detect at each one');
-        advance('authz','mike',`Good. Threat modelling is data flows and trust boundaries, not an encyclopaedia of attacks — and "what would we see" matters as much as "what could they do", because most of this job is noticing. Which brings us to finding number one.`);
+        advance('authz','mike',`That's it. Threat modelling is data flows and boundaries, not a list of attacks to memorise. And what would we see matters as much as what could they do — most of this job is noticing. Right. Finding number one.`);
       });
   }
 
   /* ---------- 2. authorisation ---------- */
   if(key==='mike'&&s==='authz'){
     return choose('mike',
-      `Finding one. GET /api/bookings/1042 returns a booking. Any authenticated user can request any ID and get somebody else's — a different clinic's patient name, time and phone number. The IDs are sequential. Fix it.`,
+      `Finding one. GET /api/bookings/1042 returns a booking. Any logged-in user can ask for any ID and get someone else's — another clinic's patient name, time and phone number. And the IDs run in order. How do we fix it?`,
       [
-       {label:`Switch the IDs to UUIDs so they can't be guessed or enumerated.`,ok:false,
-        note:`Now they're unguessable and still returned to anyone who has one — and they leak in referrers, support tickets and shared links. You've made the hole harder to find. Again.`},
-       {label:`Authorise every request server-side against the caller's tenant, deny by default, and add a test that a token from tenant A gets a 404 for tenant B's booking.`,ok:true},
-       {label:`Stop exposing the ID in the UI and filter the list endpoint so people can't discover other IDs.`,ok:false,
-        note:`The UI is not the client you have to worry about. The endpoint is the product. Again.`}
+       {label:`Switch the IDs to UUIDs so nobody can guess them.`,ok:false,
+        note:`Now they're hard to guess and still handed to anyone who has one — and they leak through referrers, support tickets and shared links. You've made the hole harder to find, not smaller. Try again?`},
+       {label:`Check on the server, every request, that the caller belongs to that tenant. Deny by default. Then write a test proving a tenant A token gets a 404 for tenant B's booking.`,ok:true},
+       {label:`Hide the ID in the interface and filter the list endpoint so people can't discover other IDs.`,ok:false,
+        note:`The interface isn't the client to worry about — the endpoint is the product. Have another go?`}
       ],function(){
         filed('Access control fix','Meridian API','Tenant-scoped authorisation server-side, deny by default, regression test added');
-        advance('secrets','mike',`Right. Being logged in is not the same as being allowed, and that confusion is the single most common serious bug in every product I have ever reviewed. The test is the half that keeps it fixed. Jen's in Ops and somebody has already made her day worse.`);
+        advance('secrets','mike',`Exactly. Being logged in isn't the same as being allowed, and that mix-up is the most common serious bug I've seen in any product. The test is the half that keeps it fixed. Jen's in Ops, and someone's already ruined her morning.`);
       });
   }
 
   /* ---------- 3. secrets ---------- */
   if(key==='jenny'&&s==='secrets'){
     return choose('jenny',
-      `Jen, platform. Someone found an AWS access key committed to the repo fourteen months ago. It's been removed and force-pushed already, and the developer says we're fine now. Are we?`,
+      `Hi, Jen — platform. So: someone found an AWS access key committed to the repo fourteen months ago. It's been deleted and force-pushed already, and the developer reckons we're fine. Are we?`,
       [
        {label:`Yes — it's out of the history, so there's nothing left to find.`,ok:false,
-        note:`Fourteen months on a repo with contractors, forks, three laptops and a CI cache. That key is public and has been all year. Again.`},
-       {label:`No — rotate the credential first, then check what it was used for in the logs, assume it's compromised for the whole period, and clean the history afterwards as tidying rather than as the fix.`,ok:true},
-       {label:`Rewrite the history properly with a history-scrubbing tool and add a secrets scanner to pre-commit.`,ok:false,
-        note:`Both good, neither urgent, and the key is still live while you do them. Rotate first. Again.`}
+        note:`Fourteen months, on a repo with contractors, forks, three laptops and a CI cache. That key is public, and has been all year. Try again?`},
+       {label:`No. Rotate the key first. Then check the logs for what it was used for, assume it's been compromised the whole time, and tidy the history afterwards — as tidying, not as the fix.`,ok:true},
+       {label:`Scrub the history properly with a history-rewriting tool, and add a secrets scanner to pre-commit.`,ok:false,
+        note:`Both good ideas, neither urgent — and the key is still live while you do them. Rotate first. Want another go?`}
       ],function(){
         filed('Secret rotation','Meridian infrastructure','Key rotated and usage reviewed; history cleanup treated as tidying, not remediation');
-        advance('phishing','jenny',`Correct, and it was used twice from an address in a hosting range last March, which we will be coming back to. A committed secret is compromised at the moment of the commit — deleting it removes the evidence, not the exposure. Theo wants you about an email.`);
+        advance('phishing','jenny',`Right. And it was used twice in March, from an address in a hosting range, which we'll come back to. Once a secret is committed it's compromised from that moment. Deleting it removes the evidence, not the exposure. Theo wants you — something about an email.`);
       });
   }
 
   /* ---------- 4. people ---------- */
   if(key==='dan'&&s==='phishing'){
     return choose('dan',
-      `Theo, IT. Someone in finance got an invoice email that looked exactly like our supplier, right down to the thread history, and nearly paid it. She spotted it and rang me. The plan on the table upstairs is mandatory annual training and a monthly leaderboard of who clicked.`,
+      `Hi, I'm Theo — IT. Someone in finance got an invoice email that looked exactly like our supplier's, right down to the thread history, and nearly paid it. She spotted it and rang me. Upstairs they're proposing mandatory annual training and a monthly leaderboard of who clicked.`,
       [
-       {label:`Run the training and the leaderboard — people need to feel the consequences or they don't take it seriously.`,ok:false,
-        note:`Then the next person who clicks won't ring me, they'll sit on it and hope. Naming people buys you silence, and silence is the expensive part. Again.`},
-       {label:`Make reporting easy and blameless, thank her publicly for ringing, and put in controls that don't depend on anyone being sharp — phishing-resistant MFA, a callback rule on payment detail changes, DMARC enforced — and measure reporting rate rather than click rate.`,ok:true},
-       {label:`Block all external email attachments and links from unrecognised domains.`,ok:false,
-        note:`And within a week everybody's forwarding invoices to their personal accounts to get any work done. A control people route around is worse than none, because now you can't see it. Again.`}
+       {label:`Run the training and the leaderboard — people need to feel the consequences.`,ok:false,
+        note:`Then the next person who clicks won't ring me. They'll sit on it and hope. Naming people buys you silence, and the silence is the expensive part. Try again?`},
+       {label:`Make reporting easy and blame-free, thank her publicly for ringing, and add controls that don't depend on anyone being sharp — phishing-resistant MFA, a callback rule on payment changes, DMARC enforced. Then measure how many people report, not how many click.`,ok:true},
+       {label:`Block all external attachments and links from unrecognised domains.`,ok:false,
+        note:`And within a week everyone's forwarding invoices to personal accounts just to get work done. A control people route around is worse than none, because now you can't see it. Have another go?`}
       ],function(){
         filed('Human controls','Meridian','Blameless reporting, phishing-resistant MFA, payment callback rule, DMARC enforced');
-        advance('logging','dan',`Thank you. She's the control that worked — reward that and you get told about the next one in ten minutes rather than ten days. Jen wants you to read what we're writing to the log service, by the way. Bring a coffee.`);
+        advance('logging','dan',`Thank you. She's the control that actually worked — reward that and you hear about the next one in ten minutes instead of ten days. Jen wants you to read what we're sending to the log service, by the way. Bring a coffee.`);
       });
   }
 
   /* ---------- 5. logging ---------- */
   if(key==='jenny'&&s==='logging'){
     return choose('jenny',
-      `Our export endpoint logs its full response payload — patient names, phone numbers, appointment reasons — to a third-party log service, four hundred days' retention, and about thirty people here can search it. We also have no alert on repeated authorisation failures. Sort out the priorities.`,
+      `So. Our export endpoint logs its whole response — patient names, phone numbers, appointment reasons — to a third-party log service. Four hundred days' retention, and about thirty people here can search it. We've also got no alert on repeated authorisation failures. What matters most?`,
       [
        {label:`Encrypt the logs at rest and tighten who can query the log service.`,ok:false,
-        note:`You've put a better lock on a room we should never have filled. It's still four hundred days of patient data in a vendor we don't control. Again.`},
-       {label:`Stop logging the payload — log identifiers and outcomes, not content — cut retention to what we actually investigate with, and add alerting on repeated authorisation failures and unusual export volume.`,ok:true},
+        note:`You've put a better lock on a room we should never have filled. It's still four hundred days of patient data sitting with a vendor we don't control. Try again?`},
+       {label:`Stop logging the payload — log identifiers and outcomes, not content. Cut retention to what we actually investigate with. And alert on repeated authorisation failures and unusual export volume.`,ok:true},
        {label:`Keep the logs — you can't investigate what you didn't record — and add the alerting on top.`,ok:false,
-        note:`Investigation needs to know who called what and whether it failed. It does not need the patient's phone number. You're arguing for a breach in advance. Again.`}
+        note:`An investigation needs to know who called what, and whether it failed. It doesn't need the patient's phone number. That's arguing for a breach in advance. Want another go?`}
       ],function(){
         filed('Logging pass','Meridian','Payload logging removed, retention cut, detection alerts added');
-        advance('vendor','jenny',`That's it. A log store is a database of your worst secrets with none of the controls of a database — log for detection, not for hoarding. And an authorisation failure nobody is alerted on is a free enumeration tool. Theo's drowning in questionnaires.`);
+        advance('vendor','jenny',`That's the one. A log store holds your worst secrets with none of a database's controls — log for detection, not for hoarding. And an authorisation failure nobody's alerted on is a free enumeration tool. Theo's drowning in questionnaires.`);
       });
   }
 
   /* ---------- 6. vendors, both directions ---------- */
   if(key==='dan'&&s==='vendor'){
     return choose('dan',
-      `Two forms. Theirs: two hundred questions from the customer who signs next week, and sales have pencilled "yes" against all of them. Ours: marketing want a new analytics SDK that reads the whole DOM on every page, including the booking form, and it sub-processes to two companies I've never heard of.`,
+      `Two forms, both yours. Theirs: two hundred questions from the customer signing next week, and sales have pencilled yes against all of them. Ours: marketing want a new analytics SDK that reads the whole page, booking form included, and passes data to two companies I've never heard of.`,
       [
-       {label:`Answer theirs accurately, and approve the SDK — it's a standard analytics tool that half the industry uses.`,ok:false,
-        note:`Half right. That SDK will read patient names out of the booking form and ship them to two subprocessors, and "everyone uses it" is not a data protection basis. Again.`},
-       {label:`Answer theirs honestly — with compensating controls and dates where the answer is "not yet" — and for the SDK ask what data leaves, who can see it, what the subprocessors do, and configure it to capture nothing from that form, or decline it.`,ok:true},
-       {label:`Answer theirs optimistically to get the deal signed, and fix the gaps in the following quarter.`,ok:false,
-        note:`Those answers get attached to a contract. You'd be writing a lie with a legal consequence, and the gap will be found by the same audit that finds the incident. Again.`}
+       {label:`Answer theirs accurately, and approve the SDK — it's a standard tool half the industry uses.`,ok:false,
+        note:`Half right. That SDK will read patient names off the booking form and ship them to two subprocessors, and everyone uses it isn't a data protection basis. Try again?`},
+       {label:`Answer theirs honestly — where it's not yet, say so, with the compensating control and a date. And for the SDK, ask what data leaves, who sees it, what the subprocessors do. Configure it to capture nothing from that form, or turn it down.`,ok:true},
+       {label:`Answer theirs optimistically to get the deal signed, then fix the gaps next quarter.`,ok:false,
+        note:`Those answers get attached to a contract. That's a lie with a legal consequence, and the gap gets found by the same audit that finds the incident. Have another go?`}
       ],function(){
         filed('Vendor review','Meridian','Questionnaire answered honestly with dated gaps; analytics SDK scoped away from patient data');
-        advance('incident','dan',`Good. A questionnaire answered aspirationally is a contractual promise, and every vendor we add is a piece of our attack surface we don't run. Jen's shouting for you. Something about a token.`);
+        advance('incident','dan',`Good. An optimistic answer on a form becomes a contractual promise — and every vendor we add is attack surface we don't run. Jen's shouting for you. Something about a token.`);
       });
   }
 
   /* ---------- 7. the incident ---------- */
   if(key==='jenny'&&s==='incident'){
     return choose('jenny',
-      `This is the shape I didn't like. One API token, forty-one thousand requests over nine days, sequential booking IDs, spread across eleven tenants, from a hosting range. It's the token belonging to an account that trialled us in March. It is still working right now. What do you do first?`,
+      `This is the shape I didn't like. One API token: forty-one thousand requests over nine days, booking IDs in order, across eleven tenants, all from a hosting range. It belongs to an account that trialled us in March. It's still working right now. What do you do first?`,
       [
        {label:`Revoke the token immediately, then work out what happened.`,ok:false,
-        note:`Close, and you've just destroyed your own timeline — the token record tells us which tenants, which IDs and when, and some of that is in stores that roll over. Snapshot first. It's a minute. Again.`},
-       {label:`Preserve the evidence first — snapshot the relevant logs and token records — then revoke, then scope exactly which records were returned successfully, keeping a written timeline as you go, and close the hole once containment holds.`,ok:true},
-       {label:`Leave it running and monitor, so we can see what they do next and identify them.`,ok:false,
-        note:`Nine days of patient data already and you'd like some more for the report? We are not a research project. Again.`}
+        note:`So close — and you've just destroyed your own timeline. The token record tells us which tenants, which IDs, and when, and some of that sits in stores that roll over. Snapshot first. It takes a minute. Try again?`},
+       {label:`Preserve the evidence first — snapshot the relevant logs and token records. Then revoke. Then work out exactly which records came back successfully, writing the timeline as you go. Close the hole once it's contained.`,ok:true},
+       {label:`Leave it running and watch, so we can see what they do next and identify them.`,ok:false,
+        note:`Nine days of patient data already, and you'd like a bit more for the report? We're not a research project. Have another go?`}
       ],function(){
         filed('Incident handling','Meridian','Evidence preserved, token revoked, scope established, timeline kept contemporaneously');
-        advance('disclosure','jenny',`Done. Snapshot, revoke, scope: one thousand four hundred and six bookings across eleven tenants, names, phone numbers and appointment reasons, nothing financial. Contain, preserve, scope, fix — in that order, and write the timeline while you can still remember it, because in three weeks you'll be quoting it to a regulator. Ellis is in the war room. Ellis has thoughts about wording.`);
+        advance('disclosure','jenny',`Done. Snapshot, revoke, scope: one thousand four hundred and six bookings across eleven tenants. Names, phone numbers, appointment reasons. Nothing financial. Contain, preserve, scope, fix — in that order. And write the timeline while you still remember it, because in three weeks you'll be quoting it to a regulator. Ellis is in the war room, and Ellis has thoughts about wording.`);
       });
   }
 
   /* ---------- 8. disclosure ---------- */
   if(key==='owen'&&s==='disclosure'){
     return choose('owen',
-      `Ellis, communications. Right. Draft says "a security incident involving a third-party integration". No mention of data, no numbers, and it goes out next Friday with the product update so it lands soft. Tell me that's fine.`,
+      `Ellis — communications. Right. My draft says a security incident involving a third-party integration. No mention of data, no numbers, and it goes out next Friday alongside the product update so it lands softly. Tell me that's fine.`,
       [
-       {label:`"That's fine — it's technically accurate and we're not hiding anything."`,ok:false,
-        note:`(It is technically accurate and it is a lie by construction. Eleven clinics will find their own audit logs before Friday, and then the story is the cover-up rather than the bug. Again.)`},
-       {label:`"Before I redraft it — what are you actually trying to protect us from here? Churn, the press, or the regulator? Because those want different things and one of them has a seventy-two-hour clock on it."`,ok:true},
+       {label:`"That's fine — it's accurate, and we're not hiding anything."`,ok:false,
+        note:`(It is accurate, and it's a lie by construction. Eleven clinics will find this in their own audit logs before Friday, and then the story is the cover-up rather than the bug. Want another go?)`},
+       {label:`"Before I redraft it — what are you actually trying to protect us from? Churn, the press, or the regulator? Because those want different things, and one of them has a seventy-two-hour clock on it."`,ok:true},
        {label:`"We have to disclose fully within 72 hours under GDPR, so that draft isn't an option."`,ok:false,
-        note:`I'm sure you're right and you've told me nothing about what I should write instead. I'll send mine, then.  (You won the point and lost the pen. Again.)`}
+        note:`I'm sure you're right, and you've told me nothing about what to write instead. I'll send mine, then.  (You won the point and lost the pen. Try again?)`}
       ],function(){
-        say('owen',`...Churn, mostly. Two of those eleven are our biggest clinics and they'll go to procurement over this. And I'd rather not read our name in the trade press with the word "leak" next to it.`,
+        say('owen',`...Churn, mostly. Two of those eleven are our biggest clinics and they'll take this to procurement. And I'd rather not see our name in the trade press next to the word leak.`,
           [{label:'Then vagueness is the worst option you have.',go:function(){
             say('owen',`Go on.`,
               [{label:'Because they will find out from their own logs first.',go:function(){
@@ -2035,7 +2096,7 @@ function secScript(key){
                   [{label:'Everything they need to act on, today.',go:function(){
                     filed('Disclosure reframed','Meridian','From vague and late to specific and early, because affected clinics have their own logs');
                     startClock(90);
-                    say('kate',`And you have ninety seconds, because the seventy-two hours started when Jen confirmed scope and the notice has to be with the affected clinics before the regulator's. Ravi's on the floor. Go.`,
+                    say('kate',`And you've got ninety seconds, because the seventy-two hours started when Jen confirmed scope, and the clinics have to hear before the regulator does. Ravi's on the floor. Go.`,
                       [{label:'Go.',go:function(){ G.step='crisis_fix'; paintHUD(); closeDlg(); }}]);
                   }}]);
               }}]);
@@ -2045,23 +2106,23 @@ function secScript(key){
 
   if(key==='mike'&&s==='crisis_fix'){
     return choose('mike',`Ninety seconds. What's in the notice?`,[
-      {label:`Hold it until forensics are finished next week, then publish something complete and accurate.`,ok:false,
-       note:`Complete, accurate and a week after the deadline, by which time two clinics have found it themselves. The notice does not have to be final, it has to be honest and useful. Again.`},
-      {label:`What was accessed and over what dates, which clinics and how many records, what we have done, what we are still establishing, what they should tell their patients, and a named person to contact — plus the regulator inside seventy-two hours.`,ok:true},
-      {label:`The full technical write-up of the vulnerability, so nobody can accuse us of hiding the detail.`,ok:false,
-       note:`A root-cause analysis is for us and for later. A clinic manager needs to know whose data, when, and what to do this afternoon. Again.`}
+      {label:`Hold it until forensics finish next week, then publish something complete and accurate.`,ok:false,
+       note:`Complete, accurate, and a week past the deadline — by which time two clinics have found it themselves. The notice doesn't have to be final. It has to be honest and useful. Try again?`},
+      {label:`What was accessed and when, which clinics and how many records, what we've done, what we're still working out, what they should tell their patients, and a named person to contact. Plus the regulator inside seventy-two hours.`,ok:true},
+      {label:`The full technical write-up of the vulnerability, so nobody can say we hid the detail.`,ok:false,
+       note:`A root-cause analysis is for us, and for later. A clinic manager needs to know whose data, when, and what to do this afternoon. Have another go?`}
     ],function(){
-      advance('crisis_show','mike',`Sent to eleven clinics with eleven seconds spare, regulator notified, and a line saying what we're still working out — which is the line that makes the rest of it believable. Go and show Ellis.`);
+      advance('crisis_show','mike',`Sent — eleven clinics, eleven seconds to spare, regulator notified, and a line saying what we're still working out. That line is what makes the rest believable. Go and show Ellis.`);
     });
   }
 
   if(key==='owen'&&s==='crisis_show'){
     stopClock();
-    return say('owen',`Names, dates, numbers, a person to ring. It's much worse reading and it's much better, isn't it.`,
+    return say('owen',`Names, dates, numbers, someone to ring. It's a much worse read and a much better notice, isn't it.`,
       [{label:'And it is the version they can act on.',go:function(){
-        say('owen',`Two of them have already replied to say thanks for telling us first. I have written nine of these and I have spent all nine of them trying to use fewer words. You're the first person to explain what the vagueness was costing me.`,
+        say('owen',`Two have already replied to thank us for telling them first. I've written nine of these, and I spent all nine trying to use fewer words. You're the first person to explain what the vagueness was costing me.`,
           [{label:'...',go:function(){
-            say('kate',`That is the job. Not the CVE, not the pen test — that. Someone brings you wording designed to make a problem smaller, and you work out what they are frightened of before you argue with them. Seven pieces of work, an incident scoped without destroying the evidence, and a seventy-two-hour clock you did not miss. You're a security engineer now.`,
+            say('kate',`That's the job. Not the CVE, not the pen test — that. Someone brings you wording designed to make a problem look smaller, and you work out what they're frightened of before you argue with them. Seven pieces of work, an incident scoped without destroying the evidence, and a seventy-two-hour clock you didn't miss. You're a security engineer now.`,
               [{label:'Thank you.',go:function(){ G.step='complete'; paintHUD(); closeDlg(); openCertificate(); }}]);
           }}]);
       }}]);
@@ -2072,30 +2133,104 @@ function secScript(key){
     const h={
       sec_brief:`Nadia's in Product. Don't work the report in the order it was typed.`,
       threat_model:`Follow the data. Who can reach it, and what would we see if they did?`,
-      authz:`Being logged in isn't being allowed. Unguessable isn't the same as protected.`,
-      secrets:`Fourteen months. Assume it's public and act accordingly.`,
+      authz:`Logged in isn't allowed. And hard to guess isn't protected.`,
+      secrets:`Fourteen months. Assume it's public and act like it.`,
       phishing:`She rang Theo. Whatever you do, don't make the next person hesitate.`,
       logging:`Read what we log, then ask what an attacker would do with our log service.`,
-      vendor:`Both forms are the same question: what data leaves, and who can see it.`,
-      incident:`Snapshot before you revoke. You get one chance at the timeline.`,
-      disclosure:`He's asking for words. Find out what he's frightened of.`,
+      vendor:`Both forms ask the same thing: what data leaves, and who can see it.`,
+      incident:`Snapshot before you revoke. You only get one shot at the timeline.`,
+      disclosure:`He's asking for words. Find out what he's frightened of first.`,
       crisis_fix:`It doesn't have to be final. It has to be honest and useful today.`,
-      crisis_show:`Go and show him — he hasn't seen it.`,
+      crisis_show:`Go and show him — he hasn't seen it yet.`,
       complete:`You got comms to publish more detail voluntarily. Nobody does that. Pub?`
     };
     return say('alex', h[s] || `Stuck? Ask what an attacker would try next, and whether we'd notice.`);
   }
 
   const idle={
-    kate:`Nothing new — go and finish what you've got.`,
-    mike:`Bring it back when you can tell me what we'd detect.`,
+    kate:`Nothing new from me — go and finish what you've got.`,
+    mike:`Come back when you can tell me what we'd detect.`,
     jenny:`Bring me something with an alert on it and we'll get on fine.`,
-    dan:`Kettle's on. And she rang me, remember. That's the bit that worked.`,
-    owen:`I'll wait. Clock's running, though.`
+    dan:`Kettle's on. And remember, she rang me. That's the bit that worked.`,
+    owen:`I'll wait. Clock's running, mind.`
   };
   say(key, idle[key] || `...`);
 }
 
+const TRACK_GLOSSARY=[
+  {t:"pen test",l:"a pen test",m:"pen test|penetration test",
+   d:"Someone you hire to attack your own product on purpose and then write up everything they got into. Better you pay for that list than find out the other way."},
+  {t:"api",l:"an API",m:"API",
+   d:"The doorway one piece of software uses to talk to another. Your app is one thing knocking at it — anyone who knows the address is another."},
+  {t:"threat modelling",l:"threat modelling",m:"threat model(?:ling)?",
+   d:"Sitting down before anything breaks and asking: what data do we hold, where does it travel, who could reach it, and what would we see if somebody tried."},
+  {t:"owasp",l:"the OWASP Top Ten",m:"OWASP(?: Top Ten)?",
+   d:"A well-known list of the ten commonest web security mistakes. Useful as a memory jogger; no substitute for thinking about your own product."},
+  {t:"service account",l:"a service account",m:"service account",
+   d:"A login that belongs to a program rather than a person. They tend to get given far too much access on day one and then forgotten about."},
+  {t:"tenant",l:"a tenant",m:"tenant",
+   d:"One customer’s walled-off data inside software that serves many customers. Two clinics on the same system should never see into each other’s."},
+  {t:"endpoint",l:"an endpoint",m:"endpoint",
+   d:"One particular address on an API — a single door, like “give me booking 1042”. It answers whoever knocks, not just your own screens."},
+  {t:"uuid",l:"a UUID",m:"UUID",
+   d:"A long random-looking ID, like 8f14e45f-c6d1. Effectively impossible to guess, which people often mistake for impossible to reach."},
+  {t:"404",l:"a 404",m:"404",
+   d:"The web’s “there’s nothing here” reply. Handy in security, because it tells a stranger nothing about whether the thing exists."},
+  {t:"token",l:"a token",m:"(?:API )?token",
+   d:"A string of characters that proves who is calling an API. Whoever holds it is treated as that customer until somebody switches it off."},
+  {t:"access key",l:"an access key",m:"access key",
+   d:"A username and password for machines, used to reach cloud services. Once it has been public, it stays public — there is no undo."},
+  {t:"repo",l:"a repo",m:"repo|repository",
+   d:"The shared folder where a team’s code lives, along with every version anyone has ever saved."},
+  {t:"force-push",l:"a force-push",m:"force-push(?:ed)?",
+   d:"Rewriting a project’s saved history so an old version looks as though it never existed. Everyone who already copied it still has it."},
+  {t:"rotate",l:"rotating a key",m:"rotate|rotating",
+   d:"Issue a new key, move everything over to it, then make the old one stop working. The only real fix once a secret has got out."},
+  {t:"secret",l:"a secret",m:"secret",
+   d:"Anything a system needs to prove itself and nobody should be able to read: a key, a password, a token."},
+  {t:"ci",l:"CI",m:"CI",
+   d:"Continuous integration — the robot that builds and tests every change automatically. It keeps copies of things, which is how leaked keys survive."},
+  {t:"mfa",l:"MFA",m:"MFA",
+   d:"Multi-factor authentication: your password plus something else — a tap, a code, a little hardware key. “Phishing-resistant” means the something else cannot be read out over the phone."},
+  {t:"phishing",l:"phishing",m:"phishing",
+   d:"A fake message built to get you to click, pay or log in. The good ones copy a real conversation you are already part of."},
+  {t:"dmarc",l:"DMARC",m:"DMARC",
+   d:"A setting on your domain that tells the world’s mail servers to bin messages that only pretend to come from you."},
+  {t:"at rest",l:"encryption at rest",m:"(?:encrypt(?:ed|ion)? )?at rest",
+   d:"Data scrambled while it sits on a disk, so a stolen drive is useless. It does nothing about who can simply log in and read it."},
+  {t:"retention",l:"retention",m:"retention",
+   d:"How long you keep something before deleting it. Every extra day is another day it can be stolen."},
+  {t:"payload",l:"the payload",m:"payload",
+   d:"The actual content of a request or reply — the names, numbers and details — as opposed to who asked and whether it worked."},
+  {t:"authorisation",l:"authorisation",m:"authorisation|authorization",
+   d:"Deciding whether the person asking is allowed this particular thing. A different question from authentication, which only asks whether you are who you say."},
+  {t:"enumeration",l:"enumeration",m:"enumeration",
+   d:"Walking through IDs or email addresses one at a time to find out what exists. Sequential numbers make it trivial."},
+  {t:"subprocessor",l:"a subprocessor",m:"subprocessor",
+   d:"A company your supplier passes your data on to. Your customers’ data, somebody else’s somebody else."},
+  {t:"sdk",l:"an SDK",m:"SDK",
+   d:"A ready-made lump of code you drop into your product to add a feature. It runs with the same access as everything else on the page."},
+  {t:"questionnaire",l:"a security questionnaire",m:"security questionnaire|questionnaire",
+   d:"A long list of security questions a customer sends before they will sign. The answers get attached to the contract, so they have to be true."},
+  {t:"attack surface",l:"attack surface",m:"attack surface",
+   d:"Everything about you that could be attacked — every door, integration and supplier. Adding a tool adds surface."},
+  {t:"snapshot",l:"a snapshot",m:"snapshot",
+   d:"A frozen copy of logs or records, taken before you change anything, so you can still reconstruct what happened."},
+  {t:"revoke",l:"revoking a token",m:"revoke|revoking|revoked",
+   d:"Switching a key or token off for good, so it stops working immediately."},
+  {t:"cve",l:"a CVE",m:"CVE",
+   d:"A public reference number for a known software vulnerability, so everyone can talk about the same bug."},
+  {t:"gdpr",l:"GDPR",m:"GDPR",
+   d:"European data protection law. Among much else it gives you seventy-two hours to tell the regulator once you know personal data has been exposed."},
+  {t:"regulator",l:"the regulator",m:"regulator",
+   d:"The public body you must report certain data breaches to, and which can fine you for how you handled them."},
+  {t:"hosting range",l:"a hosting range",m:"hosting range",
+   d:"A block of internet addresses belonging to a data centre rather than a home or an office. Customer traffic coming from one is worth a second look."},
+  {t:"root-cause analysis",l:"a root-cause analysis",m:"root-cause analysis",
+   d:"The write-up afterwards: why it happened, and what stops it happening again. For you and your team, not for the customer this afternoon."},
+  {t:"churn",l:"churn",m:"churn",
+   d:"Customers leaving. Usually counted as a percentage over a month or a quarter."}
+];
 TRACK_DEFS.security={
   id:'security', name:'Security', title:'Security Chronicles',
   blurb:'Eleven findings, a questionnaire nobody reads, and one token making forty thousand requests.',
@@ -2103,39 +2238,40 @@ TRACK_DEFS.security={
   roles:{mike:'Security Lead', kate:'CTO', jenny:'Platform / SRE',
          alex:'Senior Engineer', dan:'IT & Support',
          owen:'Head of Communications', player:'The new security engineer'},
+  glossary:TRACK_GLOSSARY,
   script:function(key){ return secScript(key); },
   occupants:function(room){ return secOccupants(room); },
   objectives:OBJ_SEC,
-  opening:{text:`Nine in the morning at Meridian. A pen test report with eleven findings, a two-hundred-question questionnaire from a customer who signs next week, and something in the API logs that Jen does not like the shape of.`,
+  opening:{text:`Nine in the morning at Meridian. A pen test with eleven findings, a two-hundred-question form from a customer who signs next week, and something in the API logs Jen doesn't like the shape of.`,
            label:'Find Nadia.'},
   certTitle:'SECURITY CHRONICLES',
-  timeUp:{who:'kate',line:`Clock's gone. The clinics hear it from their own logs and we answer to the regulator late as well as second. Finish it anyway — missing a deadline is survivable; not knowing what you would have written is not.`},
+  timeUp:{who:'kate',line:`Clock's gone. The clinics find out from their own logs, and we answer to the regulator late as well as second. Finish it anyway — missing a deadline you survive; not knowing what you'd have written, you don't.`},
   certBody:['handled a week at Meridian in a day — threat model, broken access control,',
             'a leaked key, phishing controls, logging, vendor review and a live incident —',
             'and turned a notice designed to say nothing into one eleven clinics could act on.'],
   lessons:[
-    {t:'Threat modelling is data flows, not attack lists', c:'Design',
-     l:'What data, crossing which trust boundaries, reachable by whom — and for each one, what would we actually see if somebody tried?'},
-    {t:'Authenticated is not authorised', c:'Access control',
+    {t:'Follow the data, not a list of attacks', c:'Design',
+     l:'What data, crossing which boundaries, reachable by whom? And for each one: what would we actually see if someone tried?'},
+    {t:'Logged in isn’t the same as allowed', c:'Access control',
      l:'Check the caller against the tenant on every request, deny by default, and write the test that proves tenant A gets a 404 for tenant B.'},
-    {t:'Unguessable is not protected', c:'Access control',
-     l:'UUIDs stop enumeration and leak in referrers, tickets and shared links. Obscurity buys time, not control.'},
-    {t:'A committed secret is compromised at the commit', c:'Secrets',
-     l:'Rotate first, then review what it was used for. Rewriting history removes the evidence, not the exposure.'},
-    {t:'Build controls that survive human error', c:'People',
-     l:'Phishing-resistant MFA, callbacks on payment changes, enforced DMARC. And measure reporting rate, not click rate.'},
-    {t:'Blame buys silence', c:'People',
+    {t:'Hard to guess isn’t protected', c:'Access control',
+     l:'UUIDs stop people enumerating IDs, but they leak through referrers, tickets and shared links. Obscurity buys time, not control.'},
+    {t:'Once a secret is committed, it’s leaked', c:'Secrets',
+     l:'Rotate it first, then look at what it was used for. Rewriting history removes the evidence, not the exposure.'},
+    {t:'Build controls that don’t rely on people being sharp', c:'People',
+     l:'Phishing-resistant MFA, callbacks on payment changes, DMARC enforced. And measure how many people report, not how many click.'},
+    {t:'Blame just buys you silence', c:'People',
      l:'Name the people who click and the next one sits on it and hopes. The person who rang IT is the control that worked.'},
-    {t:'A log store is a database of your worst secrets', c:'Logging',
-     l:'Log identifiers and outcomes, not payloads. Short retention. And alert on the things that indicate an attack — unalerted auth failures are a free enumeration tool.'},
-    {t:'Your security includes your vendors', c:'Third parties',
-     l:'Ask what data leaves, who can see it, and who they pass it to. An SDK that reads the DOM reads your patient form too.'},
-    {t:'A questionnaire answered aspirationally is a contractual lie', c:'Third parties',
-     l:'Say "not yet, here is the compensating control and the date". That answer gets attached to an agreement.'},
-    {t:'Contain, preserve, scope, then fix', c:'Incidents',
-     l:'Snapshot before you revoke — you get one chance at the timeline — and write it contemporaneously, because you will be quoting it to a regulator.'},
-    {t:'Vague and late is the most expensive notice', c:'Disclosure',
-     l:'Affected customers have their own logs. Specific and early makes it a bug; slow and careful makes it a cover-up.'}
+    {t:'Your logs hold your worst secrets', c:'Logging',
+     l:'Log identifiers and outcomes, not payloads. Keep them a short time. And alert on the things that look like an attack — an auth failure nobody’s alerted on is a free enumeration tool.'},
+    {t:'Your vendors are part of your security', c:'Third parties',
+     l:'Ask what data leaves, who can see it, and who they pass it to. An SDK that reads the page reads your patient form too.'},
+    {t:'An optimistic answer becomes a promise', c:'Third parties',
+     l:'Say not yet, here’s the compensating control, here’s the date. That answer gets attached to an agreement.'},
+    {t:'Contain, preserve, scope — then fix', c:'Incidents',
+     l:'Snapshot before you revoke; you only get one shot at the timeline. And write it down as you go, because you’ll be quoting it to a regulator.'},
+    {t:'Vague and late costs the most', c:'Disclosure',
+     l:'Affected customers have their own logs. Specific and early makes it a bug. Slow and careful makes it a cover-up.'}
   ]
 };
 
@@ -2215,6 +2351,8 @@ function loadTrack(id){
   pendingTrack=TRACK.id;
   if(TRACK.roles) for(const k in TRACK.roles){ if(CAST[k]) CAST[k].role=TRACK.roles[k]; }
   G.step=TRACK.first; G.portfolio=[]; G.bought=false; stopClock(); paintHUD();
+  G.termsSeen={}; G.termsLearned=[]; G.termLine=null;
+  G.termAsking=false; G.termCount=0;
 }
 
 /* ---- screens ------------------------------------------------------------ */
@@ -2279,9 +2417,17 @@ $('avGo').onclick=function(){
 /* ---- lessons ------------------------------------------------------------ */
 function paintLessons(){
   $('lessonsTitle').textContent='What '+TRACK.name.toLowerCase()+' teaches';
-  $('lessonsBody').innerHTML=(TRACK.lessons||[]).map(function(L){
+  let rows=(TRACK.lessons||[]).map(function(L){
     return '<div class="lesson"><b>'+L.t+'</b><span>'+L.c+'</span><p>'+L.l+'</p></div>';
   }).join('');
+  const gl=TRACK.glossary||[];
+  if(gl.length) rows+='<div class="lesson"><b>The words, plainly</b><span>Jargon</span>'+
+    '<p>Every term the day uses. While you play, the first time one of them comes up, '+
+    'whoever said it stops and asks whether you know it.</p></div>'+
+    gl.map(function(e){
+      return '<div class="lesson gl"><b>'+termName(e)+'</b><p>'+e.d+'</p></div>';
+    }).join('');
+  $('lessonsBody').innerHTML=rows;
 }
 
 /* ---- track picker ------------------------------------------------------- */

@@ -38,6 +38,12 @@
     background:#1a1f27;color:#e6edf3;border:1px solid #2c3440;border-radius:8px;
     padding:10px 14px;cursor:pointer;transition:.13s;width:100%}
   #dlg .opts button:hover{border-color:#58a6ff;background:#20262f}
+  #dlg p .jt{color:#58a6ff;font-weight:600}
+  #dlg .def{display:block;border-left:2px solid #58a6ff;padding:1px 0 1px 13px}
+  #dlg .def b{display:block;font-family:"Space Grotesk",sans-serif;font-size:12px;
+    letter-spacing:.09em;text-transform:uppercase;color:#58a6ff;margin:0 0 6px}
+  .lesson.gl b{font-size:14px;text-transform:uppercase;letter-spacing:.06em;
+    color:#58a6ff;margin-bottom:5px}
   /* title + portfolio */
   .veil{position:fixed;inset:0;background:rgba(9,12,16,.94);display:flex;
     align-items:center;justify-content:center;padding:24px;z-index:20}
@@ -1317,7 +1323,8 @@ const G={
   started:false, room:'lobby', step:'first_brief',
   px:400, py:392, dir:'up', walking:false, phase:0, playerName:'',
   portfolio:[], deadline:0, deadlineEnd:0, bought:false,
-  keys:{}, touch:{up:false,down:false,left:false,right:false}
+  keys:{}, touch:{up:false,down:false,left:false,right:false},
+  termsSeen:{}, termsLearned:[], termLine:null, termAsking:false, termCount:0
 };
 
 /* ---- where everyone is, by step ---------------------------------------- */
@@ -1326,7 +1333,61 @@ const G={
 let DLG=null;
 const $=id=>document.getElementById(id);
 
+/* ---- jargon checks ------------------------------------------------------
+   Every one of these jobs has words a newcomer has not met, and being quietly
+   lost is how somebody stops playing. So the first time a term comes up in
+   conversation, whoever is speaking stops and asks. One tap if you know it; a
+   plain sentence if you do not, and then the scene carries on exactly where it
+   paused. Four rules keep it out of the way: never the same term twice in a
+   run, never more than one per line, never while a deadline clock is running,
+   and never over narration -- people explain things, the narrator does not.
+   Every term is also listed under What this teaches, for anything waved
+   through at the time.                                                      */
+const TERM_ASK=[
+  'Quick one before I go on \u2014 do you know what <b class="jt">%s</b> means?',
+  'Hang on. Do you know what <b class="jt">%s</b> means?',
+  'Before I carry on \u2014 do you know what <b class="jt">%s</b> means?'
+];
+function termName(e){ return (e.l||e.t).replace(/^(?:a|an|the) /,''); }
+function termMatch(text){
+  const gl=(TRACK&&TRACK.glossary)||[];
+  const plain=String(text).replace(/<[^>]*>/g,'');
+  let best=null, bestAt=1e9, bestLen=0;
+  for(let i=0;i<gl.length;i++){
+    const e=gl[i];
+    if(G.termsSeen[e.t]) continue;
+    if(!e.re) e.re=new RegExp('(?:^|[^A-Za-z0-9])('+(e.m||e.t)+')(?:s|es)?(?![A-Za-z0-9])','i');
+    const m=e.re.exec(plain);
+    if(!m) continue;
+    const at=m.index+(m[0].length-m[1].length-(m[2]?m[2].length:0));
+    if(at<bestAt||(at===bestAt&&m[1].length>bestLen)){ best=e; bestAt=at; bestLen=m[1].length; }
+  }
+  return best;
+}
+/* True when a check was opened instead of the line, and the line is now
+   waiting behind it. */
+function termCheck(speaker,text,options){
+  if(!speaker||G.termAsking||G.deadlineEnd) return false;
+  if(G.termLine===text) return false;
+  const e=termMatch(text);
+  if(!e) return false;
+  G.termsSeen[e.t]=1; G.termLine=text; G.termAsking=true;
+  const resume=function(){ G.termAsking=false; say(speaker,text,options); };
+  rawSay(speaker, TERM_ASK[(G.termCount++)%TERM_ASK.length].replace('%s',termName(e)), [
+    {label:'Yes, I know that one', go:resume},
+    {label:'No \u2014 explain it', go:function(){
+      G.termsLearned.push(e.t);
+      rawSay(speaker,'<span class="def"><b>'+termName(e)+'</b>'+e.d+'</span>',
+        [{label:'Got it \u2014 carry on', go:resume}]);
+    }}
+  ]);
+  return true;
+}
 function say(speaker,text,options){
+  if(termCheck(speaker,text,options)) return;
+  rawSay(speaker,text,options);
+}
+function rawSay(speaker,text,options){
   cancelTravel();
   DLG={speaker:speaker,text:text,options:options&&options.length?options:[{label:'Continue',go:closeDlg}]};
   paintDlg();
@@ -1897,22 +1958,22 @@ function uxScript(key){
 
   /* ---------- the problem ---------- */
   if(key==='kate'&&s==='ux_brief')
-    return say('kate',`Nadia, product lead. Meridian does scheduling for clinics, studios and garages, and the thing our customers' customers actually touch is the booking flow. Four steps. Sixty-one per cent of people who start it don't finish. Support think it's step three. Sales think it's the price shown at the end. The CEO thinks it's the colour of the button.`,
+    return say('kate',`Hi — Nadia, product lead. Welcome aboard. Meridian does scheduling for clinics, studios and garages, and the thing our customers' customers actually touch is the booking flow. Four steps. Sixty-one per cent of people who start it don't finish. Support think it's step three. Sales think it's the price at the end. The CEO thinks it's the colour of the button.`,
       [{label:'And what do you think?',go:function(){
-        say('kate',`That three people have three theories and nobody has watched anyone do it. Ravi's on the floor. He'll stop you opening Figma, which is the most useful thing anyone will do for you today.`,
+        say('kate',`That three people have three theories and nobody's watched anyone do it. Ravi's on the floor. He'll stop you opening Figma, which is the most useful thing anyone will do for you today.`,
           [{label:'On my way.',go:function(){ advance('research'); }}]);
       }}]);
 
   /* ---------- 1. research ---------- */
   if(key==='mike'&&s==='research'){
     return choose('mike',
-      `Ravi, design lead. Sixty-one per cent abandon and we have three theories in the building. How do you find out which one is right?`,
+      `Ravi, design lead — good to have you. So: sixty-one per cent abandon, and we've got three theories in the building. How do you find out which one's right?`,
       [
        {label:`Send a survey to everyone who abandoned, asking what put them off.`,ok:false,
-        note:`The people who abandoned have left. The few who answer will tell you a tidy story they invented afterwards, because nobody remembers why they gave up — they remember that they did. Again.`},
+        note:`The people who abandoned have left. The few who reply will tell you a tidy story they made up afterwards, because nobody remembers why they gave up — only that they did. Want to try another?`},
        {label:`Get five real customers to book an appointment while you watch and say nothing, and see where their hands stop.`,ok:true},
        {label:`Take all three theories to the team and have the discussion properly in a workshop.`,ok:false,
-        note:`Six people with opinions and no evidence. The loudest theory wins and you've spent an afternoon deciding nothing. Again.`}
+        note:`Six people with opinions and no evidence. The loudest theory wins and you've spent an afternoon deciding nothing. Try again?`}
       ],function(){
         filed('Usability sessions','Meridian booking flow','Five people, one real task, no leading questions');
         advance('ia_labels','mike',`Good. Research is watching behaviour, not collecting opinions — people are unreliable narrators of their own clicking. Five is enough to find most of it; you're not measuring, you're finding out. And four of your five stopped dead in the same place, which Theo has been telling everyone about for a year.`);
@@ -1922,45 +1983,45 @@ function uxScript(key){
   /* ---------- 2. labels and IA ---------- */
   if(key==='dan'&&s==='ia_labels'){
     return choose('dan',
-      `Theo. I take the support calls that come through here. Step three is called "Manage availability" and what it actually does is let you pick a time. People ring us to ask what it means. Forty-odd times, by my count.`,
+      `Theo — I take the support calls that come through here. So, step three is called Manage availability, and what it actually does is let you pick a time. People ring us to ask what it means. Forty-odd times, by my count.`,
       [
        {label:`Add a tooltip on the heading explaining what the step does.`,ok:false,
-        note:`A tooltip is a note apologising for your label. Nobody hovers over a heading when they're trying to book a haircut. Again.`},
-       {label:`Rename it to what people call it — "Choose a time" — and use their words for the other steps too.`,ok:true},
+        note:`A tooltip is a note apologising for your label. Nobody hovers over a heading when they're trying to book a haircut. Try again?`},
+       {label:`Rename it to what people actually call it — Choose a time — and use their words for the other steps too.`,ok:true},
        {label:`Write a help-centre article and link it from the step.`,ok:false,
-        note:`You've built a manual for a four-step form. If people have to read something to get past a label, the label is the bug. Again.`}
+        note:`You've built a manual for a four-step form. If people have to read something to get past a label, the label is the bug. Have another go?`}
       ],function(){
         filed('Naming pass','Meridian booking flow','Steps renamed in customers\u2019 words, tooltips deleted');
-        advance('states','dan',`Thank you. Forty calls, one word. "Manage availability" is what it's called in our database, and the database is not a customer. Ravi wants you back — apparently your screens only show one version of the world.`);
+        advance('states','dan',`Thank you. Forty calls, one word. Manage availability is what it's called in our database, and the database is not a customer. Ravi wants you back — apparently your screens only show one version of the world.`);
       });
   }
 
   /* ---------- 3. states ---------- */
   if(key==='mike'&&s==='states'){
     return choose('mike',
-      `Eleven screens, all beautiful, all showing a clinic with three practitioners and six free slots this week. What happens when a new salon has no availability set up yet, when the slots are still loading, when the payment fails, and when a physio has four hundred slots in one week?`,
+      `Eleven screens, all beautiful, all showing a clinic with three practitioners and six free slots this week. So what happens when a new salon hasn't set up availability yet? When the slots are still loading? When the payment fails? When a physio has four hundred slots in one week?`,
       [
        {label:`Design the happy path now and let engineering handle the edge cases as they come up.`,ok:false,
-        note:`Then a developer will invent them at half past four on a Friday, and your empty screen will say "No data". Those aren't edge cases — the empty state is the first thing every new customer ever sees. Again.`},
-       {label:`Design empty, loading, error and too-much as first-class screens, with words for each, before anything gets built.`,ok:true},
-       {label:`Add a generic error component and a spinner that can be reused anywhere.`,ok:false,
-        note:`A spinner and a shrug. "Something went wrong" tells a person nothing about whether to try again, wait, or ring you. Again.`}
+        note:`Then a developer invents them at half four on a Friday, and your empty screen says No data. Those aren't edge cases — the empty state is the first thing every new customer ever sees. Try again?`},
+       {label:`Design empty, loading, error and too-much as proper screens, with the words for each, before anything gets built.`,ok:true},
+       {label:`Add a generic error component and a spinner we can reuse anywhere.`,ok:false,
+        note:`A spinner and a shrug. Something went wrong tells a person nothing about whether to try again, wait, or ring you. Have another go?`}
       ],function(){
         filed('State coverage','Meridian booking flow','Empty, loading, error and overflow designed and written');
-        advance('forms','mike',`Right. The empty state is onboarding, the error state is support, and the overflowing one is your biggest customer. All three get seen more than the screenshot you'd put in a case study. Jen's in Ops and she has the form open.`);
+        advance('forms','mike',`Right. The empty state is onboarding, the error state is support, and the overflowing one is your biggest customer. All three get seen more than the screenshot you'd put in a case study. Jen's in Ops, and she's got the form open.`);
       });
   }
 
   /* ---------- 4. forms ---------- */
   if(key==='jenny'&&s==='forms'){
     return choose('jenny',
-      `Jen, design systems. Your booking form: fourteen fields in two columns, validation on submit, and it clears the whole thing when it fails. The postcode field rejects lowercase and the phone field rejects spaces. Four of your five testers failed here. Fix it.`,
+      `Jen, design systems. Your booking form: fourteen fields in two columns, validation on submit, and it clears the whole lot when it fails. The postcode field rejects lowercase and the phone field rejects spaces. Four of your five testers failed right here. Fix it?`,
       [
        {label:`Keep the fourteen fields but validate inline and stop clearing the form on error.`,ok:false,
-        note:`Better, and still fourteen fields to book a massage. Half of them are things we could ask after the booking exists, or not at all. Again.`},
-       {label:`One column, only the fields needed to make the booking, inline validation that never clears what they typed, and accept whatever shape they write a postcode or phone number in and normalise it ourselves.`,ok:true},
+        note:`Better — and still fourteen fields to book a massage. Half of them are things we could ask after the booking exists, or not at all. Try again?`},
+       {label:`One column, only the fields we need to make the booking, inline validation that never clears what they typed — and accept whatever shape they write a postcode or phone number in, then tidy it ourselves.`,ok:true},
        {label:`Split the fourteen fields across three shorter steps so each screen feels light.`,ok:false,
-        note:`Same fourteen fields, now with three chances to give up and a progress bar to demoralise them. Shorter screens is not the same as less asking. Again.`}
+        note:`Same fourteen fields, now with three chances to give up and a progress bar to demoralise them. Shorter screens isn't the same as asking less. Have another go?`}
       ],function(){
         filed('Form redesign','Meridian booking flow','One column, fewer fields, inline validation, input normalised not rejected');
         advance('a11y','jenny',`That's it. Two columns makes people's eyes zigzag, every field is a question you're making someone answer, and rejecting a lowercase postcode is us being lazy and calling it their mistake. Now — put the mouse down and try to book something.`);
@@ -1970,29 +2031,29 @@ function uxScript(key){
   /* ---------- 5. accessibility that isn't contrast ---------- */
   if(key==='jenny'&&s==='a11y'){
     return choose('jenny',
-      `Keyboard only, from the top. Tab goes to the footer before the form because of the source order, the date picker can't be operated without a mouse at all, the confirmation modal doesn't trap focus so tab wanders off behind it, and the three icon buttons are announced as "button, button, button". Your contrast all passes, mind.`,
+      `Keyboard only, from the top. Tab goes to the footer before the form, because of the source order. The date picker can't be operated without a mouse at all. The confirmation modal doesn't trap focus, so tab wanders off behind it. And the three icon buttons are announced as button, button, button. Your contrast all passes, mind.`,
       [
        {label:`Add aria-labels to the icon buttons and aria-hidden to the background when the modal opens.`,ok:false,
-        note:`You've named three buttons and papered over the modal. The date picker — the actual point of the product — still cannot be used at all. Again.`},
-       {label:`Fix the focus order in the markup, make the date picker fully operable by keyboard with visible focus, trap and return focus in the modal, and give every control a real accessible name.`,ok:true},
+        note:`You've named three buttons and papered over the modal. The date picker — the actual point of the product — still can't be used at all. Try again?`},
+       {label:`Fix the focus order in the markup, make the date picker fully keyboard-operable with visible focus, trap and return focus in the modal, and give every control a real accessible name.`,ok:true},
        {label:`Run the automated accessibility checker and clear everything it flags.`,ok:false,
-        note:`It flags about a third of this and nothing that matters most. An automated pass is a spellcheck, not a proofread. Again.`}
+        note:`It flags about a third of this, and none of the worst. An automated pass is a spellcheck, not a proofread. Have another go?`}
       ],function(){
         filed('Accessibility pass','Meridian booking flow','Focus order, keyboard operability, focus trap, accessible names');
-        advance('disclosure','jenny',`Good. Contrast is the easy half and the half tools can see. Whether a person can get through your flow with a keyboard is the other half, and it's the half that decides whether they can book at all. Ravi's got a screen with eleven things on it.`);
+        advance('disclosure','jenny',`Good. Contrast is the easy half, and the half tools can see. Whether a person can get through your flow on a keyboard is the other half — and that's the half that decides whether they can book at all. Ravi's got a screen with eleven things on it.`);
       });
   }
 
   /* ---------- 6. progressive disclosure ---------- */
   if(key==='mike'&&s==='disclosure'){
     return choose('mike',
-      `The manage-booking screen. Eleven options, all visible, all the same size: reschedule, cancel, add a note, invite a second guest, change practitioner, repeat weekly, export, print, add to calendar, request a reminder, share. Support say ninety per cent of visits to this screen are people trying to cancel or move. What do you do?`,
+      `The manage-booking screen. Eleven options, all visible, all the same size: reschedule, cancel, add a note, invite a second guest, change practitioner, repeat weekly, export, print, add to calendar, request a reminder, share. Support say ninety per cent of visits here are people trying to cancel or move. What do you do?`,
       [
-       {label:`Group all eleven into three labelled sections so the screen reads as an organised list.`,ok:false,
-        note:`Tidy and still eleven. You've organised the haystack. The two things nearly everyone wants are still one of eleven equal choices. Again.`},
-       {label:`Put reschedule and cancel first and obvious, collapse the rest behind one "More options", and order what's left by how often it's actually used.`,ok:true},
-       {label:`Hide the advanced options — including cancel — behind "More", so the screen is clean.`,ok:false,
-        note:`You've hidden the thing people came for to make the page look calm, which is how a design decision quietly becomes a dark pattern. Again.`}
+       {label:`Group all eleven into three labelled sections so it reads as an organised list.`,ok:false,
+        note:`Tidy, and still eleven. You've organised the haystack. The two things nearly everyone wants are still one of eleven equal choices. Try again?`},
+       {label:`Put reschedule and cancel first and obvious, collapse the rest behind one More options, and order what's left by how often it's actually used.`,ok:true},
+       {label:`Hide the advanced options — cancel included — behind More, so the screen's clean.`,ok:false,
+        note:`You've hidden the thing people came for, to make the page look calm. That's how a design decision quietly becomes a dark pattern. Have another go?`}
       ],function(){
         filed('Disclosure','Meridian booking flow','Ordered by frequency of need, not by tidiness');
         advance('dark_pattern','mike',`Yes. Progressive disclosure is about what people need, not what looks calm in a portfolio — hiding the common thing is the same mistake as showing everything, with better press. Marcus wants you in the war room. Be careful.`);
@@ -2002,19 +2063,19 @@ function uxScript(key){
   /* ---------- 7. the request you should not simply obey ---------- */
   if(key==='owen'&&s==='dark_pattern'){
     return choose('owen',
-      `Marcus, growth. Love the new flow, genuinely. One ask: move cancel off that screen, put it two clicks deeper behind a confirmation, maybe make the "keep my booking" button the big green one. Other companies do it. Churn's up four points and the board meets Thursday.`,
+      `Marcus, growth. Love the new flow, genuinely. One ask: move cancel off that screen, put it two clicks deeper behind a confirmation, maybe make keep my booking the big green one. Other companies do it. Churn's up four points and the board meets Thursday.`,
       [
        {label:`"Fair enough — I'll bury the cancel button behind a confirm step."`,ok:false,
-        note:`(You've made cancelling harder and changed nobody's mind. They'll cancel by ringing Theo, or by charging it back, and they will tell people. Again.)`},
+        note:`(You've made cancelling harder and changed nobody's mind. They'll cancel by ringing Theo, or by charging it back — and they'll tell people. Want another go?)`},
        {label:`"That'll cost us more than it saves — but before I argue, what result do you actually need, and do we know what the people who cancel have in common?"`,ok:true},
        {label:`"That's a dark pattern and I'm not designing it. There's regulation about this now."`,ok:false,
-        note:`Noted. I'll ask someone else, then, and you'll find out what got shipped in April.  (You were right and you're now outside the conversation. Again.)`},
+        note:`Noted. I'll ask someone else, then, and you'll find out what shipped in April.  (You were right, and you're now outside the conversation. Try again?)`},
        {label:`"I'll A/B test it — if it reduces churn we ship it, if not we don't."`,ok:false,
-        note:`It will reduce cancellations this month, because friction always does, and the test will tell you nothing about the refund requests in March. Some things are measurable and still wrong. Again.`}
+        note:`It'll reduce cancellations this month, because friction always does. And it'll tell you nothing about the refund requests in March. Some things are measurable and still wrong. Have another go?`}
       ],function(){
-        say('owen',`...I need four points of churn back, is what I need. And no, I don't know what they have in common. I assumed they'd found someone cheaper.`,
+        say('owen',`...I need four points of churn back, is what I need. And no, I don't know what they've got in common. I assumed they'd found someone cheaper.`,
           [{label:'Let me look.',go:function(){
-            say('owen',`Theo pulled the cancellation reasons while you were downstairs. Half of them are seasonal — swim schools, ski hire, wedding florists — and they all say some version of "we'll be back in the spring". They're not leaving. They're closing for the winter and cancelling is the only button we gave them.`,
+            say('owen',`Theo pulled the cancellation reasons while you were downstairs. Half of them are seasonal — swim schools, ski hire, wedding florists — and they all say some version of we'll be back in the spring. They're not leaving. They're closing for the winter, and cancel is the only button we gave them.`,
               [{label:'Then we gave them the wrong button.',go:function(){
                 filed('Request, translated','Meridian','The churn was seasonal pausing with no pause option');
                 startClock(90);
@@ -2028,10 +2089,10 @@ function uxScript(key){
   if(key==='mike'&&s==='crisis_fix'){
     return choose('mike',`Talk fast. What's the change?`,[
       {label:`Design the whole subscription-management area properly — pause, resume, billing holidays, the lot.`,ok:false,
-       note:`Three weeks of work and nothing in the pack. We have ninety seconds. Again.`},
-      {label:`Add "pause until a date" to the cancel screen, above cancel, with the resume date in plain words — and leave cancel exactly where it is.`,ok:true},
-      {label:`Keep cancel where it is but add a "are you sure? you'll lose your history" step to slow people down.`,ok:false,
-       note:`That's Marcus's original ask wearing a coat. You'd be adding friction to a door people are walking through for a reason. Again.`}
+       note:`Three weeks of work and nothing in the pack. We've got ninety seconds. Try again?`},
+      {label:`Add pause until a date to the cancel screen, above cancel, with the resume date in plain words — and leave cancel exactly where it is.`,ok:true},
+      {label:`Keep cancel where it is, but add an are you sure, you'll lose your history step to slow people down.`,ok:false,
+       note:`That's Marcus's original ask wearing a coat. You'd be adding friction to a door people are walking through for a reason. Have another go?`}
     ],function(){
       advance('crisis_show','mike',`Drawn, written, in the pack with eleven seconds spare. One option, on the screen people already reach, above the destructive one and not instead of it. Go and show him.`);
     });
@@ -2041,7 +2102,7 @@ function uxScript(key){
     stopClock();
     return say('owen',`So they press pause, and in April they come back on their own. And cancel's still right there.`,
       [{label:'Exactly where it was.',go:function(){
-        say('owen',`I asked four designers to hide that button. You're the first one who asked me what I was actually trying to fix.`,
+        say('owen',`I asked four designers to hide that button. You're the first who asked me what I was actually trying to fix.`,
           [{label:'...',go:function(){
             say('kate',`That's the job. Not the grid, not the components — that. Someone hands you a solution dressed as a request, and your instinct was to go and find out what was underneath it. Seven pieces of work, five real users watched, and a board pack you didn't miss. You're a designer now.`,
               [{label:'Thank you.',go:function(){ G.step='complete'; paintHUD(); closeDlg(); openCertificate(); }}]);
@@ -2055,21 +2116,21 @@ function uxScript(key){
       ux_brief:`Nadia's in Product. Ask what people do, not what the team thinks.`,
       research:`Three theories, no evidence. Go and watch somebody's hands.`,
       ia_labels:`If people need an explanation to get past a word, the word is the bug.`,
-      states:`Every new customer sees your empty state before they see anything you'd screenshot.`,
+      states:`Every new customer sees your empty state before anything you'd screenshot.`,
       forms:`Every field is a question you're making a stranger answer. Count them again.`,
       a11y:`Put the mouse down and try to book something. That's the test.`,
       disclosure:`Ninety per cent come to cancel or move. Design for the ninety.`,
       dark_pattern:`He's asking for a solution. Find out what result he needs.`,
-      crisis_fix:`Smallest change that answers the real problem, and don't touch cancel.`,
-      crisis_show:`Go and show him — he hasn't seen it.`,
-      complete:`You talked growth out of a dark pattern with evidence. Pub?`
+      crisis_fix:`Smallest change that answers the real problem — and don't touch cancel.`,
+      crisis_show:`Go and show him — he hasn't seen it yet.`,
+      complete:`You talked growth out of a dark pattern, with evidence. Pub?`
     };
     return say('alex', h[s] || `Stuck? Say what the person is trying to get done, in their words, and start there.`);
   }
 
   const idle={
-    kate:`Nothing new — go and finish what you've got.`,
-    mike:`Bring it back when you can tell me what the empty version looks like.`,
+    kate:`Nothing new from me — go and finish what you've got.`,
+    mike:`Come back when you can tell me what the empty version looks like.`,
     jenny:`Bring me something I can use with a keyboard and we'll get on fine.`,
     dan:`Kettle's on. Phones have been quieter since you fixed that label, mind.`,
     owen:`I'll wait. Board's Thursday, though.`
@@ -2077,6 +2138,60 @@ function uxScript(key){
   say(key, idle[key] || `...`);
 }
 
+const TRACK_GLOSSARY=[
+  {t:"flow",l:"a flow",m:"booking flow|(?:the )?flow",
+   d:"A named path someone takes through a product to get one thing done — the four screens of booking an appointment, say."},
+  {t:"abandon",l:"abandonment",m:"abandon(?:ed|ment|s)?",
+   d:"People starting something and leaving before the end. Sixty-one per cent abandonment means six in ten never finish booking."},
+  {t:"figma",l:"Figma",m:"Figma",
+   d:"The drawing tool most product designers work in. Opening it too early is how you end up solving the wrong problem beautifully."},
+  {t:"research",l:"user research",m:"user research|research|usability test(?:ing|s)?",
+   d:"Watching real people try to do a real task in your product while you keep quiet. Five of them will show you most of what is broken."},
+  {t:"tooltip",l:"a tooltip",m:"tooltip",
+   d:"The little explanation that appears when you hover over something. Nobody hovers when they are trying to book a haircut."},
+  {t:"label",l:"a label",m:"label",
+   d:"The words on a button, heading or field. If people need an explanation to get past one, the label is the bug."},
+  {t:"happy path",l:"the happy path",m:"happy path",
+   d:"The version where everything goes right and all the data is there. It is the easiest thing to design and the least of what people meet."},
+  {t:"edge case",l:"an edge case",m:"edge case",
+   d:"A situation outside the ordinary one — empty, enormous, broken, unusual. Calling something an edge case is often how it stops getting designed."},
+  {t:"empty state",l:"an empty state",m:"empty state",
+   d:"What a screen shows when there is nothing in it yet. It is the first thing every new customer sees, and it usually says “No data”."},
+  {t:"loading state",l:"a loading state",m:"loading state|loading",
+   d:"What people see while they wait. A spinner on its own tells them nothing about whether it is working."},
+  {t:"error state",l:"an error state",m:"error state",
+   d:"What a screen shows when something has gone wrong. “Something went wrong” tells nobody whether to try again, wait, or ring you."},
+  {t:"component",l:"a component",m:"component",
+   d:"One reusable piece of interface — a button, a field, a date picker — built once and used everywhere."},
+  {t:"design system",l:"a design system",m:"design system",
+   d:"The shared kit of components, type and colour a team builds from, so every screen does not get invented twice."},
+  {t:"validation",l:"validation",m:"validation|validate",
+   d:"Checking what somebody has typed. “On submit” means telling them at the end; “inline” means telling them there and then, beside the field."},
+  {t:"focus order",l:"focus order",m:"focus order|source order",
+   d:"The order the keyboard moves through a page when you press Tab. It follows the order things appear in the code, not where they sit on screen."},
+  {t:"modal",l:"a modal",m:"modal",
+   d:"A box that opens on top of the page and blocks the rest until you deal with it — a confirmation, say."},
+  {t:"focus trap",l:"trapping focus",m:"trap(?:s|ping)? focus|focus trap|trap and return focus",
+   d:"Keeping the keyboard inside an open dialogue so Tab cannot wander off behind it, and returning it where it started when the box closes."},
+  {t:"aria",l:"ARIA",m:"ARIA|aria-labels?|aria-hidden",
+   d:"Extra attributes that tell screen readers what something is or is called. A patch over unclear markup, not a substitute for fixing it."},
+  {t:"accessible name",l:"an accessible name",m:"accessible name",
+   d:"The name a screen reader reads out for a control. Three icon buttons with no accessible name are announced as “button, button, button”."},
+  {t:"contrast",l:"contrast",m:"contrast",
+   d:"How far apart a colour and its background are in lightness. It is the part of accessibility a tool can measure, which is why it gets fixed first."},
+  {t:"progressive disclosure",l:"progressive disclosure",m:"progressive disclosure",
+   d:"Showing the few things most people need and keeping the rest one tap away. It only works if you hide the rare things, not the common one."},
+  {t:"dark pattern",l:"a dark pattern",m:"dark pattern",
+   d:"Interface designed to get a result the person would not have chosen — hiding cancel, pre-ticking a box. It usually works this month and costs you later."},
+  {t:"a/b test",l:"an A/B test",m:"A/B test(?:ing|s)?",
+   d:"Showing two versions to two random halves of your audience and comparing what happens. It can only measure what you thought to measure."},
+  {t:"friction",l:"friction",m:"friction",
+   d:"Anything that makes an action harder — an extra step, a confirmation, a form. It reliably reduces the action, whether or not that helps you."},
+  {t:"churn",l:"churn",m:"churn",
+   d:"Customers leaving. Usually a percentage over a month or a quarter, and usually blamed on the last thing anyone changed."},
+  {t:"board",l:"the board pack",m:"board pack|the board",
+   d:"The set of slides prepared for the company’s directors before they meet. It locks at a deadline, and what is in it is what gets discussed."}
+];
 TRACK_DEFS.ux={
   id:'ux', name:'UX Design', title:'UX Chronicles',
   blurb:'Sixty-one per cent abandon the flow, three people have theories, and nobody has watched anyone use it.',
@@ -2084,13 +2199,14 @@ TRACK_DEFS.ux={
   roles:{mike:'Design Lead', kate:'Product Lead', jenny:'Design Systems & Accessibility',
          alex:'Senior Designer', dan:'Support Lead',
          owen:'Head of Growth', player:'The new designer'},
+  glossary:TRACK_GLOSSARY,
   script:function(key){ return uxScript(key); },
   occupants:function(room){ return uxOccupants(room); },
   objectives:OBJ_UX,
   opening:{text:`Nine in the morning at Meridian. Sixty-one per cent of the people who start a booking never finish it, three colleagues have three theories about why, and the board pack locks at five.`,
            label:'Find Nadia.'},
   certTitle:'UX CHRONICLES',
-  timeUp:{who:'kate',line:`Pack's locked. Marcus presents what was already in it, which means we do this again in a quarter. Finish it anyway — missing a deadline is survivable; not knowing what you would have drawn is not.`},
+  timeUp:{who:'kate',line:`Pack's locked. Marcus presents what was already in it, which means we do this again in a quarter. Finish it anyway — missing a deadline you survive; not knowing what you'd have drawn, you don't.`},
   certBody:['redesigned the Meridian booking flow from five usability sessions — naming,',
             'states, forms, keyboard access and disclosure — and turned a request to hide',
             'the cancel button into a pause option that kept it exactly where it was.'],
@@ -2101,20 +2217,20 @@ TRACK_DEFS.ux={
      l:'A tooltip is a note apologising for your wording. Use the words customers use, not the ones in your database.'},
     {t:'Empty, loading, error and too-much are the product', c:'States',
      l:'Every new customer meets your empty state first, support meets your error state, and your biggest account meets the overflowing one. Design and write all four.'},
-    {t:'Every field is a question you are making someone answer', c:'Forms',
-     l:'One column, only what the task needs now, and ask the rest later or not at all.'},
-    {t:'Never reject what you could normalise', c:'Forms',
+    {t:'Every field is a question you’re making someone answer', c:'Forms',
+     l:'One column, only what the task needs right now, and ask the rest later — or not at all.'},
+    {t:'Never reject what you could just tidy up', c:'Forms',
      l:'A lowercase postcode or a spaced phone number is us being lazy and calling it their mistake. Validate inline, and never clear what they typed.'},
     {t:'Accessibility is mostly not contrast', c:'Accessibility',
      l:'Focus order, keyboard operability, focus trapped and returned in modals, a real name on every control. The automated checker is a spellcheck, not a proofread.'},
-    {t:'Disclose by need, not by tidiness', c:'Hierarchy',
+    {t:'Hide by need, not by tidiness', c:'Hierarchy',
      l:'Showing eleven equal options and hiding the one people came for are the same mistake. Order by how often something is actually needed.'},
-    {t:'Friction is not persuasion', c:'Ethics',
-     l:'Making the exit harder reduces this month\u2019s cancellations and produces chargebacks, support calls and the story people tell about you.'},
-    {t:'Measurable is not the same as right', c:'Ethics',
-     l:'A dark pattern will win its A/B test. The test cannot see the refund request in March or the review in June.'},
+    {t:'Friction isn’t persuasion', c:'Ethics',
+     l:'Making the exit harder cuts this month’s cancellations and produces chargebacks, support calls, and the story people tell about you.'},
+    {t:'Measurable isn’t the same as right', c:'Ethics',
+     l:'A dark pattern will win its A/B test. The test can’t see the refund request in March or the review in June.'},
     {t:'A request is usually a solution in disguise', c:'Stakeholders',
-     l:'Ask what result they need and what the affected people have in common. "Hide the cancel button" was four points of seasonal pausing.'}
+     l:'Ask what result they need, and what the affected people have in common. Hide the cancel button turned out to be four points of seasonal pausing.'}
   ]
 };
 
@@ -2194,6 +2310,8 @@ function loadTrack(id){
   pendingTrack=TRACK.id;
   if(TRACK.roles) for(const k in TRACK.roles){ if(CAST[k]) CAST[k].role=TRACK.roles[k]; }
   G.step=TRACK.first; G.portfolio=[]; G.bought=false; stopClock(); paintHUD();
+  G.termsSeen={}; G.termsLearned=[]; G.termLine=null;
+  G.termAsking=false; G.termCount=0;
 }
 
 /* ---- screens ------------------------------------------------------------ */
@@ -2258,9 +2376,17 @@ $('avGo').onclick=function(){
 /* ---- lessons ------------------------------------------------------------ */
 function paintLessons(){
   $('lessonsTitle').textContent='What '+TRACK.name.toLowerCase()+' teaches';
-  $('lessonsBody').innerHTML=(TRACK.lessons||[]).map(function(L){
+  let rows=(TRACK.lessons||[]).map(function(L){
     return '<div class="lesson"><b>'+L.t+'</b><span>'+L.c+'</span><p>'+L.l+'</p></div>';
   }).join('');
+  const gl=TRACK.glossary||[];
+  if(gl.length) rows+='<div class="lesson"><b>The words, plainly</b><span>Jargon</span>'+
+    '<p>Every term the day uses. While you play, the first time one of them comes up, '+
+    'whoever said it stops and asks whether you know it.</p></div>'+
+    gl.map(function(e){
+      return '<div class="lesson gl"><b>'+termName(e)+'</b><p>'+e.d+'</p></div>';
+    }).join('');
+  $('lessonsBody').innerHTML=rows;
 }
 
 /* ---- track picker ------------------------------------------------------- */
