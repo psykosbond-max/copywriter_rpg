@@ -158,11 +158,11 @@
     <div id="map" class="map" aria-label="Floor map"></div>
   </div>
   <div id="coach">
-    <p><b class="n">1</b><span><b>Read the line above.</b> That is your objective &mdash;
-      who to find, and which room. The map next to it shows where you are; tap any
+    <p><b class="n">1</b><span><b>Read the line above.</b> It tells you who to find
+      and which room they’re in. The map next to it shows where you are. Tap any
       room to walk there.</span></p>
-    <p><b class="n">2</b><span><b>Then answer in the box below the floor.</b> Nothing
-      moves until you tap one of its options &mdash; that is how the day starts.</span></p>
+    <p><b class="n">2</b><span><b>Then answer in the box below the office.</b> Nothing
+      happens until you tap one of the answers. That’s how the day begins.</span></p>
     <button id="coachGo" type="button">Got it</button>
   </div>
   <div class="stage">
@@ -181,22 +181,22 @@
 
 <div class="veil" id="menu"><div class="inner center">
   <h2 id="menuTitle">Data Chronicles</h2>
-  <p class="lede" id="menuLede">A day on a product team, and a number somebody has already decided.</p>
+  <p class="lede" id="menuLede">A day at a software company, and a number someone has already decided on.</p>
   <button id="btnPlay" class="primary">Play game</button>
   <button id="btnLearn" class="ghost">Learn data science</button>
   <button id="btnTracks" class="ghost">Choose another track</button>
 </div></div>
 
 <div class="veil" id="nameScreen" style="display:none"><div class="inner center">
-  <h3>What should they call you?</h3>
+  <h3>What’s your name?</h3>
   <input id="nameInput" type="text" autocomplete="off" spellcheck="false" placeholder="Your name"/>
-  <p class="hintline">It goes on your certificate at the end of the day.</p>
+  <p class="hintline">We’ll put it on your certificate at the end of the day.</p>
   <button id="nameGo" class="primary" disabled>Start</button>
   <button id="backName" class="link">Back</button>
 </div></div>
 
 <div class="veil" id="avatarScreen" style="display:none"><div class="inner center">
-  <h3>And who are you today?</h3>
+  <h3>Choose your character</h3>
   <div class="avrow">
     <div class="avcard"><canvas id="av0" width="230" height="300"></canvas></div>
     <div class="avcard"><canvas id="av1" width="230" height="300"></canvas></div>
@@ -214,7 +214,7 @@
 
 <div class="veil" id="tracksScreen" style="display:none"><div class="inner">
   <h3>Choose another track</h3>
-  <p class="lede small">Engineering, product, security, UX and data science run at Meridian, a product company. Copywriting, account management, brand and design share an agency across town. Electrical, mechanical and chemical engineering are at Hallam Works, which builds the pump skids and control panels. Consulting is at Calder and Hale, on somebody else's problem — same engine, different job, different lessons.</p>
+  <p class="lede small">Software engineering, product, security, UX, and data science take place at Meridian, a software company. Copywriting, account management, brand strategy, and design take place at an ad agency across town. Electrical, mechanical, and chemical engineering take place at Hallam Works, which builds pump systems and control panels. Consulting takes place at Calder &amp; Hale, where you help another company solve its problem. Every track plays the same way, but each one is a different job with different lessons.</p>
   <div id="tracksBody"></div>
   <button id="backTracks" class="link">Back to menu</button>
 </div></div>
@@ -1344,9 +1344,9 @@ const $=id=>document.getElementById(id);
    Every term is also listed under What this teaches, for anything waved
    through at the time.                                                      */
 const TERM_ASK=[
-  'Quick one before I go on \u2014 do you know what <b class="jt">%s</b> means?',
-  'Hang on. Do you know what <b class="jt">%s</b> means?',
-  'Before I carry on \u2014 do you know what <b class="jt">%s</b> means?'
+  'Quick question before I go on. Do you know what <b class="jt">%s</b> means?',
+  'Wait a second. Do you know what <b class="jt">%s</b> means?',
+  'Before I keep going, do you know what <b class="jt">%s</b> means?'
 ];
 function termName(e){ return (e.l||e.t).replace(/^(?:a|an|the) /,''); }
 function termMatch(text){
@@ -1375,10 +1375,10 @@ function termCheck(speaker,text,options){
   const resume=function(){ G.termAsking=false; say(speaker,text,options); };
   rawSay(speaker, TERM_ASK[(G.termCount++)%TERM_ASK.length].replace('%s',termName(e)), [
     {label:'Yes, I know that one', go:resume},
-    {label:'No \u2014 explain it', go:function(){
+    {label:'No, please explain', go:function(){
       G.termsLearned.push(e.t);
       rawSay(speaker,'<span class="def"><b>'+termName(e)+'</b>'+e.d+'</span>',
-        [{label:'Got it \u2014 carry on', go:resume}]);
+        [{label:'Got it, keep going', go:resume}]);
     }}
   ]);
   return true;
@@ -1462,7 +1462,7 @@ function paintHUD(){
     c.className=L<=20?'urgent':'';
     if(L<=0&&G.step!=='complete'&&G.deadlineEnd){
       stopClock();
-      const tu=TRACK.timeUp||{who:'kate',line:`Time. Go and finish it anyway — we do not stop because the clock did.`};
+      const tu=TRACK.timeUp||{who:'kate',line:`Time’s up. Finish it anyway. We don’t stop just because the clock did.`};
       say(tu.who,tu.line);
       G.deadlineEnd=0;
     }
@@ -1474,7 +1474,7 @@ function openFolio(){
   el.querySelector('.inner').innerHTML='<h3>Work log</h3>'+
     (G.portfolio.length?G.portfolio.map(function(p){
       return '<div class="pf"><b>'+p.title+'</b><span>'+p.client+'</span><i>'+p.line+'</i></div>';
-    }).join(''):'<p class="empty">Nothing filed yet.</p>')+
+    }).join(''):'<p class="empty">Nothing here yet.</p>')+
     '<button id="folioClose">Close</button>';
   $('folioClose').onclick=function(){ el.style.display='none'; };
 }
@@ -2261,31 +2261,31 @@ CAST.p_c={name:'You', role:'The new one', where:'Lobby',
 /* Any track not compiled into this build still shows in the picker. */
 const TRACK_STUBS={
   engineering:{id:'engineering',name:'Software Engineering',title:'Engineering Chronicles',
-    blurb:'A one-line ticket, a two-thousand-line file, and an incident at twenty to twelve.'},
+    blurb:'A one-line ticket, a 2,000-line file, and a site-wide problem at 11:40 a.m.'},
   product:{id:'product',name:'Product Management',title:'Product Chronicles',
-    blurb:'Forty-one requests, two squads, one quarter, and a hundred and eighty thousand pounds with a date attached.'},
+    blurb:'Forty-one feature requests, two teams, one quarter, and a $180,000 deal with a deadline attached.'},
   security:{id:'security',name:'Security',title:'Security Chronicles',
-    blurb:'Eleven findings, a questionnaire nobody reads, and one token making forty thousand requests.'},
+    blurb:'Eleven security problems, a questionnaire nobody reads, and one stolen token making 40,000 requests.'},
   ux:{id:'ux',name:'UX Design',title:'UX Chronicles',
-    blurb:'Sixty-one per cent abandon the flow, three people have theories, and nobody has watched anyone use it.'},
+    blurb:'61% of people quit the booking flow, three coworkers have theories, and nobody has watched a real user try it.'},
   data:{id:'data',name:'Data Science',title:'Data Chronicles',
-    blurb:'Churn is up four points, everyone already knows why, and the board meets Thursday.'},
+    blurb:'Customer churn is up four points, everyone thinks they already know why, and the board meets Thursday.'},
   copywriting:{id:'copywriting',name:'Copywriting',title:'Copywriter Chronicles',
-    blurb:'Six briefs, one crisis, and a client who changes their mind at four in the afternoon.'},
+    blurb:'Six briefs, one crisis, and a client who changes their mind at 4 p.m.'},
   account:{id:'account',name:'Account Management',title:'Account Chronicles',
-    blurb:'A client who wants the wrong thing, an agency that has to build it, and you in between.'},
+    blurb:'A client who asks for the wrong thing, an agency that has to build it, and you stuck in the middle.'},
   brand:{id:'brand',name:'Brand Strategy',title:'Brand Chronicles',
-    blurb:'Positioning, architecture, and the discipline of saying no.'},
+    blurb:'Figure out what a brand stands for, decide how its brands fit together, and learn when to say no.'},
   design:{id:'design',name:'Design Fundamentals',title:'Design Chronicles',
-    blurb:'Hierarchy, type, grid, and work that survives production.'},
+    blurb:'Hierarchy, fonts, grids, and designs that still work once they’re printed.'},
   electrical:{id:'electrical',name:'Electrical Engineering',title:'Electrical Chronicles',
-    blurb:'A cable nobody sized, a pump that trips on start, and a reset button that would burn out a motor.'},
+    blurb:'A cable nobody sized properly, a pump that trips when it starts, and a reset button that could burn out a motor.'},
   mechanical:{id:'mechanical',name:'Mechanical Engineering',title:'Mechanical Chronicles',
-    blurb:'Three impellers in eight months, a frame that cracked at a sharp corner, and a lorry at the gate.'},
+    blurb:'Three broken impellers in eight months, a frame that cracked at a sharp corner, and a truck waiting at the gate.'},
   chemical:{id:'chemical',name:'Chemical Engineering',title:'Chemical Chronicles',
-    blurb:'Four per cent of a tanker missing, two chemicals on one coupling, and a client who wants to double the dose.'},
+    blurb:'Four percent of every tanker missing, two dangerous chemicals with the same hose fitting, and a client who wants more chlorine.'},
   consulting:{id:'consulting',name:'Consulting',title:'Consulting Chronicles',
-    blurb:'A benchmark nobody needs, three numbers that disagree, and a sentence the client wants taken out.'}
+    blurb:'A benchmark nobody needs, three numbers that don’t agree, and a sentence the client wants deleted.'}
 };
 const TRACKS={};
 Object.keys(TRACK_STUBS).forEach(function(id){
@@ -2390,9 +2390,9 @@ function paintLessons(){
     return '<div class="lesson"><b>'+L.t+'</b><span>'+L.c+'</span><p>'+L.l+'</p></div>';
   }).join('');
   const gl=TRACK.glossary||[];
-  if(gl.length) rows+='<div class="lesson"><b>The words, plainly</b><span>Jargon</span>'+
-    '<p>Every term the day uses. While you play, the first time one of them comes up, '+
-    'whoever said it stops and asks whether you know it.</p></div>'+
+  if(gl.length) rows+='<div class="lesson"><b>Key terms</b><span>Glossary</span>'+
+    '<p>Every term used in this game. While you play, the first time a term comes up, '+
+    'the person speaking will stop and ask whether you know what it means.</p></div>'+
     gl.map(function(e){
       return '<div class="lesson gl"><b>'+termName(e)+'</b><p>'+e.d+'</p></div>';
     }).join('');
