@@ -158,11 +158,11 @@
     <div id="map" class="map" aria-label="Floor map"></div>
   </div>
   <div id="coach">
-    <p><b class="n">1</b><span><b>Read the line above.</b> That is your objective &mdash;
-      who to find, and which room. The map next to it shows where you are; tap any
+    <p><b class="n">1</b><span><b>Read the line above.</b> It tells you who to find
+      and which room they’re in. The map next to it shows where you are. Tap any
       room to walk there.</span></p>
-    <p><b class="n">2</b><span><b>Then answer in the box below the floor.</b> Nothing
-      moves until you tap one of its options &mdash; that is how the day starts.</span></p>
+    <p><b class="n">2</b><span><b>Then answer in the box below the office.</b> Nothing
+      happens until you tap one of the answers. That’s how the day begins.</span></p>
     <button id="coachGo" type="button">Got it</button>
   </div>
   <div class="stage">
@@ -181,22 +181,22 @@
 
 <div class="veil" id="menu"><div class="inner center">
   <h2 id="menuTitle">Account Chronicles</h2>
-  <p class="lede" id="menuLede">A day in an agency, and the six briefs that come with it.</p>
+  <p class="lede" id="menuLede">A day at an ad agency, working with a client who asks for the wrong thing.</p>
   <button id="btnPlay" class="primary">Play game</button>
   <button id="btnLearn" class="ghost">Learn copywriting</button>
   <button id="btnTracks" class="ghost">Choose another track</button>
 </div></div>
 
 <div class="veil" id="nameScreen" style="display:none"><div class="inner center">
-  <h3>What should they call you?</h3>
+  <h3>What’s your name?</h3>
   <input id="nameInput" type="text" autocomplete="off" spellcheck="false" placeholder="Your name"/>
-  <p class="hintline">It goes on your certificate at the end of the day.</p>
+  <p class="hintline">We’ll put it on your certificate at the end of the day.</p>
   <button id="nameGo" class="primary" disabled>Start</button>
   <button id="backName" class="link">Back</button>
 </div></div>
 
 <div class="veil" id="avatarScreen" style="display:none"><div class="inner center">
-  <h3>And who are you today?</h3>
+  <h3>Choose your character</h3>
   <div class="avrow">
     <div class="avcard"><canvas id="av0" width="230" height="300"></canvas></div>
     <div class="avcard"><canvas id="av1" width="230" height="300"></canvas></div>
@@ -214,7 +214,7 @@
 
 <div class="veil" id="tracksScreen" style="display:none"><div class="inner">
   <h3>Choose another track</h3>
-  <p class="lede small">Engineering, product, security, UX and data science run at Meridian, a product company. Copywriting, account management, brand and design share an agency across town. Electrical, mechanical and chemical engineering are at Hallam Works, which builds the pump skids and control panels. Consulting is at Calder and Hale, on somebody else's problem — same engine, different job, different lessons.</p>
+  <p class="lede small">Software engineering, product, security, UX, and data science take place at Meridian, a software company. Copywriting, account management, brand strategy, and design take place at an ad agency across town. Electrical, mechanical, and chemical engineering take place at Hallam Works, which builds pump systems and control panels. Consulting takes place at Calder &amp; Hale, where you help another company solve its problem. Every track plays the same way, but each one is a different job with different lessons.</p>
   <div id="tracksBody"></div>
   <button id="backTracks" class="link">Back to menu</button>
 </div></div>
@@ -1021,9 +1021,9 @@ const $=id=>document.getElementById(id);
    Every term is also listed under What this teaches, for anything waved
    through at the time.                                                      */
 const TERM_ASK=[
-  'Quick one before I go on \u2014 do you know what <b class="jt">%s</b> means?',
-  'Hang on. Do you know what <b class="jt">%s</b> means?',
-  'Before I carry on \u2014 do you know what <b class="jt">%s</b> means?'
+  'Quick question before I go on. Do you know what <b class="jt">%s</b> means?',
+  'Wait a second. Do you know what <b class="jt">%s</b> means?',
+  'Before I keep going, do you know what <b class="jt">%s</b> means?'
 ];
 function termName(e){ return (e.l||e.t).replace(/^(?:a|an|the) /,''); }
 function termMatch(text){
@@ -1052,10 +1052,10 @@ function termCheck(speaker,text,options){
   const resume=function(){ G.termAsking=false; say(speaker,text,options); };
   rawSay(speaker, TERM_ASK[(G.termCount++)%TERM_ASK.length].replace('%s',termName(e)), [
     {label:'Yes, I know that one', go:resume},
-    {label:'No \u2014 explain it', go:function(){
+    {label:'No, please explain', go:function(){
       G.termsLearned.push(e.t);
       rawSay(speaker,'<span class="def"><b>'+termName(e)+'</b>'+e.d+'</span>',
-        [{label:'Got it \u2014 carry on', go:resume}]);
+        [{label:'Got it, keep going', go:resume}]);
     }}
   ]);
   return true;
@@ -1139,7 +1139,7 @@ function paintHUD(){
     c.className=L<=20?'urgent':'';
     if(L<=0&&G.step!=='complete'&&G.deadlineEnd){
       stopClock();
-      const tu=TRACK.timeUp||{who:'kate',line:`Time. Go and finish it anyway — we do not stop because the clock did.`};
+      const tu=TRACK.timeUp||{who:'kate',line:`Time’s up. Finish it anyway. We don’t stop just because the clock did.`};
       say(tu.who,tu.line);
       G.deadlineEnd=0;
     }
@@ -1151,7 +1151,7 @@ function openFolio(){
   el.querySelector('.inner').innerHTML='<h3>Portfolio</h3>'+
     (G.portfolio.length?G.portfolio.map(function(p){
       return '<div class="pf"><b>'+p.title+'</b><span>'+p.client+'</span><i>'+p.line+'</i></div>';
-    }).join(''):'<p class="empty">Nothing filed yet.</p>')+
+    }).join(''):'<p class="empty">Nothing here yet.</p>')+
     '<button id="folioClose">Close</button>';
   $('folioClose').onclick=function(){ el.style.display='none'; };
 }
@@ -1607,19 +1607,19 @@ CAST.priya={name:'Priya', role:'Marketing Manager, Kestrelbank', where:'Lobby',
   specs:true, prop:'tablet', build:1.0, bw:21, beard:false};
 
 const OBJ_ACCOUNT={
-  client_brief:'Priya from Kestrelbank is waiting in the Lobby',
-  real_brief:'Take it to Kate in Servicing',
+  client_brief:'Priya from Kestrel Bank is waiting for you in the Lobby',
+  real_brief:'Tell Kate in Servicing what you learned',
   brief_creative:'Brief Mike in Creative',
-  scope_email:'Kate has something from the client',
-  scope_cost:'Find out what it costs — Dan, Break Room',
-  scope_reply:'Answer Priya in the Lobby',
-  date_ask:'Priya is in the Lobby about the date',
-  date_check:'Ask Jenny in the Studio what it takes',
-  date_reply:'Go back to Priya with an answer',
+  scope_email:'Kate has a message from the client in Servicing',
+  scope_cost:'Ask Dan in the Break Room what the extra work costs',
+  scope_reply:'Give Priya your answer in the Lobby',
+  date_ask:'Priya is in the Lobby with a question about the deadline',
+  date_check:'Ask Jenny in the Studio how long it will take',
+  date_reply:'Go back to Priya in the Lobby with an answer',
   present_work:'Present the campaign in the Meeting Room',
-  crisis_brief:'Kate needs you in Servicing. Now.',
-  crisis_call:'Meeting Room. Call Priya.',
-  complete:'You run the account now'
+  crisis_brief:'Kate needs you in Servicing right now',
+  crisis_call:'Call Priya from the Meeting Room',
+  complete:'Day complete. The account is yours now.'
 };
 
 function accountOccupants(room){
@@ -1645,154 +1645,154 @@ function accountScript(key){
   /* ---------- 1. the brief that isn't a brief ---------- */
   if(key==='priya'&&s==='client_brief'){
     return choose('priya',
-      `You must be the new one — Priya, marketing at Kestrelbank. Nice to meet you. Right. We need a TikTok campaign. Our competitors all have one and the board keep asking.`,
+      `You must be the new account manager. I'm Priya, and I run marketing at Kestrel Bank. Nice to meet you! So, here's the thing. We need a TikTok campaign. All our competitors have one, and our board keeps asking why we don't.`,
       [
-       {label:`"Great — I'll get the creative team on it this week."`,ok:false,
-        note:`Lovely. So... six videos? What are they for?  (You've just sold a deliverable nobody has justified. When it doesn't work, that's your agency's failure, not her brief's. Want to try again?)`},
-       {label:`"Before I take that back — what's the thing that's actually not working?"`,ok:true},
-       {label:`"Honestly, TikTok's probably not right for a building society."`,ok:false,
-        note:`...Right. Well. I've been here eleven years.  (You may even be correct. You've also told the client she's stupid in the first meeting. Being right isn't the job. Try again?)`}
+       {label:`"Great! I'll get the creative team started this week."`,ok:false,
+        note:`Wonderful. So, what, six videos? And what are they supposed to do?  (You just agreed to a deliverable without knowing why it's needed. If it doesn't work, the agency gets the blame, not her request. Want to try again?)`},
+       {label:`"Before I take this to the team, can I ask what's actually not working right now?"`,ok:true},
+       {label:`"Honestly, TikTok probably isn't right for a small local bank."`,ok:false,
+        note:`...Okay. Well, I've worked here for eleven years.  (You might even be right. But you just told the client her idea was bad in your very first meeting. Being right isn't the job. Try again?)`}
       ],function(){
-        say('priya',`...Right, well. Under-25 current account openings. Down about forty per cent in eighteen months. We're told we look like our parents' bank. TikTok was my best guess at a fix, not the fix itself. Budget's forty thousand, live by end of Q3.`,
-          [{label:'That I can work with.',go:function(){
-            advance('real_brief','priya',`Nobody's asked me that before. They usually just take the order.`);
+        say('priya',`...Okay, good question. Fewer young people are opening accounts with us. Among people under 25, new checking accounts are down about 40 percent in the last 18 months. They tell us we look like their parents' bank. TikTok was my best guess at a fix, but I'm not sure it's the answer. The budget is $40,000, and it has to launch by the end of Q3.`,
+          [{label:'That’s something I can work with.',go:function(){
+            advance('real_brief','priya',`Nobody's ever asked me that before. Agencies usually just take the order.`);
           }}]);
       });
   }
 
   if(key==='kate'&&s==='real_brief')
-    return say('kate',`Forty per cent is a business problem, not a channel problem. You went in to be told what to make and came out knowing what's broken — that's the whole job, and most people take three years to learn it.`,
-      [{label:'So what now?',go:function(){
-        filed('Client brief','Kestrelbank','Under-25 openings down 40% — not a TikTok problem');
-        advance('brief_creative','kate',`Now you brief Mike. And he'll take it apart, so make it worth his time.`);
+    return say('kate',`A 40 percent drop is a business problem, not a social media problem. You went in expecting to be told what to make, and you came out knowing what's actually broken. That's the whole job, and most people take three years to learn it.`,
+      [{label:'So what do I do now?',go:function(){
+        filed('Client brief','Kestrel Bank','New accounts from under-25s down 40%. It’s not a TikTok problem.');
+        advance('brief_creative','kate',`Now you brief Mike in Creative. He'll pick it apart, so make sure it's worth his time.`);
       }}]);
 
   /* ---------- 2. briefing creative ---------- */
   if(key==='mike'&&s==='brief_creative'){
-    return choose('mike',`Kestrelbank. Go on then — what am I solving?`,
+    return choose('mike',`Kestrel Bank, right? Okay, go ahead. What problem am I solving?`,
       [
-       {label:`"Client wants a TikTok campaign. Six videos, by the 30th."`,ok:false,
-        note:`That's an order, not a brief. You've picked the channel, the format and the count before anyone's worked out what's actually wrong. If you want six videos, hire a production company. Want to try again?`},
-       {label:`"Under-25 openings down 40% in 18 months. They think we're their parents' bank. £40k, live end of Q3, has to work without a branch visit."`,ok:true},
-       {label:`"They're down on under-25s and open to anything — see what you come up with."`,ok:false,
-        note:`No constraints isn't freedom, it's three rounds of rejected work and a client who stops trusting us. Give me the edges. Try again?`}
+       {label:`"The client wants a TikTok campaign. Six videos, due by the 30th."`,ok:false,
+        note:`That's an order, not a brief. You've already picked the platform, the format, and the number of videos before anyone knows what's wrong. If all they want is six videos, they should hire a production company. Want to try again?`},
+       {label:`"New accounts from people under 25 are down 40% in 18 months. Young people see it as their parents' bank. The budget is $40k, it launches at the end of Q3, and people need to be able to sign up without visiting a branch."`,ok:true},
+       {label:`"They're losing younger customers and they're open to anything. See what you come up with."`,ok:false,
+        note:`Having no limits doesn't give me freedom. It gives me three rounds of rejected ideas and a client who stops trusting us. Tell me what the limits are. Try again?`}
       ],function(){
-        filed('Creative brief','Kestrelbank','Problem, evidence, constraints — channel left open');
-        advance('scope_email','mike',`Now that's a brief. Problem, evidence, edges — and you've left the channel open so we can actually think. Give me a week.`);
+        filed('Creative brief','Kestrel Bank','The problem, the evidence, and the limits, with the channel left open');
+        advance('scope_email','mike',`Now that's a brief. The problem, the evidence, and the limits. And you didn't pick the channel for me, so we can actually come up with ideas. Give me a week.`);
       });
   }
 
   /* ---------- 3. scope creep ---------- */
   if(key==='kate'&&s==='scope_email')
-    return say('kate',`Two weeks in, and Priya's been in touch. Can we also get a version for the branch screens? And a radio cut? Same deadline, obviously.`,
-      [{label:'Obviously.',go:function(){
-        advance('scope_cost','kate',`Before you answer her — go and find out what that actually costs us. Answering a client before you know the number is how agencies lose money politely.`);
+    return say('kate',`It's two weeks later, and Priya just emailed. She's asking if we can also make a version for the screens in their bank branches. And a radio ad too. With the same deadline, of course.`,
+      [{label:'Of course.',go:function(){
+        advance('scope_cost','kate',`Before you reply, go find out what that would actually cost us. If you answer a client before you know the price, the agency ends up doing the work for free.`);
       }}]);
 
   if(key==='dan'&&s==='scope_cost')
-    return say('dan',`Branch screens and a radio cut? Different masters, different ratios, separate audio mix, and the screens need the legal rate on them. Eleven days of studio. Not eleven hours — days.`,
-      [{label:'Eleven.',go:function(){
-        advance('scope_reply','dan',`Eleven. Go and tell her before she assumes it's free, because right now she does.`);
+    return say('dan',`Branch screens and a radio ad? Those need different master files, different screen sizes, and a separate audio mix. Plus, the branch screens have to show the current legal rate. That's eleven days of studio time. Not eleven hours. Eleven days.`,
+      [{label:'Eleven days?',go:function(){
+        advance('scope_reply','dan',`Eleven days. Go tell her before she assumes it's free, because right now she does.`);
       }}]);
 
   if(key==='priya'&&s==='scope_reply'){
-    return choose('priya',`Did you get my note? The branch screens and the radio thing. Straightforward enough, I'd have thought.`,
+    return choose('priya',`Did you get my email about the branch screens and the radio ad? It seems pretty simple to me.`,
       [
-       {label:`"Of course, no problem."`,ok:false,
-        note:`Wonderful, thank you.  (You've just given away eleven days of studio time, and taught her that everything after this is free too. Try again?)`},
-       {label:`"Both are doable. They're outside the original scope, so I'll send a revised estimate and timeline today — and if you need something by the 30th, tell me which of the two matters more."`,ok:true},
-       {label:`"That wasn't in the original scope."`,ok:false,
-        note:`I'm aware of what was in the scope.  (True — and now you're the department of no. She heard an obstacle, not a partner. Try again?)`}
+       {label:`"Of course, no problem at all."`,ok:false,
+        note:`Wonderful, thank you!  (You just gave away eleven days of studio time for free. And now she'll expect everything after this to be free too. Try again?)`},
+       {label:`"We can do both. They weren't part of the original project, so I'll send you an updated estimate and timeline today. If you need something by the 30th, which one matters more to you?"`,ok:true},
+       {label:`"That wasn't part of the original scope."`,ok:false,
+        note:`I know what was in the scope.  (That's true, but now you sound like you're just saying no. She wanted a partner, and she heard a roadblock. Try again?)`}
       ],function(){
-        filed('Revised scope','Kestrelbank','Both priced, prioritised, and in writing');
-        advance('date_ask','priya',`Send it over. And the screens matter more than the radio, since you ask. Nobody's ever asked me to choose before. They just quietly do one badly.`);
+        filed('Updated scope','Kestrel Bank','Both requests priced, prioritized, and put in writing');
+        advance('date_ask','priya',`Send it over. And since you asked, the branch screens matter more than the radio ad. No agency has ever asked me to choose before. They usually just do one of them badly and don't say anything.`);
       });
   }
 
   /* ---------- 4. the date ---------- */
   if(key==='priya'&&s==='date_ask')
-    return say('priya',`One more thing and then I'll leave you alone. The board meets Friday, and I'd love to have the films to show them. That's doable, isn't it?`,
-      [{label:'Let me check and come straight back.',go:function(){
-        advance('date_check','priya',`Good answer. The last person said yes standing exactly where you are, and then didn't deliver.`);
+    return say('priya',`One more thing, and then I'll leave you alone. Our board meets on Friday, and I'd love to show them the videos. That's possible, right?`,
+      [{label:'Let me check, and I’ll get right back to you.',go:function(){
+        advance('date_check','priya',`Good answer. The last person I worked with said yes right on the spot, and then they didn't deliver.`);
       }}]);
 
   if(key==='jenny'&&s==='date_check')
-    return say('jenny',`Friday? That's three days. I need four for the edit — grade, sound, three cuts, and that's if nothing comes back. I can give you one finished cut by Friday, or all three by Tuesday. I can't give you three by Friday — and if you promise it, I'll find out on Thursday night.`,
-      [{label:'One by Friday or three by Tuesday.',go:function(){
-        advance('date_reply','jenny',`That's the choice. And it's hers to make, not yours.`);
+    return say('jenny',`Friday? That's three days from now. I need four days to edit. That covers the color grade, the sound, and three different cuts, and that's only if the client doesn't ask for changes. I can give you one finished cut by Friday, or all three by Tuesday. I can't do all three by Friday. And if you promise her that, I'll find out Thursday night.`,
+      [{label:'So, one by Friday or all three by Tuesday.',go:function(){
+        advance('date_reply','jenny',`That's the choice. And it's her decision to make, not yours.`);
       }}]);
 
   if(key==='priya'&&s==='date_reply'){
-    return choose('priya',`Well? Friday?`,
+    return choose('priya',`So? Can we do Friday?`,
       [
        {label:`"We'll make Friday work."`,ok:false,
-        note:`Marvellous.  (You've just committed Jenny's weekend without asking her. She'll do it, and you'll do it again next month, because you got away with it once. Try again?)`},
-       {label:`"Friday, but one cut rather than three — or all three on Tuesday. Which serves the board better?"`,ok:true},
-       {label:`"Production says four days, so Friday isn't possible."`,ok:false,
-        note:`So that's a no, then.  (You relayed a constraint instead of solving a problem. She didn't hire you to forward messages. Try again?)`}
+        note:`Fantastic!  (You just signed Jenny up to work all weekend without asking her. She'll do it, and next month you'll do it again because it worked once. Try again?)`},
+       {label:`"We can have one version ready by Friday, or all three by Tuesday. Which would work better for your board meeting?"`,ok:true},
+       {label:`"Our production team needs four days, so Friday isn't possible."`,ok:false,
+        note:`So the answer is no.  (You passed along a problem instead of offering a solution. She didn't hire you to forward messages. Try again?)`}
       ],function(){
-        filed('Delivery plan','Kestrelbank','One cut Friday, full set Tuesday — client chose');
-        advance('present_work','priya',`One on Friday, then. The board only needs to see the idea, not the whole campaign — I'll take the other two on Tuesday. See you in the meeting room.`);
+        filed('Delivery plan','Kestrel Bank','One cut on Friday, the full set on Tuesday. The client chose.');
+        advance('present_work','priya',`Let's do one on Friday, then. The board just needs to see the idea, not the whole campaign. I'll take the other two on Tuesday. See you in the Meeting Room.`);
       });
   }
 
   /* ---------- 5. defending work you didn't make ---------- */
   if(key==='priya'&&s==='present_work'){
     return choose('priya',
-      `So that's the headline. Your money, before you've got any. Hmm. I don't like it, if I'm honest. My husband wouldn't get it.`,
+      `So that's the headline: "Your money, before you have any." Hmm. To be honest, I don't like it. My husband wouldn't get it.`,
       [
-       {label:`"Fair enough — we'll change it."`,ok:false,
-        note:`(Mike's face does something complicated. You've just traded a strategically sound line for one man's opinion, and Mike will stop showing you work early. Try again?)`},
-       {label:`"Can I ask what your husband would be doing when he saw it? It's built for someone scrolling at eleven at night who's never chosen a bank."`,ok:true},
-       {label:`"The creative team are the experts here."`,ok:false,
-        note:`Are they. Then why am I in the room?  (Hiding behind the department isn't defending the work. You've told the client her opinion is unwelcome. Try again?)`}
+       {label:`"That's fair. We'll change it."`,ok:false,
+        note:`(Mike makes a face. You just threw out a line based on solid strategy because of one person's opinion. From now on, Mike won't want to show you early drafts. Try again?)`},
+       {label:`"Can I ask what your husband would be doing when he saw it? This is made for someone scrolling on their phone at 11 p.m. who has never picked a bank before."`,ok:true},
+       {label:`"Our creative team are the experts here."`,ok:false,
+        note:`Really? Then why am I even in the room?  (Hiding behind your team isn't the same as defending the work. And you just told the client her opinion doesn't matter. Try again?)`}
       ],function(){
-        filed('Campaign approved','Kestrelbank','Strategy defended, taste separated from brief');
-        say('priya',`...He's fifty-one, and he's banked with the same building society since he was nineteen. He isn't who this is for, is he.`,
-          [{label:'No.',go:function(){
-            say('mike',`(Mike says nothing, but he will remember this.)`,
+        filed('Campaign approved','Kestrel Bank','Defended the strategy and kept personal taste out of it');
+        say('priya',`...Well, he's 51, and he's used the same bank since he was 19. He isn't who this is for, is he?`,
+          [{label:'No, he isn’t.',go:function(){
+            say('mike',`(Mike doesn't say anything, but he'll remember that you backed the work.)`,
               [{label:'Continue.',go:function(){
-                advance('crisis_brief','priya',`Run it. All of it. And send me the Tuesday cuts.`);
+                advance('crisis_brief','priya',`Let's run it. All of it. And send me the other videos on Tuesday.`);
               }}]);
           }}]);
       });
   }
 
   if(key==='mike'&&s==='present_work')
-    return say('mike',`(He's letting you take it. That's the test.)`);
+    return say('mike',`(Mike is letting you handle it. That's the test.)`);
 
   /* ---------- 6. the difficult call ---------- */
   if(key==='kate'&&s==='crisis_brief'){
     startClock(90);
     return choose('kate',
-      `Stop. The branch screen version went live yesterday morning with last quarter's interest rate on it. One point one, not one point six. It's been on a hundred and forty screens for thirty-one hours. What do you do first?`,
+      `Stop what you're doing. The branch screen ad went live yesterday morning with last quarter's interest rate on it. It says 1.1 percent instead of 1.6 percent. It's been on 140 screens for 31 hours. What do you do first?`,
       [
-       {label:`Work out how it happened, then call her.`,ok:false,
-        note:`Every minute on the story is a minute it's still live, and a minute closer to her finding it herself. The post-mortem comes after. Try again — what first?`},
-       {label:`Call Priya now, with the fix already moving.`,ok:true},
-       {label:`Get Jenny to pull it, then call once it's fixed.`,ok:false,
-        note:`That's the tempting one, and it's the one that ends accounts. You'd arrive with good news and no credibility, because the first thing she asks is when you knew. Have another go?`}
+       {label:`Figure out how it happened, then call Priya.`,ok:false,
+        note:`Every minute you spend on the backstory is another minute the wrong rate stays up, and another minute closer to her finding it herself. The post-mortem can wait. Try again. What comes first?`},
+       {label:`Call Priya right now, with the fix already underway.`,ok:true},
+       {label:`Have Jenny take the ads down, then call Priya once it's fixed.`,ok:false,
+        note:`That's the tempting choice, and it's the one that loses clients. You'd show up with good news but no trust, because the first thing she'll ask is when you found out. Want to try again?`}
       ],function(){
-        advance('crisis_call','kate',`Go. Jenny's already pulling them — I did that while you were deciding. Meeting room, phone, now.`);
+        advance('crisis_call','kate',`Go. Jenny is already taking them down. I told her while you were deciding. Get to the Meeting Room and call Priya now.`);
       });
   }
 
   if(key==='priya'&&s==='crisis_call'){
-    return choose('priya',`This is a surprise. Everything alright?`,
+    return choose('priya',`Oh, this is a surprise. Is everything okay?`,
       [
-       {label:`"I'm so sorry, this is completely unacceptable and I take full responsibility —"`,ok:false,
-        note:`...What's happened? What are we talking about?  (Thirty seconds of apology before she even knows what for. She's now frightened as well as annoyed. Lead with the thing. Try again?)`},
-       {label:`"The branch screens went out with the old rate. They're coming down now, corrected version up within the hour. Then I'll tell you exactly how it happened."`,ok:true},
-       {label:`"There's been an issue at our end with the branch assets — the version control on the screen masters didn't pick up the rate change from —"`,ok:false,
-        note:`I'm going to stop you there. Is it fixed?  (You opened with the explanation. She can't hear any of it until she knows it's handled. Try again?)`}
+       {label:`"I'm so sorry. This is completely unacceptable, and I take full responsibility —"`,ok:false,
+        note:`...Wait, what happened? What are we talking about?  (You spent thirty seconds apologizing before she even knew why. Now she's scared as well as annoyed. Start with what happened. Try again?)`},
+       {label:`"The branch screens went out with the old interest rate. We're taking them down now, and the corrected version will be up within the hour. After that, I'll explain exactly how it happened."`,ok:true},
+       {label:`"There's been an issue on our end with the branch files. Our version control on the screen files didn't pick up the rate change from —"`,ok:false,
+        note:`Let me stop you there. Is it fixed?  (You started with the explanation. She can't focus on any of it until she knows the problem is being handled. Try again?)`}
       ],function(){
         stopClock();
-        filed('Incident handled','Kestrelbank','Called first, led with the fix');
-        say('priya',`Right. Right — thank you. Send me the corrected screen once it's up.`,
-          [{label:'Within the hour.',go:function(){
-            say('priya',`...You know, the last agency had something similar. I found it myself, in a branch in Chester, eight days later. That's why they're the last agency.`,
+        filed('Problem handled','Kestrel Bank','Called the client first and led with the fix');
+        say('priya',`Okay. Okay, thank you. Send me the corrected screen once it's up.`,
+          [{label:'You’ll have it within the hour.',go:function(){
+            say('priya',`...You know, our last agency made a similar mistake. I found it myself, eight days later, in a branch in Columbus. That's why they're our last agency.`,
               [{label:'Understood.',go:function(){
-                say('kate',`That's the job. Not the campaign — that. The client didn't hire you to be perfect, they hired you to be the person who tells them first. Six things on the account and one bad morning handled properly. It's your account now.`,
+                say('kate',`That's the real job. Not the campaign. What you just did. The client didn't hire you to be perfect. They hired you to be the person who tells them first. You handled six big moments on this account, including one really bad morning. The account is yours now.`,
                   [{label:'Thank you.',go:function(){ G.step='complete'; paintHUD(); closeDlg(); openCertificate(); }}]);
               }}]);
           }}]);
@@ -1802,111 +1802,112 @@ function accountScript(key){
   /* ---------- Alex: hints ---------- */
   if(key==='alex'){
     const h={
-      client_brief:`She's in the lobby. Whatever she asks for, find out what's underneath it before you agree to anything.`,
-      real_brief:`Kate's right there. Tell her what the actual problem is, not what the client asked for.`,
-      brief_creative:`Mike will reject an order. Give him the problem, the evidence and the edges — and don't pick the channel for him.`,
-      scope_email:`Extra work is fine. Extra work you've already agreed to for free isn't.`,
-      scope_cost:`Dan's in the break room. Never quote a client a number you haven't been given.`,
-      scope_reply:`Yes to what she wants, priced. No and of course are both wrong answers.`,
-      date_ask:`Don't answer that standing here. Go and ask the person who has to do the work.`,
-      date_check:`Jenny will give you the real number. She always does, and people always ignore it.`,
-      date_reply:`Give her the trade-off and let her pick. It's her launch.`,
-      present_work:`You didn't write it, but you're selling it. Defend the thinking, not your feelings.`,
-      crisis_brief:`Whatever it is — the first question is never how did this happen.`,
+      client_brief:`She's in the Lobby. Whatever she asks for, find out the reason behind it before you agree to anything.`,
+      real_brief:`Kate's right here. Tell her what the real problem is, not just what the client asked for.`,
+      brief_creative:`Mike will reject an order. Give him the problem, the evidence, and the limits. And don't pick the platform for him.`,
+      scope_email:`Extra work is fine. Extra work you've already agreed to do for free isn't.`,
+      scope_cost:`Dan's in the Break Room. Never give a client a price you haven't gotten from the team.`,
+      scope_reply:`Say yes to what she wants, but with a price. "No" and "of course" are both wrong answers.`,
+      date_ask:`Don't answer that on the spot. Go ask the person who has to do the work.`,
+      date_check:`Jenny will give you the real timeline. She always does, and people always ignore it.`,
+      date_reply:`Give her the options and let her choose. It's her launch.`,
+      present_work:`You didn't write it, but you're the one selling it. Defend the thinking behind it, not your feelings.`,
+      crisis_brief:`Whatever happened, the first question is never "how did this happen?"`,
       crisis_call:`Fix first, apology second, explanation last. In that order.`,
-      complete:`You've had a worse first fortnight than I did. Drink?`
+      complete:`You've had a rougher first two weeks than I did. Want to grab a drink?`
     };
-    return say('alex', h[s] || `Stuck? Tell me what the client asked for and I'll tell you what they want.`);
+    return say('alex', h[s] || `Stuck? Tell me what the client asked for, and I'll tell you what they actually want.`);
   }
 
   const idle={
-    kate:`Not now — go and deal with it, then tell me how it went.`,
-    mike:`I'm working on your brief. Let me.`,
-    jenny:`Bring me a date and I'll tell you if it's real.`,
-    dan:`Kettle's on. Ask me before you promise anyone anything.`,
-    priya:`I'll wait. Not for long, mind.`
+    kate:`Not right now. Go take care of it, then tell me how it went.`,
+    mike:`I'm working on your brief. Give me some time.`,
+    jenny:`Bring me a deadline, and I'll tell you if it's realistic.`,
+    dan:`Coffee's on. And check with me before you promise anyone anything.`,
+    priya:`I'll wait. But not for long.`
   };
   say(key, idle[key] || `...`);
 }
 
 const TRACK_GLOSSARY=[
   {t:"brief",l:"a brief",m:"brief",
-   d:"The written statement of what a piece of work has to do: the problem, the evidence, the budget and the edges. An order with a format and a deadline is not one."},
+   d:"A document that explains what a piece of work needs to do: the problem, the evidence, the budget, and the limits. A request for a specific format with a deadline is an order, not a brief."},
   {t:"deliverable",l:"a deliverable",m:"deliverable",
-   d:"One named thing you have promised to hand over — six films, three posters. Agreeing deliverables before anyone agrees the problem is how work fails."},
+   d:"A specific thing you’ve promised to hand over, like six videos or three posters. Agreeing on deliverables before anyone agrees on the problem is how projects fail."},
   {t:"scope",l:"scope",m:"scope",
-   d:"Exactly what the fee covers. Everything outside it is real work somebody has to do, so it needs a number and a date rather than a yes."},
+   d:"Exactly what the client’s fee covers. Anything outside it is real extra work, so it needs a price and a deadline, not just a yes."},
   {t:"estimate",l:"an estimate",m:"estimate",
-   d:"The written price for a piece of work before it starts. A revised one is how extra work stays paid work instead of a favour."},
-  {t:"channel",l:"a channel",m:"channel",
-   d:"Where the work runs — TikTok, radio, branch screens, post. Choosing it before you know the problem is picking the answer first."},
+   d:"A written price for a piece of work before it starts. Sending an updated estimate is how extra work stays paid work instead of a free favor."},
+  {t:"channel",l:"a channel",m:"channel|platform",
+   d:"Where an ad runs, like TikTok, radio, in-branch screens, or mail. Picking it before you understand the problem means choosing the answer first."},
   {t:"production company",l:"a production company",m:"production company",
-   d:"The firm that makes the films. If a client only wants six videos made, they can hire one directly — the agency is for working out what the videos should be."},
-  {t:"master",l:"a master",m:"master(?:s)?",
-   d:"The finished, approved version of a film or audio piece that every other version is cut from."},
-  {t:"ratio",l:"an aspect ratio",m:"ratio(?:s)?",
-   d:"The shape of the frame — tall for phones, wide for screens. A different ratio is a different edit, not a resize."},
+   d:"A company that films and edits videos. If a client only wants six videos made, they can hire one directly. An agency’s job is to figure out what the videos should be."},
+  {t:"master",l:"a master file",m:"master(?:s)?",
+   d:"The final, approved version of a video or audio file. Every other version is made from it."},
+  {t:"screen size",l:"a screen size",m:"screen size(?:s)?",
+   d:"The shape of the video frame: tall for phones, wide for TVs and branch screens. A new shape means a new edit, not just a resize."},
   {t:"audio mix",l:"an audio mix",m:"audio mix|sound mix",
-   d:"Balancing voice, music and effects for where it will be heard. A cinema mix and a branch-screen mix are not the same work."},
-  {t:"legal rate",l:"the legal rate",m:"legal rate|legal line|interest rate",
-   d:"The interest rate and small print a financial ad is required to show. It has to be the current one, which is how the wrong number ends up on a hundred and forty screens."},
-  {t:"cut",l:"a cut",m:"radio cut|cut(?:s)?",
-   d:"One edited version of a film — a thirty-second cut, a radio cut. Three cuts is three lots of work, not one with variations."},
-  {t:"grade",l:"the grade",m:"grade",
-   d:"The stage where a film’s colour is set. Part of the finishing work that happens after the edit and takes real days."},
-  {t:"studio day",l:"a studio day",m:"studio day(?:s)?|eleven days of studio|days of studio",
-   d:"One day of a designer’s or editor’s time, which is what you are actually spending when you say yes to something."},
+   d:"Balancing the voice, music, and sound effects for wherever it will be heard. A mix for the radio and a mix for a bank lobby aren’t the same job."},
+  {t:"legal rate",l:"the legal rate",m:"legal rate|interest rate",
+   d:"The interest rate and fine print that a bank ad is legally required to show. It has to be current, which is how a wrong number can end up on 140 screens."},
+  {t:"cut",l:"a cut",m:"cut(?:s)?",
+   d:"One edited version of a video, like a 30-second cut or a 15-second cut. Three cuts means three separate pieces of work, not one with small changes."},
+  {t:"color grade",l:"the color grade",m:"color grade",
+   d:"The step where the colors in a video are adjusted and finalized. It happens after editing and takes real time."},
+  {t:"studio time",l:"studio time",m:"studio time",
+   d:"Days of a designer’s or editor’s time. That’s what you’re really spending whenever you say yes to extra work."},
   {t:"round",l:"a round",m:"round(?:s)?",
-   d:"One pass of work going to the client and coming back with comments. Rounds are counted, and quoted for."},
+   d:"One cycle of sending work to the client and getting feedback back. Agencies count rounds and include them in the price."},
   {t:"version control",l:"version control",m:"version control",
-   d:"Keeping track of which file is the current one. Without it, last quarter’s rate goes out on a hundred and forty screens."},
+   d:"Keeping track of which file is the latest one. Without it, last quarter’s interest rate ends up on 140 screens."},
   {t:"post-mortem",l:"a post-mortem",m:"post-mortem|postmortem",
-   d:"The meeting afterwards about how it happened. Valuable, and never the first thing you do while something wrong is still live."},
+   d:"A meeting after a problem to figure out how it happened. It’s useful, but it’s never the first thing you do while the mistake is still live."},
   {t:"board",l:"the board",m:"board",
-   d:"The client company’s directors. They meet on a set day, which is why “I need it by Friday” is often real."},
+   d:"The group of directors who oversee the client’s company. They meet on set dates, which is why “I need it by Friday” is often a real deadline."},
   {t:"q3",l:"Q3",m:"Q3|Q[1-4]",
-   d:"The third quarter of the financial year. Companies plan and spend in quarters, so “live by end of Q3” is a budget deadline as much as a date."}
+   d:"The third quarter of the company’s financial year. Companies plan and spend money by quarter, so “launch by the end of Q3” is a budget deadline, not just a date."}
 ];
 TRACK_DEFS.account={
     id:'account', name:'Account Management', live:true,
     title:'Account Chronicles',
-    blurb:'A client who wants the wrong thing, an agency that has to build it, and you in between.',
+    blurb:'A client who asks for the wrong thing, an agency that has to build it, and you stuck in the middle.',
     first:'client_brief',
     roles:{kate:'Account Director', alex:'Account Executive', mike:'Creative Director',
-           jenny:'Production', dan:'Studio & estimates',
-           priya:'Marketing Manager, Kestrelbank', player:'The new account manager'},
+           jenny:'Production Manager', dan:'Studio Manager',
+           priya:'Marketing Manager, Kestrel Bank', player:'New Account Manager'},
     glossary:TRACK_GLOSSARY,
   script:function(key){ return accountScript(key); },
     occupants:function(room){ return accountOccupants(room); },
     objectives:OBJ_ACCOUNT,
-    opening:{text:`Nine in the morning, and there's already a client in the lobby — which is never a good sign. Priya, from Kestrelbank. She's been waiting eleven minutes.`,
-             label:'Go over.'},
+    opening:{text:`It's 9 a.m., and a client is already waiting in the Lobby. That's never a good sign. It's Priya from Kestrel Bank, and she's been waiting for eleven minutes.`,
+             label:'Go say hello.'},
     certTitle:'ACCOUNT CHRONICLES',
-    timeUp:{who:'kate',line:`Time's gone. She found it herself — a colleague sent her a photo of a branch screen. Go and ring her anyway, and lead with the fix. Late is recoverable. Silent isn't.`},
-    certBody:['ran the Kestrelbank account for a fortnight — took the brief apart, briefed',
-              'creative, priced the scope, held the date, defended work they did not make,',
-              'and made the difficult call first.'],
+    timeUp:{who:'kate',line:`We're out of time. She found out on her own. A coworker sent her a photo of one of the branch screens. Call her anyway, and start with the fix. Being late is something you can recover from. Staying silent isn't.`},
+    certBody:['managed the Kestrel Bank account: found the real problem behind the request,',
+              'briefed the creative team, priced the extra work, protected the deadline,',
+              'defended work someone else made, and made the difficult call first.'],
     lessons:[
-      {t:'Take the problem, not the order', c:'The first meeting',
-       l:'Clients bring solutions. The ask is a symptom — find out what’s actually not working before you agree to build anything.'},
-      {t:'Never correct a client in the first meeting', c:'The first meeting',
-       l:'You may be right. Being right isn’t the job. Curiosity gets you to the same place without spending the relationship.'},
-      {t:'A brief is a problem with constraints', c:'Briefing creative',
-       l:'Evidence, boundaries, and no pre-chosen solution. An order isn’t a brief — and no constraints isn’t freedom.'},
-      {t:'Price it before you agree to it', c:'Scope creep',
-       l:'Yes to the goal, no to the free work. Never quote a number you haven’t been given, and always put it in writing.'},
-      {t:'Don’t be the department of no', c:'Scope creep',
-       l:'Offer the trade-off, not the obstacle. The client should hear a partner, not an objection.'},
-      {t:'Never commit someone else’s time', c:'The date',
-       l:'Ask the person who has to do the work before you promise the date. They’ll do it once, and resent it for a year.'},
-      {t:'Negotiate the date, not the quality', c:'The date',
-       l:'Make the trade-off visible and let the client choose. It’s their launch.'},
-      {t:'Taste is not a brief', c:'The presentation',
-       l:'Turn I don’t like it into who is this for, without telling anyone they’re wrong. Defend the strategy, concede on preference.'},
+      {t:'Solve the problem, not just the request', c:'The first meeting',
+       l:'Clients often come to you with a solution already in mind. Find out what’s actually not working before you agree to build anything.'},
+      {t:'Don’t correct a client in the first meeting', c:'The first meeting',
+       l:'You might be right, but being right isn’t the job. Asking good questions gets you to the same place without hurting the relationship.'},
+      {t:'A brief is a problem with limits', c:'Briefing the creative team',
+       l:'Include the evidence and the limits, but don’t pick the solution. An order isn’t a brief, and having no limits isn’t freedom.'},
+      {t:'Price it before you agree to it', c:'Extra requests',
+       l:'Say yes to the goal, but not to free work. Never give a price you haven’t gotten from your team, and always put it in writing.'},
+      {t:'Don’t just say no', c:'Extra requests',
+       l:'Offer options instead of roadblocks. The client should feel like they’re working with a partner, not fighting an obstacle.'},
+      {t:'Never promise someone else’s time', c:'The deadline',
+       l:'Ask the person doing the work before you promise a date. They might do it once, but they’ll resent it for a long time.'},
+      {t:'Negotiate the deadline, not the quality', c:'The deadline',
+       l:'Lay out the options clearly and let the client choose. It’s their launch.'},
+      {t:'Personal taste isn’t a brief', c:'The presentation',
+       l:'Turn “I don’t like it” into “Who is this for?” without telling anyone they’re wrong. Stand firm on strategy, and be flexible on personal preferences.'},
       {t:'Tell them first', c:'The difficult call',
-       l:'Ring early and lead with the fix. The apology comes second, once. The explanation comes last. You’re not paid to be perfect, you’re paid to be the one who tells them.'}
+       l:'Call early and start with the fix. Apologize second, and only once. Explain what happened last. You’re not paid to be perfect. You’re paid to be the one who tells them.'}
     ]
   };
+
 
 
 /* ==========================================================================
@@ -1938,31 +1939,31 @@ CAST.p_c={name:'You', role:'The new one', where:'Lobby',
 /* Any track not compiled into this build still shows in the picker. */
 const TRACK_STUBS={
   engineering:{id:'engineering',name:'Software Engineering',title:'Engineering Chronicles',
-    blurb:'A one-line ticket, a two-thousand-line file, and an incident at twenty to twelve.'},
+    blurb:'A one-line ticket, a 2,000-line file, and a site-wide problem at 11:40 a.m.'},
   product:{id:'product',name:'Product Management',title:'Product Chronicles',
-    blurb:'Forty-one requests, two squads, one quarter, and a hundred and eighty thousand pounds with a date attached.'},
+    blurb:'Forty-one feature requests, two teams, one quarter, and a $180,000 deal with a deadline attached.'},
   security:{id:'security',name:'Security',title:'Security Chronicles',
-    blurb:'Eleven findings, a questionnaire nobody reads, and one token making forty thousand requests.'},
+    blurb:'Eleven security problems, a questionnaire nobody reads, and one stolen token making 40,000 requests.'},
   ux:{id:'ux',name:'UX Design',title:'UX Chronicles',
-    blurb:'Sixty-one per cent abandon the flow, three people have theories, and nobody has watched anyone use it.'},
+    blurb:'61% of people quit the booking flow, three coworkers have theories, and nobody has watched a real user try it.'},
   data:{id:'data',name:'Data Science',title:'Data Chronicles',
-    blurb:'Churn is up four points, everyone already knows why, and the board meets Thursday.'},
+    blurb:'Customer churn is up four points, everyone thinks they already know why, and the board meets Thursday.'},
   copywriting:{id:'copywriting',name:'Copywriting',title:'Copywriter Chronicles',
-    blurb:'Six briefs, one crisis, and a client who changes their mind at four in the afternoon.'},
+    blurb:'Six briefs, one crisis, and a client who changes their mind at 4 p.m.'},
   account:{id:'account',name:'Account Management',title:'Account Chronicles',
-    blurb:'A client who wants the wrong thing, an agency that has to build it, and you in between.'},
+    blurb:'A client who asks for the wrong thing, an agency that has to build it, and you stuck in the middle.'},
   brand:{id:'brand',name:'Brand Strategy',title:'Brand Chronicles',
-    blurb:'Positioning, architecture, and the discipline of saying no.'},
+    blurb:'Figure out what a brand stands for, decide how its brands fit together, and learn when to say no.'},
   design:{id:'design',name:'Design Fundamentals',title:'Design Chronicles',
-    blurb:'Hierarchy, type, grid, and work that survives production.'},
+    blurb:'Hierarchy, fonts, grids, and designs that still work once they’re printed.'},
   electrical:{id:'electrical',name:'Electrical Engineering',title:'Electrical Chronicles',
-    blurb:'A cable nobody sized, a pump that trips on start, and a reset button that would burn out a motor.'},
+    blurb:'A cable nobody sized properly, a pump that trips when it starts, and a reset button that could burn out a motor.'},
   mechanical:{id:'mechanical',name:'Mechanical Engineering',title:'Mechanical Chronicles',
-    blurb:'Three impellers in eight months, a frame that cracked at a sharp corner, and a lorry at the gate.'},
+    blurb:'Three broken impellers in eight months, a frame that cracked at a sharp corner, and a truck waiting at the gate.'},
   chemical:{id:'chemical',name:'Chemical Engineering',title:'Chemical Chronicles',
-    blurb:'Four per cent of a tanker missing, two chemicals on one coupling, and a client who wants to double the dose.'},
+    blurb:'Four percent of every tanker missing, two dangerous chemicals with the same hose fitting, and a client who wants more chlorine.'},
   consulting:{id:'consulting',name:'Consulting',title:'Consulting Chronicles',
-    blurb:'A benchmark nobody needs, three numbers that disagree, and a sentence the client wants taken out.'}
+    blurb:'A benchmark nobody needs, three numbers that don’t agree, and a sentence the client wants deleted.'}
 };
 const TRACKS={};
 Object.keys(TRACK_STUBS).forEach(function(id){
@@ -2067,9 +2068,9 @@ function paintLessons(){
     return '<div class="lesson"><b>'+L.t+'</b><span>'+L.c+'</span><p>'+L.l+'</p></div>';
   }).join('');
   const gl=TRACK.glossary||[];
-  if(gl.length) rows+='<div class="lesson"><b>The words, plainly</b><span>Jargon</span>'+
-    '<p>Every term the day uses. While you play, the first time one of them comes up, '+
-    'whoever said it stops and asks whether you know it.</p></div>'+
+  if(gl.length) rows+='<div class="lesson"><b>Key terms</b><span>Glossary</span>'+
+    '<p>Every term used in this game. While you play, the first time a term comes up, '+
+    'the person speaking will stop and ask whether you know what it means.</p></div>'+
     gl.map(function(e){
       return '<div class="lesson gl"><b>'+termName(e)+'</b><p>'+e.d+'</p></div>';
     }).join('');
