@@ -158,11 +158,11 @@
     <div id="map" class="map" aria-label="Floor map"></div>
   </div>
   <div id="coach">
-    <p><b class="n">1</b><span><b>Read the line above.</b> It tells you who to find
-      and which room they’re in. The map next to it shows where you are. Tap any
+    <p><b class="n">1</b><span><b>Read the line above.</b> That is your objective &mdash;
+      who to find, and which room. The map next to it shows where you are; tap any
       room to walk there.</span></p>
-    <p><b class="n">2</b><span><b>Then answer in the box below the office.</b> Nothing
-      happens until you tap one of the answers. That’s how the day begins.</span></p>
+    <p><b class="n">2</b><span><b>Then answer in the box below the floor.</b> Nothing
+      moves until you tap one of its options &mdash; that is how the day starts.</span></p>
     <button id="coachGo" type="button">Got it</button>
   </div>
   <div class="stage">
@@ -181,22 +181,22 @@
 
 <div class="veil" id="menu"><div class="inner center">
   <h2 id="menuTitle">Electrical Chronicles</h2>
-  <p class="lede" id="menuLede">A day at an engineering company, and a reset button that could have burned out a motor.</p>
+  <p class="lede" id="menuLede">A day at an engineering works, and a reset button that would have burnt out a motor.</p>
   <button id="btnPlay" class="primary">Play game</button>
   <button id="btnLearn" class="ghost">Learn electrical engineering</button>
   <button id="btnTracks" class="ghost">Choose another track</button>
 </div></div>
 
 <div class="veil" id="nameScreen" style="display:none"><div class="inner center">
-  <h3>What’s your name?</h3>
+  <h3>What should they call you?</h3>
   <input id="nameInput" type="text" autocomplete="off" spellcheck="false" placeholder="Your name"/>
-  <p class="hintline">We’ll put it on your certificate at the end of the day.</p>
+  <p class="hintline">It goes on your certificate at the end of the day.</p>
   <button id="nameGo" class="primary" disabled>Start</button>
   <button id="backName" class="link">Back</button>
 </div></div>
 
 <div class="veil" id="avatarScreen" style="display:none"><div class="inner center">
-  <h3>Choose your character</h3>
+  <h3>And who are you today?</h3>
   <div class="avrow">
     <div class="avcard"><canvas id="av0" width="230" height="300"></canvas></div>
     <div class="avcard"><canvas id="av1" width="230" height="300"></canvas></div>
@@ -214,7 +214,7 @@
 
 <div class="veil" id="tracksScreen" style="display:none"><div class="inner">
   <h3>Choose another track</h3>
-  <p class="lede small">Software engineering, product, security, UX, and data science take place at Meridian, a software company. Copywriting, account management, brand strategy, and design take place at an ad agency across town. Electrical, mechanical, and chemical engineering take place at Hallam Works, which builds pump systems and control panels. Consulting takes place at Calder &amp; Hale, where you help another company solve its problem. Every track plays the same way, but each one is a different job with different lessons.</p>
+  <p class="lede small">Engineering, product, security, UX and data science run at Meridian, a product company. Copywriting, account management, brand and design share an agency across town. Electrical, mechanical and chemical engineering are at Hallam Works, which builds the pump skids and control panels. Consulting is at Calder and Hale, on somebody else's problem — same engine, different job, different lessons.</p>
   <div id="tracksBody"></div>
   <button id="backTracks" class="link">Back to menu</button>
 </div></div>
@@ -1507,7 +1507,7 @@ lobby:{
   name:'Reception', wall:'#dfe3e7', wallHi:'#edf0f3', wallDk:'#c4cad1', skirt:'#2b323c',
   material:'Terrazzo, a steel counter, and a finished panel behind glass',
   desc:'Terrazzo laid true and sealed. A steel counter with the wordmark behind it, a wall of test certificates and type approvals, two cable drums waiting to go out on Thursday, and a finished control panel in a glass case for the people who come to be convinced.',
-  exits:'Right → Project Office<br/>Down → Cafeteria',
+  exits:'Right → Project Office<br/>Down → Canteen',
   doors:[{side:'right',at:240},{side:'bottom',at:400}],
   floor(){ terrazzoCool(31); },
   draw(){
@@ -1573,7 +1573,7 @@ studio:{
   name:'Test Bay', wall:'#232a32', wallHi:'#2f3740', wallDk:'#1a2027', skirt:'#12161c',
   material:'Epoxy with walkway lines, a row of cubicles, and a motor on the bed',
   desc:'Bea runs this. A row of switchgear cubicles down the long wall, one panel open on a stand with its door swung out, a motor coupled to the test bed, a load bank, and a hazard barrier round everything that is energised. The walkway lines are painted on and they are not decorative.',
-  exits:'Left → Cafeteria<br/>Up → Project Office<br/>Right → Briefing Room',
+  exits:'Left → Canteen<br/>Up → Project Office<br/>Right → Briefing Room',
   doors:[{side:'left',at:240},{side:'top',at:400},{side:'right',at:240}],
   floor(){ bayFloor(71); },
   draw(){
@@ -1593,7 +1593,7 @@ studio:{
     grain(FX,FY,FW,FH,.06);
   }},
 breakroom:{
-  name:'Cafeteria', wall:'#dfe3e7', wallHi:'#edf0f3', wallDk:'#c4cad1', skirt:'#3b444f',
+  name:'Canteen', wall:'#dfe3e7', wallHi:'#edf0f3', wallDk:'#c4cad1', skirt:'#3b444f',
   material:'Tile, a long table, and a notice board with one thing on it that matters',
   desc:'Colin makes the tea in here. A counter with the kettle and a machine nobody has read the instructions for, one long table, a boot rack by the door, and a notice board carrying four out-of-date posters and one toolbox talk from Tuesday.',
   exits:'Up → Reception<br/>Right → Test Bay',
@@ -1653,7 +1653,7 @@ const CAST={
    legs:'#a8a49c', legsDk:'#8d8981', shoe:'#33302b',
    skin:'#f0c8a0', skinDk:'#cfa079', hair:'#3a2a1c', hairHi:'#5a4430', cut:'undercut',
    specs:true, prop:'coffee', build:0.96, bw:19, beard:false},
- dan:{name:'Colin', role:'Maintenance Technician', where:'Cafeteria',
+ dan:{name:'Colin', role:'Maintenance Fitter', where:'Canteen',
    accent:'#a78bfa', top:'#7d9070', topDk:'#5f6f54', style:'tee', tee:'#7d9070',
    legs:'#3f4a5c', legsDk:'#2f3747', shoe:'#f2ece0',
    skin:'#a0673a', skinDk:'#7d4c28', hair:'#22201d', hairHi:'#3a352d', cut:'beanie',
@@ -1903,9 +1903,9 @@ const $=id=>document.getElementById(id);
    Every term is also listed under What this teaches, for anything waved
    through at the time.                                                      */
 const TERM_ASK=[
-  'Quick question before I go on. Do you know what <b class="jt">%s</b> means?',
-  'Wait a second. Do you know what <b class="jt">%s</b> means?',
-  'Before I keep going, do you know what <b class="jt">%s</b> means?'
+  'Quick one before I go on \u2014 do you know what <b class="jt">%s</b> means?',
+  'Hang on. Do you know what <b class="jt">%s</b> means?',
+  'Before I carry on \u2014 do you know what <b class="jt">%s</b> means?'
 ];
 function termName(e){ return (e.l||e.t).replace(/^(?:a|an|the) /,''); }
 function termMatch(text){
@@ -1934,10 +1934,10 @@ function termCheck(speaker,text,options){
   const resume=function(){ G.termAsking=false; say(speaker,text,options); };
   rawSay(speaker, TERM_ASK[(G.termCount++)%TERM_ASK.length].replace('%s',termName(e)), [
     {label:'Yes, I know that one', go:resume},
-    {label:'No, please explain', go:function(){
+    {label:'No \u2014 explain it', go:function(){
       G.termsLearned.push(e.t);
       rawSay(speaker,'<span class="def"><b>'+termName(e)+'</b>'+e.d+'</span>',
-        [{label:'Got it, keep going', go:resume}]);
+        [{label:'Got it \u2014 carry on', go:resume}]);
     }}
   ]);
   return true;
@@ -2021,7 +2021,7 @@ function paintHUD(){
     c.className=L<=20?'urgent':'';
     if(L<=0&&G.step!=='complete'&&G.deadlineEnd){
       stopClock();
-      const tu=TRACK.timeUp||{who:'kate',line:`Time’s up. Finish it anyway. We don’t stop just because the clock did.`};
+      const tu=TRACK.timeUp||{who:'kate',line:`Time. Go and finish it anyway — we do not stop because the clock did.`};
       say(tu.who,tu.line);
       G.deadlineEnd=0;
     }
@@ -2033,7 +2033,7 @@ function openFolio(){
   el.querySelector('.inner').innerHTML='<h3>Work log</h3>'+
     (G.portfolio.length?G.portfolio.map(function(p){
       return '<div class="pf"><b>'+p.title+'</b><span>'+p.client+'</span><i>'+p.line+'</i></div>';
-    }).join(''):'<p class="empty">Nothing here yet.</p>')+
+    }).join(''):'<p class="empty">Nothing filed yet.</p>')+
     '<button id="folioClose">Close</button>';
   $('folioClose').onclick=function(){ el.style.display='none'; };
 }
@@ -2487,16 +2487,16 @@ CAST.owen={name:'Helen', role:'Asset Manager, Wearside Water', where:'Briefing R
    specs:true, prop:'tablet', build:1.0, bw:20, beard:false};
 
 const OBJ_ELEC={
-  panel_brief:'Get the control panel brief from Maggie in the Project Office',
-  load_cable:'Arun is in the Design Office. The site wants a bigger cable.',
-  motor_start:'Go back to Arun. The main pump trips every other time it starts.',
-  discrimination:'Bea is in the Test Bay with the pump station’s fault records',
-  isolation:'Colin is in the Cafeteria, and he’s read Friday’s schedule',
-  panel_build:'Go back to Bea. The panel failed inspection on three items.',
-  client:'Helen is waiting for you in the Briefing Room',
-  crisis_fix:'Hurry to Bea in the Test Bay',
-  crisis_show:'Go back to Helen in the Briefing Room',
-  complete:'Day complete. You’re an electrical engineer now.'
+  panel_brief:'Get the panel brief from Maggie in the Project Office',
+  load_cable:'Arun is in the Design Office — site want a bigger cable',
+  motor_start:'Arun again. The lead pump trips every second start',
+  discrimination:'Bea is in the Test Bay with the station fault records',
+  isolation:'Colin is in the Canteen, and he has read the programme for Friday',
+  panel_build:'Back to Bea. The panel came back from inspection with a list',
+  client:'Helen is waiting in the Briefing Room',
+  crisis_fix:'Test Bay. Bea. Quickly',
+  crisis_show:'Back to Helen in the Briefing Room',
+  complete:'You are an electrical engineer now'
 };
 
 function elecOccupants(room){
@@ -2516,111 +2516,111 @@ function elecScript(key){
 
   /* ---------- the brief ---------- */
   if(key==='kate'&&s==='panel_brief')
-    return say('kate',`Hi, I'm Maggie, the engineering director. Welcome to Hallam Works! We design and build the control panels and pump systems used in water treatment plants and food factories. Starting this morning, you're on the Riverside Water project: one pump station, two 60-horsepower pumps, and one control panel. It has a witness test at 5 p.m., with the client's inspector standing right next to it.`,
-      [{label:'What’s gone wrong with it?',go:function(){
-        say('kate',`Three things, and for each one, someone is just guessing. The site wants a bigger cable. The main pump trips about every other time it starts. And the panel failed inspection with a list of problems. Arun is in the Design Office. Start with the cable, because they've already ordered it.`,
+    return say('kate',`Hi — I'm Maggie, engineering director. Welcome to Hallam Works. We design and build the control panels and pump skids that end up in water treatment works and food factories. You're on the Wearside Water job from this morning: one pumping station, two forty-five kilowatt pumps, one panel. It witnesses at five o'clock with their inspector standing next to it.`,
+      [{label:'What has gone wrong with it?',go:function(){
+        say('kate',`Three things, and every one of them is somebody's guess. Site want a bigger cable. The lead pump trips about every second start. And the panel came back from inspection with a list. Arun's in the Design Office — start with the cable, because that's the one they've already ordered.`,
           [{label:'On my way.',go:function(){ advance('load_cable'); }}]);
       }}]);
 
   /* ---------- 1. sizing a cable ---------- */
   if(key==='mike'&&s==='load_cable'){
     return choose('mike',
-      `Hi, I'm Arun Pillai, the principal electrical engineer. That mostly means I'm the one asking where the numbers came from. Good to have you here. The site wants the next size up of cable running out to the wet well. It's 600 feet long, buried in a conduit with three other circuits, and they think voltage drop is why the pump is struggling. Do we send them a bigger cable?`,
+      `Arun Pillai — principal electrical, which mostly means I ask where the number came from. Good to have you. Site have asked for the next size up of cable out to the wet well. A hundred and eighty metres, buried in a duct with three other circuits, and they reckon volt drop is why the pump struggles. Do we send them a bigger cable?`,
       [
-       {label:`Yes. It's cheap compared to a site visit, and it makes the complaint go away.`,ok:false,
-        note:`That's 600 feet of cable, and we still wouldn't know what's wrong. A bigger cable only fixes voltage drop. If the real problem is the starter, we just bought copper to hide it. Want to try another one?`},
-       {label:`First work out the design current. Then check the voltage drop over 600 feet. Then derate it for four circuits in one conduit at that ground temperature. And check that the breaker can still clear a fault at the far end.`,ok:true},
-       {label:`Install a larger breaker instead, so it stops tripping when the pump starts.`,ok:false,
-        note:`Now the cable is protected by a breaker that needs more current before it reacts, and a fault at the far end might never trip it at all. You weakened the protection just to hide a symptom. Try again?`}
+       {label:`Yes. It's cheap next to a site visit, and it makes the complaint go away.`,ok:false,
+        note:`A hundred and eighty metres of it, and we still wouldn't know what's wrong. A bigger cable fixes volt drop and nothing else — if the trip is the starter, we've bought copper to hide it. Want to try another?`},
+       {label:`Work out the design current first, then volt drop over the hundred and eighty metres, then derate for four circuits in one duct at that ground temperature — and check the protective device can still clear a fault at the far end.`,ok:true},
+       {label:`Fit a larger breaker instead, so it stops tripping on start.`,ok:false,
+        note:`Now the cable is protected by a device that needs more current before it notices anything, and a fault at the far end might never clear at all. You've weakened the protection to quieten a symptom. Try again?`}
       ],function(){
-        filed('Cable sizing','Riverside Water','Checked design current, voltage drop, derating for the conduit, and the breaker at the far end');
-        advance('motor_start','mike',`That's it. A cable has to pass four checks: the current it carries, the voltage drop at the far end, the heat from everything packed around it, and whether the breaker can still detect a fault through it. Ours passes three and fails the derating. So they do need a bigger cable, and now we can explain why. Okay, now for that trip.`);
+        filed('Cable sizing','Wearside Water','Design current, volt drop, derating for the duct, and the protective device checked at the far end');
+        advance('motor_start','mike',`That's it. A cable is sized four times over — the current it carries, the volt drop at the end of it, what's packed around it, and whether the fuse can still see a fault through it. Ours passes on three and fails on the derating. So they do need a bigger cable, and now we can tell them why. Right. That trip.`);
       });
   }
 
   /* ---------- 2. starting a motor ---------- */
   if(key==='mike'&&s==='motor_start'){
     return choose('mike',
-      `Same pump. It's 60 horsepower, started across the line, and the overload trips about every other time it starts. The site electrician has already turned up the overload setting twice. What's really going on?`,
+      `Same pump. Forty-five kilowatts, direct on line, and it trips the overload about one start in two. The site electrician has already wound the overload setting up twice. What's actually happening?`,
       [
-       {label:`Turn the overload up one more notch. It obviously needs the extra room.`,ok:false,
-        note:`That would be the third time someone has done that, and every time, the motor gets a little less protection. An overload that never trips is just a heater with a label on it. Want to try again?`},
-       {label:`Figure out if the problem is the starting surge, the wrong protection curve, or the pump starting against a valve that hasn't opened yet. Then choose the right starting method and set the protection to match the motor's own curve.`,ok:true},
-       {label:`Install a variable frequency drive. It'll start the motor gently, and we can adjust it later.`,ok:false,
-        note:`That might be the right equipment, but you bought it before asking the question. A drive brings its own problems: electrical interference, cable length limits, and shielded cable nobody ordered. And if the valve is still closed, it'll trip anyway. Try again?`}
+       {label:`Wind the overload up one more mark. It clearly needs the headroom.`,ok:false,
+        note:`That's the third time somebody's done that, and each time the motor got a bit less protection. An overload that never trips is a heater with a label on it. Have another go?`},
+       {label:`Find out whether it's inrush, the wrong protection curve, or the pump starting against a valve that hasn't opened yet — then pick the start method and set the protection to the motor's own curve.`,ok:true},
+       {label:`Fit a variable speed drive. It'll soft-start it and we can trim the duty later.`,ok:false,
+        note:`Quite possibly the right kit, bought before the question. A drive brings harmonics, a cable length limit and screened cable nobody has ordered — and if the valve is still shut, it trips anyway. Try again?`}
       ],function(){
-        filed('Motor starting','Riverside Water','Found the cause before choosing a fix, and matched the starter and protection to the motor');
-        advance('discrimination','mike',`Good. The valve actuator is slower than the pump, so the pump starts against a closed valve. That's a hard start, not a broken motor. We'll use a soft starter, add an interlock so the pump waits for the valve, and set the protection to the motor's curve instead of to the patience of whoever's on site. Bea is in the Test Bay with the station's fault records, and they don't make any sense.`);
+        filed('Motor starting','Wearside Water','Cause established before the cure — start method and protection matched to the motor curve');
+        advance('discrimination','mike',`Good. The actuator is slower than the pump, so it starts against a closed valve — that's a high-torque start, not a sick motor. Soft starter, an interlock so it waits for the valve, and protection set to the motor curve instead of to the patience of whoever is on site. Bea's in the Test Bay with the station's fault records, and they make no sense at all.`);
       });
   }
 
   /* ---------- 3. discrimination ---------- */
   if(key==='jenny'&&s==='discrimination'){
     return choose('jenny',
-      `Hi, I'm Bea Novak, the production manager. Nice to meet you! Look at this. Last month, a float switch shorted out in the wet well. It's on a tiny 2-amp circuit. But the whole station went dark: both pumps, the control panel, the remote monitoring, everything. How do we stop that from happening again?`,
+      `Bea Novak, production — nice to meet you. Look at this. Last month a float switch shorted in the wet well. Two amp circuit. The whole station went dark: both pumps, the panel, the telemetry, the lot. How do we stop that happening again?`,
       [
-       {label:`Put a bigger fuse on the float switch circuit, so a small fault doesn't blow it.`,ok:false,
-        note:`The little fuse wasn't the problem. The problem is that the big breaker upstream tripped first, and it will do that again for any fault down the line. Try again?`},
-       {label:`Coordinate the protection. Test the fault loop impedance at the float switch, and make sure the closest breaker clears that fault well before the one upstream does. Check it against the trip curves, not the labels on the panel door.`,ok:true},
-       {label:`Add a one-second delay to every breaker upstream, so the small ones always trip first.`,ok:false,
-        note:`You got coordination by making every fault last a second longer, including a fault that someone happens to be touching at the time. Coordinate it where the curves cross instead. Want to try again?`}
+       {label:`Put a bigger fuse on the float circuit so a small fault doesn't blow it.`,ok:false,
+        note:`The little fuse wasn't the problem. The problem is that the big one upstream went first, and it will do it again on any fault down there. Try again?`},
+       {label:`Grade the protection: prove the earth fault loop impedance at the float, and make the nearest device clear that fault well before the one upstream — checked against the curves, not the labels on the door.`,ok:true},
+       {label:`Put a one-second delay on every device upstream, so the little ones always win the race.`,ok:false,
+        note:`You've bought discrimination by making every fault last a second longer — including the one somebody is holding at the time. Grade it where the curves cross. Have another go?`}
       ],function(){
-        filed('Selective coordination','Riverside Water','Coordinated protection using trip curves, and tested the fault loop at the far end');
-        advance('isolation','jenny',`Right. A fault should be cleared by the breaker closest to it, and you prove that using the curves instead of just hoping. Now a fault on the float circuit only shuts down the float circuit. Colin is in the Cafeteria. He's read the testing schedule, and he has something to say about Friday.`);
+        filed('Discrimination','Wearside Water','Protection graded on the curves, loop impedance proved at the far end');
+        advance('isolation','jenny',`Right. A fault should be cleared by the device nearest to it, and you prove that on the curves rather than hoping. That float circuit now takes out the float circuit. Colin's in the canteen — he's read the commissioning programme and he has something to say about Friday.`);
       });
   }
 
   /* ---------- 4. safe isolation ---------- */
   if(key==='dan'&&s==='isolation'){
     return choose('dan',
-      `Hi, I'm Colin Baxter. I'm a maintenance technician. I'm the one they send out when something breaks at 3 a.m. The schedule has me testing the interlocks on Friday afternoon with the panel still live, because we're short on time. The commissioning team says I'll be fine with gloves and a face shield. Will I?`,
+      `Colin Baxter, maintenance fitter — I'm the one they send when it goes off at three in the morning. The programme has me testing the interlocks on Friday afternoon with the panel live, because the slot's tight. Commissioning say gloves and a face shield and I'll be fine. Will I?`,
       [
-       {label:`It's only a few readings. Wear gloves and a shield, and take your time.`,ok:false,
-        note:`So you just approved live electrical work because the schedule is tight. That exact sentence shows up in every accident report I've ever read. Want to try another one?`},
-       {label:`No. Shut off the power, put your own lock on it, and test that it's dead using a tester you've checked first. Do every test that can be done with the power off. Anything that truly needs power goes on an energized work permit, with a risk assessment and a second person present.`,ok:true},
-       {label:`Then Friday's testing is canceled, and the schedule will have to change.`,ok:false,
-        note:`That's correct, but it doesn't help anyone. The tests still have to happen, and now I'm the one calling the client. Start by figuring out which tests we can do with the power off. Try again?`}
+       {label:`It's a couple of readings. Gloves, shield, take your time.`,ok:false,
+        note:`So you've authorised live working because the programme is tight. That sentence is in every report I've ever read about somebody getting hurt. Want to try another?`},
+       {label:`No. Isolate it, lock it off with your own lock, prove dead with a proving unit, and do every test that can be done dead. Anything that genuinely needs it energised goes on a permit, with a risk assessment and a second person.`,ok:true},
+       {label:`Then Friday's off, and the programme will have to move.`,ok:false,
+        note:`Correct, and no use to anybody. The tests still have to happen and now I'm the one ringing the client. Start with which ones we can do dead. Try again?`}
       ],function(){
-        filed('Safe isolation','Hallam Works','Shut off, locked out, tested dead, and moved the two live tests onto a permit');
-        advance('panel_build','dan',`Thank you. Nine of the eleven tests can be done with the power off. The other two will go on a permit, with two of us there and a plan. And just so you know, a schedule never approves anything. People do. Bea has the inspection list, by the way. It's longer than you'd like.`);
+        filed('Safe isolation','Hallam Works','Isolate, lock, prove dead — the two genuinely live tests moved onto a permit');
+        advance('panel_build','dan',`Thank you. Nine of the eleven tests can be done dead, and the two that can't are a permit with two of us and a plan. And for the record, the programme didn't authorise anything — programmes never do. Bea's got the inspection list, by the way. It's longer than you'd like.`);
       });
   }
 
   /* ---------- 5. the panel itself ---------- */
   if(key==='jenny'&&s==='panel_build'){
     return choose('jenny',
-      `The inspection found three problems. First, the enclosure is rated NEMA 12, and it's going into a pump house that gets hosed down. Second, the 480-volt power wiring and the sensor wiring share the same wire duct. Third, the emergency stop button goes into the PLC and comes back out of one of its outputs. Tell me what we're doing about them.`,
+      `Inspection list, three items. The enclosure is IP54 and it's going into a pump house that gets hosed down. There's four hundred volt and instrument wiring sharing one trunking. And the emergency stop goes into the PLC and comes back out of an output. Tell me what we're doing about them.`,
       [
-       {label:`Put a fan in the door, label the wire duct clearly, and mention the emergency stop in the manual.`,ok:false,
-        note:`A fan in a hosed-down room lets water in, a label does nothing about electrical interference, and the stop button still only works while the software is having a good day. Three problems, three Band-Aids. Try again?`},
-       {label:`Use a NEMA 4X enclosure, sized for the heat the equipment actually gives off in that room. Keep power and sensor wiring separated, and cross them at right angles. And hardwire the emergency stop through a safety relay to the contactor coils. The PLC only gets a signal for display.`,ok:true},
-       {label:`Move everything into a bigger enclosure. That fixes the heat and gives us room to separate the wiring.`,ok:false,
-        note:`That fixes two out of three, but the one you skipped is the one that protects a person. Want to try again?`}
+       {label:`Fit a fan in the door, label the trunking properly, and note the emergency stop in the manual.`,ok:false,
+        note:`A fan in an IP54 door in a washdown room, a label that does nothing about induced noise, and a stop button that works only while software is having a good day. Three problems, three plasters. Try again?`},
+       {label:`IP66 enclosure sized for the heat it actually dissipates at that ambient, power and signal segregated with a gap and crossings at right angles, and the emergency stop hardwired through a safety relay to the contactor coils — the PLC gets a contact for indication only.`,ok:true},
+       {label:`Move the lot into a bigger enclosure. That deals with the heat and gives us room to separate things.`,ok:false,
+        note:`Two out of three, and the one you've left is the one that stops a person. Have another go?`}
       ],function(){
-        filed('Panel design','Riverside Water','Washdown-rated enclosure, heat calculated, wiring separated, emergency stop hardwired');
-        advance('client','jenny',`Now that's a proper panel. Safety should never go through software. It goes through wiring you can see and a relay you can test. And an enclosure is sized by the heat inside it and the conditions outside it, not by whatever's on the shelf. Helen from Riverside Water is here, and she has a request.`);
+        filed('Panel design','Wearside Water','IP66 for washdown, heat calculated, power and signal segregated, emergency stop hardwired through a safety relay');
+        advance('client','jenny',`That's a panel. Safety doesn't go through software — it goes through contacts you can see and a relay you can test. And an enclosure is sized by the heat inside it and the weather outside it, not by what's on the shelf. Helen's here from Wearside, and she's brought a request.`);
       });
   }
 
   /* ---------- 6. the client, and what she actually needs ---------- */
   if(key==='owen'&&s==='client'){
     return choose('owen',
-      `Hi, I'm Helen Ashworth, the asset manager at Riverside Water. The panel looks great, it really does. But I have one request. Can you add a remote reset? When that pump trips at 3 a.m., Colin drives forty minutes to press a button, then forty minutes home. I'd rather just press it from my desk.`,
+      `Helen Ashworth, asset manager at Wearside. The panel looks smart, genuinely. One thing though — can you add a remote reset? When that pump trips at three in the morning, Colin drives forty minutes to press a button and forty minutes home. I'd rather press it from my desk.`,
       [
-       {label:`"Of course. I'll wire in a remote reset through the monitoring system."`,ok:false,
-        note:`(You just agreed to restart a tripped pump from forty miles away without asking why it tripped. The first time it's jammed with rags, you'll restart it four times into a blockage. Want to try again?)`},
-       {label:`"Before I wire anything, what does Colin find when he gets there? Is it the same kind of trip every time?"`,ok:true},
-       {label:`"You can't remotely reset a motor protection trip. It's there for a reason."`,ok:false,
-        note:`I'm sure it is. I'll send the request to your director in writing, then.  (You were right, but you left her with a 3 a.m. problem and nobody to help solve it. Try again?)`}
+       {label:`"Of course — I'll wire a reset in from the telemetry."`,ok:false,
+        note:`(You've just agreed to restart a tripped pump from forty miles away without asking what tripped it. The first time it's a rag round the impeller, you'll restart it four times into a blockage. Want another go?)`},
+       {label:`"Before I wire anything — what does Colin find when he gets there? Is it the same trip every time?"`,ok:true},
+       {label:`"You can't remote-reset a motor protection trip. It's there for a reason."`,ok:false,
+        note:`I'm sure it is. I'll put the request to your director in writing, then.  (You were right, and you've left her with a three in the morning problem and nobody to solve it with. Try again?)`}
       ],function(){
-        say('owen',`...Mostly rags wrapped around the impeller. Sometimes even a pair of jeans. It's a combined sewer up there. He clears it, presses reset, and it starts up again. Sometimes there's nothing wrong, and it just needed the button.`,
-          [{label:'So a reset from your desk would restart it right into the blockage.',go:function(){
-            say('owen',`...That's what I've been asking four suppliers for. Not one of them asked me what Colin finds when he gets there.`,
-              [{label:'Then the button was never the real fix.',go:function(){
-                filed('Real requirement','Riverside Water','She asked for a reset button, but needed to stop driving out for trips nobody could diagnose');
+        say('owen',`...A rag round the impeller, mostly. Or a pair of jeans — it's a combined sewer up there. He clears it, presses reset, and off it goes. Sometimes it's nothing and it just needed the button.`,
+          [{label:'So a reset from your desk would restart it into the blockage.',go:function(){
+            say('owen',`...Which is what I've been asking four suppliers for. Not one of them asked me what he finds when he gets there.`,
+              [{label:'Then the button was never the fix.',go:function(){
+                filed('Requirement, translated','Wearside Water','The ask was a reset button; the need was not driving out for a trip nobody can diagnose');
                 startClock(90);
-                say('kate',`That's the right answer at the worst possible moment. The witness test is at 5 p.m., the inspector is already in the parking lot, and that logic has to be in the panel before he opens the door. Bea is in the Test Bay. Go!`,
-                  [{label:'Go!',go:function(){ G.step='crisis_fix'; paintHUD(); closeDlg(); }}]);
+                say('kate',`Which is the right answer at the worst possible moment. The panel witnesses at five, the inspector is in the yard, and that logic has to be in it before he opens the door. Bea's in the Test Bay. Go.`,
+                  [{label:'Go.',go:function(){ G.step='crisis_fix'; paintHUD(); closeDlg(); }}]);
               }}]);
           }}]);
       });
@@ -2628,23 +2628,23 @@ function elecScript(key){
 
   if(key==='jenny'&&s==='crisis_fix'){
     return choose('jenny',`Ninety seconds. What am I wiring?`,[
-      {label:`A remote reset wired straight to the motor contactor, with a five-minute lockout.`,ok:false,
-       note:`Five minutes later, it starts into the same rags, and again five minutes after that. Then the motor is ruined. Try again, quickly!`},
-      {label:`Allow a remote restart only for a thermal overload trip, up to twice, an hour apart. A blockage or hard-start trip locks out, sends an alarm with the reason, and can only be reset at the panel. The emergency stop stays hardwired no matter what.`,ok:true},
-      {label:`Restart automatically after any trip, and send an alarm so someone can check it later.`,ok:false,
-       note:`That alarm still arrives at 3 a.m., and by then the pump has been fighting a pair of jeans since midnight. Want to try again?`}
+      {label:`Remote reset straight to the start contactor, with a five-minute lockout.`,ok:false,
+       note:`Five minutes later it starts into the same rag, and five after that, and then the motor is scrap. Try again — quickly.`},
+      {label:`Remote restart only for a thermal overload, twice, an hour apart — and a blockage or high-torque trip locks out, alarms with the reason, and can only be reset at the panel. Emergency stop stays hardwired either way.`,ok:true},
+      {label:`Automatic restart after any trip, and send an alarm so somebody can look at it later.`,ok:false,
+       note:`The alarm lands at the same three in the morning, by which time the pump has been arguing with a pair of jeans since midnight. Have another go?`}
     ],function(){
-      advance('crisis_show','jenny',`Wired, tested, and every terminal tightened, with eleven seconds left. Two remote resets for the trip that deserves one, and a lockout with a reason for the trip that doesn't. Go show Helen before the inspector gets to the door.`);
+      advance('crisis_show','jenny',`Wired, tested, terminals tight — eleven seconds on the clock. Two resets from the desk for the trip that deserves one, and a lockout with a reason for the trip that doesn't. Go and show her, before the inspector reaches the door.`);
     });
   }
 
   if(key==='owen'&&s==='crisis_show'){
     stopClock();
-    return say('owen',`So it tells me what kind of trip it was. And if it's rags, it won't let me pretend it isn't.`,
-      [{label:'And Colin will know what he’s driving out to fix.',go:function(){
-        say('owen',`Four suppliers said yes to the button. You're the first one who asked what Colin finds when he gets there.`,
+    return say('owen',`So it tells me which trip it was. And if it's the rag, it won't let me pretend it isn't.`,
+      [{label:'And Colin gets told what he is driving to.',go:function(){
+        say('owen',`Four suppliers said yes to the button. You're the first one who asked what he finds when he gets there.`,
           [{label:'...',go:function(){
-            say('kate',`That's the real job. Not sizing cables, not safety relays. What you just did. Someone handed you a solution, and you went and found out what the problem was. You finished six pieces of work, made the witness test on time, and the inspector didn't find a single problem. You're an electrical engineer now.`,
+            say('kate',`That's the job. Not the cable sizing, not the safety relay — that. Somebody hands you a solution and you go and find out what the problem was. Six pieces of work, a witness test you didn't miss, and an inspector who found nothing. You're an electrical engineer now.`,
               [{label:'Thank you.',go:function(){ G.step='complete'; paintHUD(); closeDlg(); openCertificate(); }}]);
           }}]);
       }}]);
@@ -2653,132 +2653,135 @@ function elecScript(key){
   /* ---------- Nell: hints ---------- */
   if(key==='alex'){
     const h={
-      panel_brief:`Maggie is in the Project Office. Ask what's being tested at 5 p.m., and who will be watching.`,
-      load_cable:`A cable needs four checks, not one. They've only mentioned voltage drop.`,
+      panel_brief:`Maggie's in the Project Office. Ask what witnesses at five, and who is standing next to it.`,
+      load_cable:`Four checks on a cable, not one. They have only mentioned volt drop.`,
       motor_start:`Ask what the pump is starting against before you touch the overload.`,
-      discrimination:`A 2-amp fault shut down a 60-horsepower station. Look at the trip curves, not the labels.`,
-      isolation:`He's asking you to approve live electrical work. The right answer isn't the brave one.`,
-      panel_build:`Water, heat, wiring separation, and the one item that protects a person.`,
-      client:`She asked for a button. Find out what Colin finds when he gets there.`,
-      crisis_fix:`Not every trip deserves a reset. Decide which ones do, and what happens with the rest.`,
-      crisis_show:`Go show her. She hasn't seen it yet.`,
-      complete:`You got a client to take back a request for a reset button. That's a first around here. Drinks?`
+      discrimination:`A two amp fault took out forty-five kilowatts. Look at the curves, not the labels.`,
+      isolation:`He is asking you to authorise live working. The right answer is not the brave one.`,
+      panel_build:`Washdown, heat, segregation — and the one item that stops a person.`,
+      client:`She has asked for a button. Find out what Colin finds when he gets there.`,
+      crisis_fix:`Not every trip deserves a reset. Say which ones do, and what happens to the rest.`,
+      crisis_show:`Go and show her — she has not seen it yet.`,
+      complete:`You got a client to un-ask for a reset button. First time here. Pub?`
     };
-    return say('alex', h[s] || `Stuck? Say out loud what current is flowing, for how long, and what detects it. Start there.`);
+    return say('alex', h[s] || `Stuck? Say out loud what current flows, for how long, and what notices. Start there.`);
   }
 
   const idle={
-    kate:`I don't have anything new for you. Go finish what you're working on.`,
+    kate:`Nothing new from me — go and finish what you have got.`,
     mike:`Come back when you can tell me where the number came from.`,
-    jenny:`Bring me something I can build and test, and we'll get along fine.`,
-    dan:`There's coffee in the pot. And I'm still not working on it live.`,
-    owen:`I'll wait. But the test is at five.`
+    jenny:`Bring me something I can build and test and we will get on fine.`,
+    dan:`Kettle's on. And I'm still not working on it live, mind.`,
+    owen:`I'll wait. Five o'clock, though.`
   };
   say(key, idle[key] || `...`);
 }
 
 const TRACK_GLOSSARY=[
   {t:"design current",l:"design current",m:"design current",
-   d:"The current a circuit will actually carry during normal use, calculated from the real load instead of just read off the motor’s nameplate and rounded up."},
-  {t:"voltage drop",l:"voltage drop",m:"voltage drop",
-   d:"Voltage that gets lost along the length of a cable. Too much of it, and equipment at the far end gets less power than it needs, even if everything looks fine at the panel."},
+   d:"The current a circuit will actually carry in normal use, worked out from the load rather than read off the motor plate and rounded up."},
+  {t:"volt drop",l:"volt drop",m:"volt drop|voltage drop",
+   d:"Voltage lost along the length of a cable. Too much of it and equipment at the far end gets less than it needs, however healthy the supply looks at the panel."},
   {t:"derating",l:"derating",m:"derat(?:e|ed|ing)",
-   d:"Lowering how much current a cable is allowed to carry because of where it’s installed, like bundled with other circuits or buried in a warm conduit. The same cable can handle less current in a crowded conduit than in open air."},
-  {t:"breaker",l:"a circuit breaker",m:"breaker|fuse",
-   d:"A fuse or circuit breaker cuts off power when the current shows something is wrong. Choosing its size is a promise about how quickly a fault will be cleared."},
-  {t:"starting surge",l:"starting surge",m:"starting surge",
-   d:"The large burst of current a motor draws in the first moments of starting, several times its normal running current. It’s normal and brief, and it causes lots of unnecessary trips. Engineers also call it inrush current."},
+   d:"Cutting the current a cable is allowed to carry because of where it sits — bunched with other circuits, buried in a warm duct, or run through insulation. A cable in free air and the same cable in a duct are not the same cable."},
+  {t:"protective device",l:"a protective device",m:"protective device|breaker|fuse",
+   d:"The fuse or circuit breaker that disconnects a circuit when the current says something is wrong. Sizing it is a promise about how fast a fault will be cleared."},
+  {t:"inrush",l:"inrush",m:"inrush",
+   d:"The large current a motor pulls in the first moments of starting, several times its running current. Normal, brief, and the cause of a great many nuisance trips."},
   {t:"overload",l:"an overload relay",m:"overload(?: relay| setting)?",
-   d:"A device that protects a motor from drawing too much current for too long. Turning its setting up to stop the trips removes the protection instead of fixing the cause."},
-  {t:"across the line",l:"across-the-line starting",m:"across the line",
-   d:"Starting a motor by connecting it straight to full voltage. It’s the cheapest method but the hardest on everything, which is why big pumps often need a gentler start."},
-  {t:"soft starter",l:"a soft starter",m:"soft start(?:er|ing)?",
-   d:"A device that raises the voltage gradually, so a motor speeds up gently instead of slamming to full speed. It reduces the mechanical and electrical shock of starting."},
-  {t:"vfd",l:"a variable frequency drive",m:"variable frequency drive|VFD",
-   d:"Electronics that control a motor’s speed by changing the frequency of its power. They’re very useful, but they come with their own requirements, like shielded cable and limits on cable length."},
-  {t:"protection curve",l:"a trip curve",m:"protection curve|trip curve(?:s)?|the curves",
-   d:"A graph showing how much current a breaker will tolerate, and for how long, before it trips. You coordinate breakers by comparing their curves, not just their ratings."},
-  {t:"coordination",l:"selective coordination",m:"coordinat(?:e|ed|ion)",
-   d:"Setting up protection so a fault is cleared by the breaker closest to it, and nothing upstream reacts. Without it, a tiny 2-amp fault can shut down an entire site."},
-  {t:"fault loop impedance",l:"fault loop impedance",m:"fault loop(?: impedance)?",
-   d:"How much the path of a ground fault resists the current that needs to flow to trip the breaker. If it’s too high at the end of a long cable, the breaker may never see enough current to trip in time."},
-  {t:"lockout",l:"lockout/tagout",m:"lock(?:s|ed)? out|your own lock",
-   d:"The procedure for making equipment truly safe before working on it: turn it off, put your own padlock and tag on the switch, then test that it’s dead where you’ll be working. Your lock, your key, in your pocket."},
-  {t:"tested dead",l:"testing for dead",m:"tested dead|test that it's dead|tester you've checked",
-   d:"Using a voltage tester to confirm there’s no power, after first checking the tester on a known live source. A tester that has quietly failed will tell you a live panel is dead."},
-  {t:"permit",l:"an energized work permit",m:"(?:energized work )?permit",
-   d:"A written approval for a specific piece of dangerous live work. It names who is doing it, what’s still live, and who is watching, because a verbal agreement isn’t proof of anything."},
-  {t:"nema rating",l:"a NEMA rating",m:"NEMA \\w+|NEMA rating",
-   d:"A rating that says how well an electrical enclosure keeps out dust and water. NEMA 12 handles dust and drips. NEMA 4X survives being hosed down, which is what happens in a pump house."},
+   d:"The device that protects a motor from drawing too much current for too long. Winding its setting up to stop a trip removes the protection rather than fixing the cause."},
+  {t:"direct on line",l:"direct on line",m:"direct on line|DOL",
+   d:"Starting a motor by simply connecting it straight to full voltage. Cheapest, hardest on everything, and the reason big pumps often need something gentler."},
+  {t:"soft starter",l:"a soft starter",m:"soft start(?:er|ing)?|soft-start",
+   d:"A device that ramps the voltage up so a motor accelerates gently instead of slamming to full speed. It reduces the mechanical and electrical shock of starting."},
+  {t:"vfd",l:"a variable speed drive",m:"variable speed drive|VFD|VSD|drive",
+   d:"Electronics that vary a motor's speed by varying the frequency it is fed. Very useful, and it brings its own requirements: screened cable, cable length limits and harmonics."},
+  {t:"harmonics",l:"harmonics",m:"harmonics",
+   d:"Distortion that some electronics push back into the supply. It heats cables and transformers and upsets sensitive equipment sharing the same board."},
+  {t:"protection curve",l:"a protection curve",m:"protection curve|trip curve|the curves|curves",
+   d:"A graph of how much current a device will tolerate for how long before it disconnects. Two devices are graded by comparing their curves, not their ratings."},
+  {t:"discrimination",l:"discrimination",m:"discrimination|grade(?:d|s)? the protection|grading",
+   d:"Arranging protection so a fault is cleared by the device nearest to it, and nothing upstream notices. Without it a two amp fault can switch off an entire site."},
+  {t:"earth fault loop impedance",l:"earth fault loop impedance",m:"earth fault loop impedance|loop impedance",
+   d:"How much the path of an earth fault resists the current that has to flow to trip the protection. Too high at the far end of a long run and the device never sees enough current to operate in time."},
+  {t:"safe isolation",l:"safe isolation",m:"safe isolation|isolate(?:d)?|isolation",
+   d:"The procedure for making equipment genuinely dead before working on it: identify it, switch it off, lock it off with your own lock, then prove it dead at the point of work."},
+  {t:"proving unit",l:"a proving unit",m:"proving unit|prove dead|proved dead",
+   d:"A small device used to check that your voltage tester is working, before and after you test. A tester that has quietly failed will tell you a live panel is dead."},
+  {t:"permit",l:"a permit to work",m:"permit(?: to work)?",
+   d:"A written authorisation for a specific piece of dangerous work, naming who does it, what is isolated, what is still live and who is watching. It exists because verbal agreement is not evidence."},
+  {t:"lock off",l:"locking off",m:"lock(?:s|ed|ing)? it off|lock off|lock-off",
+   d:"Fitting your own padlock to an isolator so nobody can switch it back on while you are inside. Your lock, your key, in your pocket."},
+  {t:"ip rating",l:"an IP rating",m:"IP\\d\\d|IP rating",
+   d:"Two digits saying how well an enclosure keeps out solid things and water. IP54 shrugs off splashes; IP66 survives being hosed down, which is what happens in a pump house."},
   {t:"enclosure",l:"an enclosure",m:"enclosure",
-   d:"The metal or plastic cabinet a control panel is built inside. It should be sized for the heat the equipment gives off and the conditions around it, not for whatever’s in stock."},
-  {t:"separation",l:"wire separation",m:"separat(?:e|ed|ion)",
-   d:"Keeping power cables and signal cables physically apart, and crossing them at right angles where they must meet, so the big cables don’t create interference in the small ones."},
-  {t:"wire duct",l:"wire duct",m:"wire duct",
-   d:"The slotted plastic channel that holds wires neatly inside a panel. It’s convenient, and it’s the usual reason power and signal wires end up lying against each other."},
+   d:"The cabinet a panel lives in. It is sized by the heat the kit inside gives off and the conditions outside it, not by what is in the stores."},
+  {t:"segregation",l:"segregation",m:"segregat(?:e|ed|ion)",
+   d:"Keeping power cables and signal cables physically apart, and crossing them at right angles where they must meet, so the big ones do not induce noise into the small ones."},
+  {t:"trunking",l:"trunking",m:"trunking",
+   d:"The rectangular ducting that carries cables around a panel or a building. Convenient, and the usual reason power and signal end up lying against each other."},
   {t:"emergency stop",l:"an emergency stop",m:"emergency stop|E-stop",
-   d:"The big red button that must stop machinery no matter what else is broken. It should be hardwired, because it has to work even when the software doesn’t."},
+   d:"The button that must stop machinery whatever else is broken. It belongs in hardwired contacts, because it has to work when the software does not."},
   {t:"safety relay",l:"a safety relay",m:"safety relay",
-   d:"A relay built and certified to fail safely. It turns an emergency stop press into power actually being cut. You can test it, and it doesn’t run any software."},
+   d:"A relay built and certified to fail safely, used to turn an emergency stop into power actually being removed. It can be tested, and it does not run a program."},
   {t:"contactor",l:"a contactor",m:"contactor",
-   d:"A heavy-duty switch controlled by an electric coil, used to start and stop motors. When the coil loses power, the switch opens. That’s how an emergency stop cuts power."},
+   d:"A large switch operated by a coil, used to start and stop motors. Drop the coil and the contacts open, which is how an emergency stop removes power."},
   {t:"plc",l:"a PLC",m:"PLC",
-   d:"A programmable logic controller. It’s the small industrial computer that runs the plant’s sequence, like which pump or valve runs and in what order. It’s great at logic, but you never trust it to stop a machine in an emergency."},
+   d:"The small industrial computer that runs a plant's sequence — which pump, which valve, in what order. Excellent at logic, and never the thing you trust to stop a machine."},
   {t:"interlock",l:"an interlock",m:"interlock(?:s|ed|ing)?",
-   d:"A condition that must be true before something is allowed to happen, like the valve being open before the pump starts, or the safety guard being closed before the motor turns."},
-  {t:"remote monitoring",l:"remote monitoring",m:"remote monitoring|monitoring system",
-   d:"The system that reports what a remote site is doing back to a control room, and sometimes sends commands the other way. It’s how a pump station forty miles away sends an alarm. Engineers often call it telemetry or SCADA."},
+   d:"A condition that has to be true before something is allowed to happen — the valve open before the pump starts, the guard closed before the motor turns."},
+  {t:"telemetry",l:"telemetry",m:"telemetry",
+   d:"The link that reports what a remote site is doing back to a control room, and sometimes carries instructions the other way. It is how a pumping station forty miles away raises an alarm."},
   {t:"actuator",l:"an actuator",m:"actuator",
-   d:"The motor that opens and closes a valve. Its speed matters. A pump that starts before the valve opens is pushing against a closed door."},
+   d:"The motor or cylinder that drives a valve open and shut. Its speed matters: a pump that starts before the valve has opened is working against a closed door."},
   {t:"wet well",l:"a wet well",m:"wet well",
-   d:"The underground tank at a pump station that collects incoming sewage or water for the pumps to move. It’s also where rags, wipes, and the occasional pair of jeans end up."},
-  {t:"witness test",l:"a witness test",m:"witness test",
-   d:"A test done with the customer’s inspector watching, to confirm the panel does everything the specification says before it leaves the factory."},
+   d:"The chamber at a pumping station that collects incoming sewage or water for the pumps to lift. Also where the rags, wipes and occasional pair of jeans collect."},
+  {t:"witness test",l:"a witness test",m:"witness(?:es|ed)?(?: test)?|factory acceptance test|FAT",
+   d:"A test run with the customer's inspector standing next to it, signing off that the panel does what the specification says before it leaves the works."},
   {t:"thermal overload",l:"a thermal overload trip",m:"thermal overload",
-   d:"A trip caused by a motor running hotter than it should for too long. It’s often safe to restart once the motor cools down, which is why it’s the one trip worth resetting remotely."}
+   d:"A trip caused by a motor running hotter than it should for longer than it should. Often recoverable once it has cooled, which is why it is the one trip worth resetting remotely."}
 ];
 TRACK_DEFS.electrical={
   id:'electrical', name:'Electrical Engineering', title:'Electrical Chronicles',
-  blurb:'A cable nobody sized properly, a pump that trips when it starts, and a reset button that could burn out a motor.',
+  blurb:'A cable nobody sized, a pump that trips on start, and a reset button that would burn out a motor.',
   first:'panel_brief',
   roles:{mike:'Principal Electrical Engineer', kate:'Engineering Director', jenny:'Production Manager',
-         alex:'Junior Engineer', dan:'Maintenance Technician',
-         owen:'Asset Manager, Riverside Water', player:'New Electrical Engineer'},
+         alex:'Graduate Engineer', dan:'Maintenance Fitter',
+         owen:'Asset Manager, Wearside Water', player:'The new electrical engineer'},
   glossary:TRACK_GLOSSARY,
   script:function(key){ return elecScript(key); },
   occupants:function(room){ return elecOccupants(room); },
   objectives:OBJ_ELEC,
-  opening:{text:`It's 9 a.m. at Hallam Works. There's a control panel with a witness test at 5 p.m., a pump that trips every other time it starts, and a bigger cable that someone has already ordered.`,
+  opening:{text:`Nine in the morning at Hallam Works. A panel that witnesses at five with the client's inspector next to it, a pump that trips every second start, and a bigger cable somebody has already ordered.`,
            label:'Find Maggie.'},
   certTitle:'ELECTRICAL CHRONICLES',
-  timeUp:{who:'kate',line:`It's 5 p.m. The inspector has gone home, so the panel sits in the Test Bay until he can come back in two weeks. Meanwhile, Colin drives out every time it rains. Finish it anyway. You can recover from a missed test, but you need to know what you would have wired.`},
-  certBody:['sized a cable four different ways, found what a pump was really starting against,',
-            'coordinated the protection, kept a technician off a live panel, took the emergency',
-            'stop out of software, and turned a reset button into logic that knows why it tripped.'],
+  timeUp:{who:'kate',line:`Five o'clock. The inspector has gone home, the panel goes back on the test bay until he can come again — a fortnight — and Colin drives out every time it rains. Finish it anyway: missing a witness test you survive; not knowing what you would have wired, you don't.`},
+  certBody:['sized a cable four ways, found out what a pump was really starting against, graded',
+            'the protection, kept a fitter off a live panel and got an emergency stop out of',
+            'software — then turned a reset button into logic that knows which trip it was.'],
   lessons:[
-    {t:'A cable has to pass four checks', c:'Cables',
-     l:'Design current, voltage drop at the far end, derating for whatever is around it, and whether the breaker can still detect a fault through it. Passing three out of four means a cable that fails in the field.'},
-    {t:'Find the cause before you buy the fix', c:'Motors',
-     l:'A bigger fuse, a higher overload setting, and a new drive all hide the same symptom. A pump starting against a closed valve keeps causing trouble no matter what.'},
-    {t:'An overload that never trips is just a heater', c:'Protection',
-     l:'Every notch you turn it up removes protection from an expensive motor. Set it to match the motor’s curve, not the patience of whoever is on site.'},
-    {t:'The closest breaker should clear the fault', c:'Protection',
-     l:'Coordinate protection where the trip curves cross. Adding a blanket delay upstream makes every fault last longer, including one someone might be touching.'},
-    {t:'A schedule never justifies live work', c:'Safety',
-     l:'Shut off the power, lock it out with your own lock, and test that it’s dead. Anything that truly can’t be done with the power off goes on a permit, with a risk assessment and a second person.'},
-    {t:'Safety doesn’t run through software', c:'Safety',
-     l:'An emergency stop belongs in hardwired circuits and a safety relay you can test. A PLC output is just a suggestion about what should happen next.'},
-    {t:'Size an enclosure for heat and conditions', c:'Panels',
-     l:'Add up the heat the equipment gives off, and choose a rating that fits the room it’s going in. A fan in the door of a hosed-down panel creates a new problem instead of solving one.'},
-    {t:'Keep power and signal wires apart', c:'Panels',
-     l:'A label does nothing about electrical interference. Separate them, cross them at right angles where they must meet, and shield what needs shielding.'},
-    {t:'Ask what they find when they get there', c:'Working with clients',
-     l:'A reset button is a solution. Driving forty minutes at 3 a.m. is the problem, and the two need completely different designs.'},
+    {t:'A cable is sized four times over', c:'Cables',
+     l:'Design current, volt drop at the far end, derating for whatever is packed around it, and whether the protective device can still see a fault through it. Three out of four is a cable that fails in service.'},
+    {t:'Find the cause before you buy the cure', c:'Motors',
+     l:'A bigger fuse, a wound-up overload and a new drive all quieten the same symptom. A pump starting against a valve that has not opened yet carries on regardless.'},
+    {t:'An overload that never trips is a heater', c:'Protection',
+     l:'Every notch up is protection taken away from a motor somebody has to pay for. Set it to the motor curve, not to the patience of the person on site.'},
+    {t:'The nearest device should clear the fault', c:'Protection',
+     l:'Grade protection where the curves cross. A blanket delay upstream buys discrimination by making every fault last longer, including the one somebody is holding.'},
+    {t:'The programme never authorises live working', c:'Safety',
+     l:'Isolate, lock off with your own lock, prove dead with a proving unit. Whatever genuinely cannot be done dead goes on a permit, with a risk assessment and a second person.'},
+    {t:'Safety does not go through software', c:'Safety',
+     l:'An emergency stop belongs in hardwired contacts and a safety relay you can test. A PLC output is an opinion about what ought to happen next.'},
+    {t:'An enclosure is sized by heat and weather', c:'Panels',
+     l:'Add up what the kit dissipates, pick the rating for the room it lives in, and leave bending room at the glands. A fan in the door of a washdown panel is two faults, not one.'},
+    {t:'Keep power and signal apart', c:'Panels',
+     l:'A label does nothing about induced noise. Separate them, cross at right angles where they must meet, and screen what needs screening.'},
+    {t:'Ask what they find when they get there', c:'Clients',
+     l:'A reset button is a solution. Forty minutes in the car at three in the morning is the problem, and the two want completely different designs.'},
     {t:'Not every trip deserves a reset', c:'Design',
-     l:'Let harmless trips be reset from a desk. Make the trips that signal damage lock out, send an alarm with the reason, and wait for someone to fix it in person.'}
+     l:'Let the harmless trip be reset from a desk. Make the trip that means damage lock out, alarm with the reason, and wait for somebody with a tool.'}
   ]
 };
-
 
 
 /* ==========================================================================
@@ -2810,31 +2813,31 @@ CAST.p_c={name:'You', role:'The new one', where:'Lobby',
 /* Any track not compiled into this build still shows in the picker. */
 const TRACK_STUBS={
   engineering:{id:'engineering',name:'Software Engineering',title:'Engineering Chronicles',
-    blurb:'A one-line ticket, a 2,000-line file, and a site-wide problem at 11:40 a.m.'},
+    blurb:'A one-line ticket, a two-thousand-line file, and an incident at twenty to twelve.'},
   product:{id:'product',name:'Product Management',title:'Product Chronicles',
-    blurb:'Forty-one feature requests, two teams, one quarter, and a $180,000 deal with a deadline attached.'},
+    blurb:'Forty-one requests, two squads, one quarter, and a hundred and eighty thousand pounds with a date attached.'},
   security:{id:'security',name:'Security',title:'Security Chronicles',
-    blurb:'Eleven security problems, a questionnaire nobody reads, and one stolen token making 40,000 requests.'},
+    blurb:'Eleven findings, a questionnaire nobody reads, and one token making forty thousand requests.'},
   ux:{id:'ux',name:'UX Design',title:'UX Chronicles',
-    blurb:'61% of people quit the booking flow, three coworkers have theories, and nobody has watched a real user try it.'},
+    blurb:'Sixty-one per cent abandon the flow, three people have theories, and nobody has watched anyone use it.'},
   data:{id:'data',name:'Data Science',title:'Data Chronicles',
-    blurb:'Customer churn is up four points, everyone thinks they already know why, and the board meets Thursday.'},
+    blurb:'Churn is up four points, everyone already knows why, and the board meets Thursday.'},
   copywriting:{id:'copywriting',name:'Copywriting',title:'Copywriter Chronicles',
-    blurb:'Six briefs, one crisis, and a client who changes their mind at 4 p.m.'},
+    blurb:'Six briefs, one crisis, and a client who changes their mind at four in the afternoon.'},
   account:{id:'account',name:'Account Management',title:'Account Chronicles',
-    blurb:'A client who asks for the wrong thing, an agency that has to build it, and you stuck in the middle.'},
+    blurb:'A client who wants the wrong thing, an agency that has to build it, and you in between.'},
   brand:{id:'brand',name:'Brand Strategy',title:'Brand Chronicles',
-    blurb:'Figure out what a brand stands for, decide how its brands fit together, and learn when to say no.'},
+    blurb:'Positioning, architecture, and the discipline of saying no.'},
   design:{id:'design',name:'Design Fundamentals',title:'Design Chronicles',
-    blurb:'Hierarchy, fonts, grids, and designs that still work once they’re printed.'},
+    blurb:'Hierarchy, type, grid, and work that survives production.'},
   electrical:{id:'electrical',name:'Electrical Engineering',title:'Electrical Chronicles',
-    blurb:'A cable nobody sized properly, a pump that trips when it starts, and a reset button that could burn out a motor.'},
+    blurb:'A cable nobody sized, a pump that trips on start, and a reset button that would burn out a motor.'},
   mechanical:{id:'mechanical',name:'Mechanical Engineering',title:'Mechanical Chronicles',
-    blurb:'Three broken impellers in eight months, a frame that cracked at a sharp corner, and a truck waiting at the gate.'},
+    blurb:'Three impellers in eight months, a frame that cracked at a sharp corner, and a lorry at the gate.'},
   chemical:{id:'chemical',name:'Chemical Engineering',title:'Chemical Chronicles',
-    blurb:'Four percent of every tanker missing, two dangerous chemicals with the same hose fitting, and a client who wants more chlorine.'},
+    blurb:'Four per cent of a tanker missing, two chemicals on one coupling, and a client who wants to double the dose.'},
   consulting:{id:'consulting',name:'Consulting',title:'Consulting Chronicles',
-    blurb:'A benchmark nobody needs, three numbers that don’t agree, and a sentence the client wants deleted.'}
+    blurb:'A benchmark nobody needs, three numbers that disagree, and a sentence the client wants taken out.'}
 };
 const TRACKS={};
 Object.keys(TRACK_STUBS).forEach(function(id){
@@ -2939,9 +2942,9 @@ function paintLessons(){
     return '<div class="lesson"><b>'+L.t+'</b><span>'+L.c+'</span><p>'+L.l+'</p></div>';
   }).join('');
   const gl=TRACK.glossary||[];
-  if(gl.length) rows+='<div class="lesson"><b>Key terms</b><span>Glossary</span>'+
-    '<p>Every term used in this game. While you play, the first time a term comes up, '+
-    'the person speaking will stop and ask whether you know what it means.</p></div>'+
+  if(gl.length) rows+='<div class="lesson"><b>The words, plainly</b><span>Jargon</span>'+
+    '<p>Every term the day uses. While you play, the first time one of them comes up, '+
+    'whoever said it stops and asks whether you know it.</p></div>'+
     gl.map(function(e){
       return '<div class="lesson gl"><b>'+termName(e)+'</b><p>'+e.d+'</p></div>';
     }).join('');
