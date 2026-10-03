@@ -2517,110 +2517,110 @@ function mechScript(key){
 
   /* ---------- the brief ---------- */
   if(key==='kate'&&s==='skid_brief')
-    return say('kate',`Hi — I'm Maggie, engineering director. Welcome to Hallam Works. We design and build the pump skids and process packages that end up in dairies, breweries and water treatment works. You're on Ravensworth Dairy from this morning. Their transfer skid goes on a lorry at five o'clock, and right now I wouldn't put it on one.`,
+    return say('kate',`Hello, and welcome to Hallam Works! I'm Maggie, engineering director — we're really glad you're here. We design and build the pump skids and process packages that end up in dairies, breweries and water treatment works. You're on Ravensworth Dairy from this morning. Their transfer skid goes on a lorry at five o'clock, and it needs a bit of love before it's ready.`,
       [{label:'What is wrong with it?',go:function(){
-        say('kate',`The pump has been through three impellers in eight months. The frame cracked at a weld and nobody believes it was overloaded. And Bea can't make the drawing we've sent her. Arun's in the Design Office — start with the pump, because that's the one costing them money every week.`,
+        say('kate',`The pump has been through three impellers in eight months. The frame cracked at a weld, and nobody thinks it was overloaded. And Bea can't quite make the drawing we've sent her. Arun's in the Design Office and he's lovely — start with the pump, because that's the one costing them money every week.`,
           [{label:'On my way.',go:function(){ advance('npsh'); }}]);
       }}]);
 
   /* ---------- 1. cavitation ---------- */
   if(key==='mike'&&s==='npsh'){
     return choose('mike',
-      `Arun Pillai — principal mechanical, which mostly means I ask where the number came from. Good to have you. The transfer pump rattles like a bag of spanners and chews an impeller every few months. It lifts warm water out of a balance tank, three metres below it, through a long suction line with a strainer in it. What's going on?`,
+      `Hello! Arun Pillai, principal mechanical — which mostly means I'm the one who asks where the number came from. Really good to have you. The transfer pump rattles like a bag of spanners and chews an impeller every few months. It lifts warm water out of a balance tank, three metres below it, through a long suction line with a strainer in it. What do you think's going on?`,
       [
        {label:`It's undersized for the duty. Fit the next frame size up.`,ok:false,
-        note:`A bigger pump pulls harder on the same suction line, which is the thing that's hurting it. You'd have made the noise louder. Want to try another?`},
+        note:`Good thought, but a bigger pump pulls harder on the same suction line — which is the very thing that's hurting it. It'd just get louder. Want to try another?`},
        {label:`Work out the head available at the suction against the head the pump needs there — the lift, the losses, the strainer, and the temperature of the water — and fix the suction side rather than the pump.`,ok:true},
        {label:`Throttle the discharge valve to settle it down.`,ok:false,
-        note:`That moves it along its curve and quietens it a bit, while the bubbles keep collapsing on the impeller. You've turned the alarm off. Try again?`}
+        note:`That moves it along its curve and quietens it a little, but the bubbles keep collapsing on the impeller. It hides the problem rather than fixing it. Try again?`}
       ],function(){
         filed('Cavitation','Ravensworth Dairy','NPSH available compared with NPSH required — suction line, strainer and liquid temperature');
-        advance('tolerance','mike',`That's it. It's cavitating: the pressure at the impeller drops below the point where warm water boils, bubbles form and collapse, and the metal goes. Shorten and enlarge the suction, move the strainer where somebody will actually clean it, and stop it lifting warm water three metres. Now — the bearing housing. It was made exactly to your drawing.`);
+        advance('tolerance','mike',`That's it — well spotted! It's cavitating: the pressure at the impeller drops below the point where warm water boils, bubbles form and collapse, and the metal wears away. Shorten and enlarge the suction, move the strainer somewhere it'll actually get cleaned, and stop it lifting warm water three metres. Now — shall we look at the bearing housing? It was made exactly to the drawing.`);
       });
   }
 
   /* ---------- 2. fits and tolerances ---------- */
   if(key==='mike'&&s==='tolerance'){
     return choose('mike',
-      `The bearing housing runs sweetly on the bench and seizes after twenty minutes at temperature. The shop measured it: every dimension is inside the tolerance on the drawing. The drawing dimensions each part from the one before it, all the way across. What do you change?`,
+      `Here's a puzzle. The bearing housing runs sweetly on the bench and seizes after twenty minutes at temperature. The shop measured it: every dimension is inside the tolerance on the drawing. The drawing dimensions each part from the one before it, all the way across. What would you change?`,
       [
        {label:`Open the bore up a few hundredths on the bench until it stops seizing.`,ok:false,
-        note:`Which fixes this one and leaves the next forty to seize in service. And you've thrown away the only evidence of why. Have another go?`},
+        note:`That would fix this one, but the next forty would still seize in service — and we'd lose the evidence of why. Have another go?`},
        {label:`Specify the fit the bearing actually needs, dimension from one functional datum instead of chaining dimensions, and allow for the housing and shaft growing at different rates when they are hot.`,ok:true},
        {label:`Tighten the tolerance on every dimension so the stack cannot add up.`,ok:false,
-        note:`Now it costs three times as much, takes twice as long, and still seizes — because the problem is thermal growth, not scatter. Try again?`}
+        note:`Then it costs three times as much, takes twice as long, and still seizes — because the real culprit is thermal growth, not scatter. Try again?`}
       ],function(){
         filed('Fits and datums','Ravensworth Dairy','Functional datum, the right fit for the bearing, and clearance for thermal growth');
-        advance('fatigue','mike',`Good. Made to the drawing and wrong is a drawing problem. Chained dimensions let every tolerance add up in the same direction, and steel that gets hot grows whether or not the drawing mentions it. Bea's in the Test Bay with the frame that cracked. She's brought the broken bit.`);
+        advance('fatigue','mike',`Brilliant. If it's made to the drawing and still wrong, it's the drawing that needs fixing. Chained dimensions let every tolerance add up in the same direction, and hot steel grows whether or not the drawing mentions it. Bea's in the Test Bay with the frame that cracked — she's brought the broken bit to show you.`);
       });
   }
 
   /* ---------- 3. fatigue ---------- */
   if(key==='jenny'&&s==='fatigue'){
     return choose('jenny',
-      `Bea Novak, production — nice to meet you. Here's the frame. It cracked at the toe of a weld, in a sharp inside corner, after about four million cycles. It never saw anything like its rated load. The pump on it runs at twenty-four hertz and the frame's first mode is about twenty-five. Your move.`,
+      `Hello! Bea Novak, production — lovely to meet you. Here's the frame. It cracked at the toe of a weld, in a sharp inside corner, after about four million cycles. It never saw anything like its rated load. The pump on it runs at twenty-four hertz and the frame's first mode is about twenty-five. What do you reckon?`,
       [
        {label:`Go up a plate thickness. More metal, more margin.`,ok:false,
-        note:`Thicker plate under a load it never exceeded, and you've just stiffened it slightly closer to the running speed. It will crack again in a different corner. Want to try another?`},
+        note:`It feels safer, but the load never exceeded the rating — and thicker plate nudges the frame even closer to the running speed. It'd likely crack again in a different corner. Want to try another?`},
        {label:`Treat it as fatigue at a stress raiser: radius that corner, move the weld toe out of the bending zone or dress it, and shift the frame's natural frequency well away from the running speed.`,ok:true},
        {label:`Add gussets everywhere and weld it all up solid.`,ok:false,
-        note:`Every gusset you add is another weld toe in another stressed corner, and you've changed the frequency by guesswork. Have another go?`}
+        note:`Each gusset adds another weld toe in another stressed corner, and changes the frequency by guesswork. Have another go?`}
       ],function(){
         filed('Fatigue failure','Ravensworth Dairy','Stress raiser removed, weld toe moved, and the frame detuned from the running speed');
-        advance('joint','jenny',`Right. Fatigue doesn't care about your rated load — it cares about how many times, and how sharp the corner is. Four million cycles at a sharp weld toe is a crack with a date on it, and running a machine on a frame that rings at the same speed is asking for them. Colin's in the canteen. The flange is still weeping.`);
+        advance('joint','jenny',`Exactly right! Fatigue doesn't care about the rated load — it cares about how many times, and how sharp the corner is. And a frame that rings at the same speed as the machine on it will always find a weak spot. Colin's in the canteen — the flange is still weeping, and he'd love a hand.`);
       });
   }
 
   /* ---------- 4. the bolted joint ---------- */
   if(key==='dan'&&s==='joint'){
     return choose('dan',
-      `Colin Baxter, maintenance fitter — I'm the one who gets sent when it drips. That discharge flange has had three gaskets in a year. I've tightened it, I've nipped it up hot, I've put a thicker gasket in. Still weeps. What am I doing wrong?`,
+      `Hiya — Colin Baxter, maintenance fitter. I'm the one who gets sent when it drips! Good to meet you. That discharge flange has had three gaskets in a year. I've tightened it, I've nipped it up hot, I've put a thicker gasket in. Still weeps. What am I doing wrong?`,
       [
        {label:`Keep going round it. Another quarter turn on each bolt should close it.`,ok:false,
-        note:`I've been doing that for a year. Two of those studs are stretched and one flange face is visibly dished now. Try again?`},
+        note:`I've been doing that for a year, bless me. Two of those studs are stretched now, and one flange face is visibly dished. Try again?`},
        {label:`Nothing much. It's the pipework: an unsupported run is pulling the joint open, so no amount of bolt tension will hold it.`,ok:true},
        {label:`Fit a softer, thicker gasket so it takes up the gap.`,ok:false,
-        note:`A thicker gasket relaxes more and squeezes out sideways, and the gap is still being pulled open twice a shift. Have another go?`}
+        note:`A thicker gasket relaxes more and squeezes out sideways, and the joint's still being pulled open twice a shift. Have another go?`}
       ],function(){
         filed('Bolted joint','Ravensworth Dairy','Pipework supported, correct gasket and preload, tightened in sequence to a torque figure');
-        advance('dfm','dan',`Thank you. Twelve metres of full pipe hanging off one nozzle, and nobody's put a support under it. While we're here: a flange is a designed joint — the right gasket for the fluid and the temperature, the bolts tightened in a crossing sequence to a figure somebody calculated, and no pipe loads trying to prise it apart. Bea's after you about the drawing.`);
+        advance('dfm','dan',`Oh, thank you — that's a weight off my mind! Twelve metres of full pipe hanging off one nozzle, and nobody's put a support under it. And while we're here: a flange is a designed joint — the right gasket for the fluid and temperature, bolts tightened in a crossing sequence to a calculated figure, and no pipe loads prising it apart. Bea's after you about the drawing, by the way.`);
       });
   }
 
   /* ---------- 5. design for manufacture ---------- */
   if(key==='jenny'&&s==='dfm'){
     return choose('jenny',
-      `Your skid drawing. It's lovely. It also has a tenth of a millimetre on every dimension including the frame, two welds I can only reach if I cut the frame apart afterwards, no lifting points, and the pump seal can only come out if we lift the whole skid off its feet. What are we changing?`,
+      `Right, your skid drawing! It's lovely. It also has a tenth of a millimetre on every dimension including the frame, two welds I can only reach if I cut the frame apart afterwards, no lifting points, and the pump seal can only come out if we lift the whole skid off its feet. What shall we change?`,
       [
        {label:`Leave it — the shop can work round it, they always do.`,ok:false,
-        note:`We can, at about twice the hours and with somebody guessing which dimensions you meant. That's how you get a skid that fits nothing. Try again?`},
+        note:`We can, but at about twice the hours, and with somebody guessing which dimensions you really meant. Try again?`},
        {label:`Open every tolerance right up. If tight tolerances are the problem, take them off.`,ok:false,
-        note:`And now the pump and motor shafts don't line up, because those two did need it. Tolerance isn't a style, it's where the function is. Have another go?`},
+        note:`Then the pump and motor shafts won't line up, because those two genuinely need it. Tolerance belongs where the function is. Have another go?`},
        {label:`Put the tight tolerances only where the function needs them, design access for welding and for changing the seal, and add lifting points where the load actually is.`,ok:true}
       ],function(){
         filed('Design for manufacture','Ravensworth Dairy','Tolerance where function needs it, weld and maintenance access, lifting points designed in');
-        advance('client','jenny',`That's a drawing I can build. Tolerance costs money everywhere you put it, so put it where it does something. And if a fitter can't get at it, somebody will get at it badly at two in the morning. Iona's here from Ravensworth, and she's got an ask.`);
+        advance('client','jenny',`Now that's a drawing I can build — thank you! Tolerance costs money everywhere you put it, so put it where it does something. And if a fitter can't get at it, someone's going to struggle at two in the morning. Iona's here from Ravensworth, and she's got a request.`);
       });
   }
 
   /* ---------- 6. the client, and what she actually needs ---------- */
   if(key==='owen'&&s==='client'){
     return choose('owen',
-      `Iona Beattie, engineering manager at Ravensworth. It looks good, it really does. One thing — can you make the skid smaller? It has to come through a nine hundred wide doorway and yours is one and a half metres across.`,
+      `Hello — Iona Beattie, engineering manager at Ravensworth. Lovely to meet you. It looks good, it really does. One thing — could you make the skid smaller? It has to come through a nine hundred wide doorway, and yours is one and a half metres across.`,
       [
        {label:`"Of course — I'll shrink the layout to nine hundred."`,ok:false,
-        note:`(You've just agreed to squeeze a working pump set into a doorway. The pipework gets tighter, the seal gets harder to reach, and in a year somebody is lifting the whole thing out to change an O-ring. Want another go?)`},
+        note:`(Kind of you, but squeezing a working pump set into a doorway makes the pipework tighter and the seal harder to reach — and in a year someone's lifting the whole thing out to change an O-ring. Want another go?)`},
        {label:`"Before I redraw anything — is the doorway the only way in, and what happens the day you need to change that seal?"`,ok:true},
        {label:`"Nine hundred isn't possible with that pump. You'd have to take a wall out."`,ok:false,
-        note:`Then I'll ask somebody who says yes and live with what turns up.  (Correct, and you've just handed the job to whoever is least careful. Try again?)`}
+        note:`Oh. Then I suppose I'll ask someone else.  (You're right about the pump, but she's left without a way forward. Try again?)`}
       ],function(){
-        say('owen',`...The doorway's the only way in with the line running, yes. And the seal — honestly, last time we lost half a shift. We had to break the pipework and lift the whole thing out on a pallet truck.`,
+        say('owen',`...Oh, good question. The doorway's the only way in with the line running, yes. And the seal — honestly, last time we lost half a shift. We had to break the pipework and lift the whole thing out on a pallet truck.`,
           [{label:'So the doorway is the constraint, and half a shift is the actual problem.',go:function(){
-            say('owen',`...Nobody has asked about the second one. Everyone measures the door.`,
+            say('owen',`...Do you know, nobody's asked about the second one. Everyone just measures the door.`,
               [{label:'Then it comes in as two halves that bolt together.',go:function(){
                 filed('Requirement, translated','Ravensworth Dairy','The ask was a narrower skid; the need was getting in through the door and changing a seal without losing a shift');
                 startClock(90);
-                say('kate',`Which is right, and the worst possible timing. The lorry is at the gate, the crane is booked for ten past five and after that it's Tuesday. Splitting it moves the lifting points. Bea's in the Test Bay. Go.`,
+                say('kate',`Lovely — that's exactly right, just at a tricky moment! The lorry's at the gate, the crane's booked for ten past five, and after that it's Tuesday. Splitting it moves the lifting points. Bea's in the Test Bay. You can do this — go!`,
                   [{label:'Go.',go:function(){ G.step='crisis_fix'; paintHUD(); closeDlg(); }}]);
               }}]);
           }}]);
@@ -2628,24 +2628,24 @@ function mechScript(key){
   }
 
   if(key==='jenny'&&s==='crisis_fix'){
-    return choose('jenny',`Ninety seconds. How is this thing getting on the lorry?`,[
+    return choose('jenny',`I'm ready — ninety seconds! How's this getting on the lorry?`,[
       {label:`Two sections, same lugs as before, slings straight off the crane hook.`,ok:false,
-       note:`The slings come in at forty-five degrees on a load that narrow, so each leg carries about half again what you calculated — and the centre of gravity moved when you split it. Try again — quickly.`},
+       note:`The slings come in at forty-five degrees on a load that narrow, so each leg carries about half again what we calculated — and the centre of gravity moved when we split it. Try again, quickly!`},
       {label:`Two sections, lifted separately: lugs recalculated for the sling angle we'll actually use, a spreader beam so the legs pull vertically, and the centre of gravity marked on both halves.`,ok:true},
       {label:`Lift it in one piece as drawn and take the doorway out on site next week.`,ok:false,
-       note:`That's the customer's wall, on the customer's line, in the customer's shutdown that isn't booked. Have another go?`}
+       note:`That's the customer's wall, on the customer's line, in a shutdown they haven't booked. Have another go?`}
     ],function(){
-      advance('crisis_show','jenny',`On the lorry with eleven seconds to spare. Two halves, lugs to the angle they're actually slung at, spreader beam, centres of gravity painted on. Go and show her, before she signs for the one she asked for.`);
+      advance('crisis_show','jenny',`On the lorry with eleven seconds to spare! Two halves, lugs to the angle they're actually slung at, spreader beam, centres of gravity painted on. Go and show her — she'll love it.`);
     });
   }
 
   if(key==='owen'&&s==='crisis_show'){
     stopClock();
-    return say('owen',`Two halves. So it comes through the door, and the pump end comes out on its own when the seal goes.`,
+    return say('owen',`Two halves! So it comes through the door, and the pump end comes out on its own when the seal goes. That's brilliant.`,
       [{label:'Twenty minutes instead of half a shift.',go:function(){
-        say('owen',`I've had four of these built. You're the first one who asked what happens the day it breaks.`,
+        say('owen',`I've had four of these built. You're the first who asked what happens the day it breaks. Thank you so much.`,
           [{label:'...',go:function(){
-            say('kate',`That's the job. Not the fatigue sums, not the tolerances — that. Somebody gives you a dimension and you go and find out what they're really up against. Six pieces of work, a lorry you didn't miss, and a skid somebody can maintain. You're a mechanical engineer now.`,
+            say('kate',`And that's the job, really. Not the fatigue sums, not the tolerances — that. Somebody gives you a dimension, and you take the time to find out what they're really up against. Six pieces of work, a lorry met, and a skid somebody can actually maintain. I'm so proud of you — you're a mechanical engineer now.`,
               [{label:'Thank you.',go:function(){ G.step='complete'; paintHUD(); closeDlg(); openCertificate(); }}]);
           }}]);
       }}]);
@@ -2654,29 +2654,30 @@ function mechScript(key){
   /* ---------- Nell: hints ---------- */
   if(key==='alex'){
     const h={
-      skid_brief:`Maggie's in the Project Office. Ask what goes on the lorry, and when.`,
-      npsh:`Three impellers in eight months is not a pump that is too small. Look at the suction side.`,
-      tolerance:`Made to the drawing and still wrong means the drawing. Ask what it is dimensioned from.`,
+      skid_brief:`Hi, I'm Nell! Maggie's in the Project Office. Ask what goes on the lorry, and when.`,
+      npsh:`Three impellers in eight months usually isn't a pump that's too small. Have a look at the suction side.`,
+      tolerance:`Made to the drawing and still wrong means it's the drawing. Ask what it's dimensioned from.`,
       fatigue:`It never saw its rated load. Count the cycles and look at the corner it cracked in.`,
-      joint:`He has tightened it, warmed it and thickened it. Look at what is hanging off the nozzle.`,
+      joint:`He's tightened it, warmed it and thickened it. Look at what's hanging off the nozzle.`,
       dfm:`Tolerance costs money everywhere you put it. Ask which dimensions actually do something.`,
-      client:`She has given you a dimension. Ask what happens the day the seal goes.`,
-      crisis_fix:`Splitting it moved the centre of gravity, and the slings are not vertical.`,
-      crisis_show:`Go and show her — she has not seen it yet.`,
-      complete:`You talked a client out of a narrower skid, with a reason. Pub?`
+      client:`She's given you a dimension. Ask what happens the day the seal goes.`,
+      crisis_fix:`Splitting it moved the centre of gravity, and the slings aren't vertical. You've got this.`,
+      crisis_show:`Go and show her — she hasn't seen it yet!`,
+      complete:`You talked a client out of a narrower skid, with a good reason. Brilliant! Pub?`
     };
-    return say('alex', h[s] || `Stuck? Say what the load is, how many times it happens, and where it goes into the metal.`);
+    return say('alex', h[s] || `Stuck? Try saying what the load is, how many times it happens, and where it goes into the metal.`);
   }
 
   const idle={
-    kate:`Nothing new from me — go and finish what you have got.`,
-    mike:`Come back when you can tell me where the number came from.`,
-    jenny:`Bring me a drawing I can build and we will get on fine.`,
-    dan:`Kettle's on. That flange is still dripping, mind.`,
-    owen:`I'll wait. The lorry will not, though.`
+    kate:`Nothing new from me just yet — finish what you've got, and shout if you need anything.`,
+    mike:`Come back whenever you can tell me where the number came from — happy to go through it with you.`,
+    jenny:`Bring me a drawing I can build, and we'll get on brilliantly.`,
+    dan:`Kettle's on, help yourself! That flange is still dripping, mind.`,
+    owen:`No rush — I'll wait. The lorry won't, though!`
   };
   say(key, idle[key] || `...`);
 }
+
 
 const TRACK_GLOSSARY=[
   {t:"skid",l:"a skid",m:"skid",
@@ -2755,10 +2756,10 @@ TRACK_DEFS.mechanical={
   script:function(key){ return mechScript(key); },
   occupants:function(room){ return mechOccupants(room); },
   objectives:OBJ_MECH,
-  opening:{text:`Nine in the morning at Hallam Works. A transfer skid that goes on a lorry at five, a pump that has eaten three impellers, and a frame that cracked where nobody thought it could.`,
+  opening:{text:`Nine in the morning at Hallam Works, and welcome to your first day! Today there's a transfer skid that goes on a lorry at five, a pump that has eaten three impellers, and a frame that cracked where nobody thought it could. Let's get stuck in.`,
            label:'Find Maggie.'},
   certTitle:'MECHANICAL CHRONICLES',
-  timeUp:{who:'kate',line:`Five o'clock, and the lorry has gone without it. Next crane slot is Tuesday, which is after their shutdown, which means it sits in our yard for a fortnight. Finish it anyway: missing a lorry you survive; not knowing how you would have lifted it, you don't.`},
+  timeUp:{who:'kate',line:`That's five o'clock, I'm afraid, and the lorry's had to go without it. The next crane slot is Tuesday, so it'll wait in our yard for a fortnight. Don't worry — it happens. Let's finish it anyway, so you know exactly how you'd lift it next time.`},
   certBody:['found out why a pump was eating impellers, fixed a drawing that was made correctly',
             'and still wrong, read a fatigue crack instead of thickening the plate, and put',
             'tolerance where it earns its money — then got a skid onto a lorry in two halves.'],
