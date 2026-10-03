@@ -2271,110 +2271,110 @@ function consScript(key){
 
   /* ---------- the engagement ---------- */
   if(key==='kate'&&s==='brief')
-    return say('kate',`Hi — I'm Ruth, partner here. Welcome to Calder and Hale. Our client is Larkfield Foods: nine hundred people, three bakeries, and a board that has decided two of them is one too many. They've asked us for a cost benchmark against comparable manufacturers, they want it by Friday, and there's a steering committee at five.`,
+    return say('kate',`Hello, and welcome to Calder and Hale! I'm Ruth, one of the partners — we're so glad you've joined us. Our client is Larkfield Foods: nine hundred people, three bakeries, and a board that's decided two of them might be one too many. They've asked us for a cost benchmark against comparable manufacturers, they want it by Friday, and there's a steering committee at five.`,
       [{label:'What have we actually been asked to do?',go:function(){
-        say('kate',`That's the right question, and you'll be the only person in the building asking it today. Femi's in the team room — start with him, and start with what the benchmark is for, because nobody has written that down anywhere.`,
+        say('kate',`Oh, that's exactly the right question — you'll go far asking that. Femi's in the team room and he's lovely. Start with him, and start with what the benchmark is for, because nobody's written that down anywhere yet.`,
           [{label:'On my way.',go:function(){ advance('question'); }}]);
       }}]);
 
   /* ---------- 1. the question behind the question ---------- */
   if(key==='mike'&&s==='question'){
     return choose('mike',
-      `Femi Adeyemi, engagement manager — good to have you. The scope says cost benchmark against comparable manufacturers, four weeks. That's a deliverable, not a question. What do we do with it?`,
+      `Hello! Femi Adeyemi, engagement manager — really good to have you on the team. The scope says cost benchmark against comparable manufacturers, four weeks. That's a deliverable, though, not a question. What shall we do with it?`,
       [
        {label:`Run the benchmark. It's what they've signed for, and it is four weeks of work.`,ok:false,
-        note:`And in four weeks they have a chart showing they're eleventh of twenty, and they ask us what to do about it — with the budget spent describing the problem. Want to try another?`},
+        note:`Fair instinct! But in four weeks they'd have a chart showing they're eleventh of twenty, they'd ask us what to do about it, and the budget would be spent describing the problem. Want to try another?`},
        {label:`Find out what decision the benchmark is meant to support, who makes it and when — then design the work backwards from that.`,ok:true},
        {label:`Tell them benchmarking is a waste of money and propose something better.`,ok:false,
-        note:`You've been here forty minutes and you're telling the client their signed scope is stupid. You may even be right. You're also out of the room. Try again?`}
+        note:`You might even be right! But telling a client their signed scope is wrong in the first hour tends to end the conversation. Try again?`}
       ],function(){
         filed('Scope, reframed','Larkfield Foods','The decision the work has to serve, named — with who makes it and when');
-        advance('hypothesis','mike',`That's it. The benchmark is for a board paper in six weeks about closing the Ashby bakery. So the question isn't how do our costs compare — it's what would have to be true for Ashby to stay open. Completely different four weeks. Right. How are you going to do it?`);
+        advance('hypothesis','mike',`That's it — brilliant! The benchmark is for a board paper in six weeks about closing the Ashby bakery. So the real question isn't how our costs compare — it's what would have to be true for Ashby to stay open. A completely different four weeks. So, how shall we go about it?`);
       });
   }
 
   /* ---------- 2. hypothesis, not a trawl ---------- */
   if(key==='mike'&&s==='hypothesis'){
     return choose('mike',
-      `Two ways to spend the next fortnight. Tell me which, and why.`,
+      `There are two ways we could spend the next fortnight. Which would you pick, and why?`,
       [
        {label:`Collect everything — three sites, five years, every cost line — and see what the data says.`,ok:false,
-        note:`Three weeks of extraction, one week left, and a pile of numbers with no argument in it. Data doesn't say things. People do, eventually, too late. Try again?`},
+        note:`It feels thorough, but it'd be three weeks of extraction, one week left, and a pile of numbers with no argument in it. Data doesn't tell us things on its own. Try again?`},
        {label:`Start from four hypotheses about why Ashby costs more, and for each one design the quickest analysis that could prove it wrong.`,ok:true},
        {label:`Ask the client what they think the answer is, and build the case for it.`,ok:false,
-        note:`That isn't analysis, it's stenography with a fee attached — and when the board tests it, you own it, not them. Have another go?`}
+        note:`Worth hearing their view! But building their case for them isn't analysis — and when the board tests it, we'd be the ones holding it. Have another go?`}
       ],function(){
         filed('Hypotheses','Larkfield Foods','Four candidate explanations, each with the single number that would kill it');
-        advance('data','mike',`Good. Four hypotheses and, for each, the one number that kills it. If Ashby's problem is labour we know by Wednesday. If it's volume, Thursday. Hattie's in the data room — and the three systems disagree with each other by about eleven per cent.`);
+        advance('data','mike',`Lovely. Four hypotheses and, for each, the one number that would knock it down. If Ashby's problem is labour, we'll know by Wednesday; if it's volume, Thursday. Hattie's in the data room — she's found the three systems disagree with each other by about eleven per cent.`);
       });
   }
 
   /* ---------- 3. three numbers, three definitions ---------- */
   if(key==='jenny'&&s==='data'){
     return choose('jenny',
-      `Hattie Moss, research — hello. Finance say Ashby's cost per tonne is a hundred and forty-two pounds. The site's own spreadsheet says a hundred and twenty-nine. The group system says a hundred and thirty-six, and that is the only one the board has ever seen. It's Wednesday. Go on.`,
+      `Hello! Hattie Moss, research — lovely to meet you. Here's our puzzle: finance say Ashby's cost per tonne is a hundred and forty-two pounds. The site's own spreadsheet says a hundred and twenty-nine. The group system says a hundred and thirty-six, and that's the only one the board has ever seen. What would you do?`,
       [
        {label:`Use the group number. It's the one the board recognises.`,ok:false,
-        note:`It's also the one that quietly puts all of group overhead on the biggest site. Recognised isn't the same as right, and somebody will ask you where it came from. Want to try another?`},
+        note:`Understandable, but it's also the one that quietly puts all of group overhead on the biggest site. Recognised isn't the same as right, and someone will ask where it came from. Want to try another?`},
        {label:`Find out what each one counts — overhead, waste, downtime, agency labour — rebuild one number on a definition we can defend, and show the range instead of pretending there is a single figure.`,ok:true},
        {label:`Average the three. It's the honest middle.`,ok:false,
-        note:`Three different definitions averaged is a fourth thing that measures nothing at all. Have another go?`}
+        note:`It feels fair, but averaging three different definitions gives a fourth number that doesn't measure anything. Have another go?`}
       ],function(){
         filed('Cost baseline','Larkfield Foods','One definition rebuilt from source, with the range shown and what drives it');
-        advance('interview','jenny',`Right. The gap is agency labour and how group overhead gets spread — and once you take the allocation out, Ashby is four pounds a tonne worse than the others, not thirteen. That changes the paper entirely. Gerry's in the kitchen, by the way. He runs Ashby, he's come in for the workshop, and nobody booked him a room.`);
+        advance('interview','jenny',`Brilliant. The gap is agency labour and how group overhead gets spread — and once you take the allocation out, Ashby is four pounds a tonne worse than the others, not thirteen. That changes the paper entirely! Gerry's in the kitchen, by the way. He runs Ashby, he's come in for the workshop, and nobody booked him a room — do go and say hello.`);
       });
   }
 
   /* ---------- 4. the interview ---------- */
   if(key==='dan'&&s==='interview'){
     return choose('dan',
-      `Gerry Halloran. I run Ashby — twenty-two years. I know what you lot are for: you're the ones who write the number that shuts us. So ask your questions and I'll give you the answers you came for.`,
+      `Gerry Halloran. I run Ashby — twenty-two years. No offence, but I know what you lot are usually here for: writing the number that shuts us. So go on, ask your questions.`,
       [
        {label:`Take him through the interview guide — cost lines, shift patterns, agency spend, the lot.`,ok:false,
-        note:`Forty minutes of one-word answers and nothing you couldn't have pulled off the system. He told you what he thinks is happening and you carried on reading out questions. Try again?`},
+        note:`You'd get forty minutes of polite one-word answers and nothing you couldn't have pulled off the system. He's hinting at what he thinks is happening — try listening for that. Try again?`},
        {label:`Say what the work is actually for, admit what you don't know yet, and ask what he would fix first if somebody gave him a free fortnight and no board.`,ok:true},
        {label:`Reassure him that nothing has been decided and the analysis is completely objective.`,ok:false,
-        note:`He's heard that twice before, both times from somebody holding a laptop. He'll be perfectly polite and no use to you for the rest of the day. Have another go?`}
+        note:`Kindly meant, but he's heard that twice before from someone holding a laptop, so it won't quite land. Have another go?`}
       ],function(){
         filed('Site interview','Larkfield Foods','The question a site manager answers honestly — what he would fix first, and why nobody has let him');
-        advance('storyline','dan',`...A free fortnight? I'd re-cut the shift pattern and stop paying agency to cover a line we only run four days a week. I've asked twice. It needs a sign-off from group and nobody has ever given me one. — And there's your four pounds a tonne, from a man who's known it for two years. Femi wants to see your deck.`);
+        advance('storyline','dan',`...A free fortnight? Well, now you're asking. I'd re-cut the shift pattern and stop paying agency to cover a line we only run four days a week. I've asked twice — it needs a sign-off from group and nobody's ever given me one. Thanks for actually asking. — And there's your four pounds a tonne, from a man who's known it for two years. Femi would like to see your deck.`);
       });
   }
 
   /* ---------- 5. the storyline ---------- */
   if(key==='mike'&&s==='storyline'){
     return choose('mike',
-      `Forty pages, and the recommendation is on page thirty-eight. It builds beautifully. What's wrong with it?`,
+      `Right, the deck! Forty pages, and the recommendation is on page thirty-eight. It builds beautifully. Can you see what might trip us up?`,
       [
        {label:`Nothing. They need to see the rigour before they see the answer.`,ok:false,
-        note:`The chief executive reads the first three pages in the car. By page nine somebody asks what your point is, and you spend the meeting defending page four. Try again?`},
+        note:`The rigour's lovely! But the chief executive reads the first three pages in the car, and by page nine someone's asking what the point is. Try again?`},
        {label:`Lead with the answer — keep Ashby, here are the three things that close the gap, here is what they cost and here is what would change our mind. The analysis goes behind it.`,ok:true},
        {label:`Cut it to five pages and drop the analysis. Nobody reads an appendix.`,ok:false,
-        note:`Now you've got a strong claim and nothing holding it up when the finance director pushes. The appendix isn't decoration, it's how you survive the question. Have another go?`}
+        note:`Shorter is good, but then we'd have a strong claim with nothing holding it up when the finance director pushes. The appendix is how we answer the hard question. Have another go?`}
       ],function(){
         filed('Storyline','Larkfield Foods','Answer first, three moves under it, evidence behind — and what would change the recommendation');
-        advance('client','mike',`That's a deck. Answer, then because, then here is what it would take. And the line saying what would change our mind is the thing that makes the rest believable. Sonia's in the client room. She's read the draft.`);
+        advance('client','mike',`Now that's a deck — well done! Answer, then because, then here's what it would take. And the line saying what would change our mind is what makes the rest believable. Sonia's in the client room. She's read the draft.`);
       });
   }
 
   /* ---------- 6. the client, and the meeting you are not in ---------- */
   if(key==='owen'&&s==='client'){
     return choose('owen',
-      `Sonia Vance, chief operating officer. It's good work, genuinely. One thing: can you take the sentence about group overhead out? It isn't what the paper is about, and it'll start a fight.`,
+      `Hello — Sonia Vance, chief operating officer. Lovely to meet you. It's good work, genuinely. One thing: could you take out the sentence about group overhead? It isn't really what the paper's about, and it'll start a fight.`,
       [
        {label:`"Of course — I'll cut it."`,ok:false,
-        note:`(You've just taken the reason Ashby looks expensive out of a paper about closing Ashby. When it surfaces later, and it will, every other number you gave them becomes suspect. Want another go?)`},
+        note:`(Kind of you, but that removes the very reason Ashby looks expensive from a paper about closing Ashby. If it comes out later, every other number becomes suspect. Want another go?)`},
        {label:`"Before I touch it — who is in the room on Thursday, and which part of this are you expecting to be argued with?"`,ok:true},
        {label:`"I can't remove a finding. It's the central point of the analysis."`,ok:false,
-        note:`Nor can I take it in as it stands. I'll present my own version, then.  (You were right, and you have just lost control of your own work. Try again?)`}
+        note:`Oh. Well, I can't take it in as it stands, so I'll present my own version, then.  (You're right about the finding, but now she's going it alone. Try again?)`}
       ],function(){
-        say('owen',`...The finance director built that overhead model. If the paper says his allocation makes Ashby look thirteen pounds worse than it is, he will spend the entire meeting defending it and nobody will discuss the shift pattern. I'm not trying to hide anything. I'm trying not to lose the meeting.`,
+        say('owen',`...Good question. The finance director built that overhead model. If the paper says his allocation makes Ashby look thirteen pounds worse than it is, he'll spend the whole meeting defending it and nobody will discuss the shift pattern. I'm not trying to hide anything — I just don't want to lose the meeting.`,
           [{label:'So it needs to be a decision about Ashby, not a verdict on his model.',go:function(){
-            say('owen',`...That is exactly it. Four firms have sat where you're sitting and not one of them put it that way.`,
+            say('owen',`...Yes! That's exactly it. Four firms have sat where you're sitting, and not one of them put it that way. Thank you.`,
               [{label:'Then the sentence moves, it does not go.',go:function(){
                 filed('Client, understood','Larkfield Foods','A finding kept and reframed, so the meeting is about the decision rather than whose model is wrong');
                 startClock(90);
-                say('kate',`Which is right, and the timing is appalling. The pre-read locks in ninety seconds and Thursday's pack goes with whatever is in it. Femi's in the team room. Go.`,
+                say('kate',`Lovely — exactly right, just at a tricky moment! The pre-read locks in ninety seconds, and Thursday's pack goes with whatever's in it. Femi's in the team room. You can do this — go!`,
                   [{label:'Go.',go:function(){ G.step='crisis_fix'; paintHUD(); closeDlg(); }}]);
               }}]);
           }}]);
@@ -2382,24 +2382,24 @@ function consScript(key){
   }
 
   if(key==='mike'&&s==='crisis_fix'){
-    return choose('mike',`Ninety seconds. What goes on the page?`,[
+    return choose('mike',`I'm ready — ninety seconds! What goes on the page?`,[
       {label:`Cut the overhead line and mention it out loud on Thursday.`,ok:false,
-       note:`A finding that only exists out loud isn't in the paper — and you won't get the floor for it. Try again, quickly.`},
+       note:`A finding that only exists out loud isn't in the paper — and we might not get the chance to say it. Try again, quickly!`},
       {label:`Keep the finding, move it out of the headline into the basis of the numbers, and write the recommendation like-for-like: same rules for all three sites. Shift pattern named as the first move.`,ok:true},
       {label:`Leave it exactly as drafted and let her manage the room.`,ok:false,
-       note:`You've handed her the fight she told you she would lose, and the decision goes down with it. Have another go?`}
+       note:`That hands her the very fight she's worried about losing, and the decision could go down with it. Have another go?`}
     ],function(){
-      advance('crisis_show','mike',`In the pack with eleven seconds to spare. Like-for-like on the front page, the allocation explained under basis of preparation, and the shift pattern as move one. Go and show her, before she reads the old draft.`);
+      advance('crisis_show','mike',`In the pack with eleven seconds to spare! Like-for-like on the front page, the allocation explained under basis of preparation, and the shift pattern as move one. Go and show her — she'll be so relieved.`);
     });
   }
 
   if(key==='owen'&&s==='crisis_show'){
     stopClock();
-    return say('owen',`So it says the same thing. It just doesn't say it at him.`,
+    return say('owen',`Oh, so it says the same thing. It just doesn't say it at him. That's perfect.`,
       [{label:'And the decision is still the decision.',go:function(){
-        say('owen',`I've had four firms through here. You're the first one who asked who was going to argue with it.`,
+        say('owen',`I've had four firms through here. You're the first who asked who was going to argue with it. Thank you so much.`,
           [{label:'...',go:function(){
-            say('kate',`That's the job. Not the model, not the deck — that. Somebody asks you to take a sentence out, and you go and find out which meeting they're frightened of. Six pieces of work, a site manager who told you the truth, and a pre-read you didn't miss. You're a consultant now.`,
+            say('kate',`And that's the job, really. Not the model, not the deck — that. Somebody asks you to take a sentence out, and you kindly find out which meeting they're worried about. Six pieces of work, a site manager who trusted you with the truth, and a pre-read met. I'm so proud of you — you're a consultant now.`,
               [{label:'Thank you.',go:function(){ G.step='complete'; paintHUD(); closeDlg(); openCertificate(); }}]);
           }}]);
       }}]);
@@ -2408,29 +2408,30 @@ function consScript(key){
   /* ---------- Anya: hints ---------- */
   if(key==='alex'){
     const h={
-      brief:`Ruth's in her office. Ask what the benchmark is for before you ask what goes in it.`,
-      question:`A deliverable is not a question. Find the decision underneath it.`,
+      brief:`Hi, I'm Anya! Ruth's in her office. Ask what the benchmark is for before you ask what goes in it.`,
+      question:`A deliverable isn't a question. Find the decision underneath it.`,
       hypothesis:`For each idea, ask what single number would prove it wrong — then go and get that one.`,
       data:`Three numbers, three definitions. Ask what each one counts before you pick.`,
-      interview:`He thinks you are here to close his site. Say what you are actually doing.`,
+      interview:`He thinks you're here to close his site. Be honest about what you're actually doing — he'll warm up.`,
       storyline:`The answer goes first. The rigour goes behind it, where it can still be reached.`,
-      client:`She is not asking you to lie. Ask who is in the room on Thursday.`,
-      crisis_fix:`Keep the finding. Change where it sits, and make the rules the same for all three sites.`,
-      crisis_show:`Go and show her — she has not seen it yet.`,
-      complete:`You kept a finding and kept the client. That is the whole trick. Drink?`
+      client:`She isn't asking you to lie. Ask who's in the room on Thursday.`,
+      crisis_fix:`Keep the finding. Change where it sits, and make the rules the same for all three sites. You've got this.`,
+      crisis_show:`Go and show her — she hasn't seen it yet!`,
+      complete:`You kept a finding and kept the client — that's the whole trick! Drink?`
     };
-    return say('alex', h[s] || `Stuck? Say what decision this changes, and who has to be convinced of it.`);
+    return say('alex', h[s] || `Stuck? Try saying what decision this changes, and who has to be convinced of it.`);
   }
 
   const idle={
-    kate:`Nothing new from me — go and finish what you have got.`,
-    mike:`Come back when you can give me the answer in one sentence.`,
-    jenny:`Bring me a definition and I will build you a number.`,
-    dan:`Kettle's on. Twenty-two years, mind.`,
-    owen:`I'll wait. Thursday will not.`
+    kate:`Nothing new from me just yet — finish what you've got, and shout if you need anything.`,
+    mike:`Come back whenever you can give me the answer in one sentence — I'm looking forward to it.`,
+    jenny:`Bring me a definition and I'll happily build you a number.`,
+    dan:`Kettle's on, if you want one. Twenty-two years, mind!`,
+    owen:`No rush — I'll wait. Thursday won't, though!`
   };
   say(key, idle[key] || `...`);
 }
+
 
 const TRACK_GLOSSARY=[
   {t:"engagement",l:"an engagement",m:"engagement",
@@ -2501,10 +2502,10 @@ TRACK_DEFS.consulting={
   script:function(key){ return consScript(key); },
   occupants:function(room){ return consOccupants(room); },
   objectives:OBJ_CONS,
-  opening:{text:`Nine in the morning at Calder and Hale. A client who has asked for a benchmark, a board paper in six weeks about closing a bakery, and a pre-read that locks at five o'clock.`,
+  opening:{text:`Nine in the morning at Calder and Hale, and welcome to your first day! Today there's a client who has asked for a benchmark, a board paper in six weeks about closing a bakery, and a pre-read that locks at five o'clock. Let's get stuck in.`,
            label:'Find Ruth.'},
   certTitle:'CONSULTING CHRONICLES',
-  timeUp:{who:'kate',line:`Pre-read's locked. Thursday's pack goes out with the old draft, the finance director spends the meeting defending his model, and nobody discusses the shift pattern. Finish it anyway: missing a deadline you survive; not knowing what you would have written, you don't.`},
+  timeUp:{who:'kate',line:`The pre-read's locked, I'm afraid, so Thursday's pack goes out with the old draft. Don't worry — we can still brief Sonia before the meeting. Let's finish it anyway, so you know exactly what you'd write next time.`},
   certBody:['turned a benchmark into the decision underneath it, rebuilt a cost baseline on a',
             'definition that could be defended, got the truth out of a site manager who expected',
             'the worst, and kept a finding in the pack by moving it rather than deleting it.'],
