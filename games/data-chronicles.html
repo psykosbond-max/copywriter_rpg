@@ -1957,126 +1957,126 @@ function dataScript(key){
 
   /* ---------- the question ---------- */
   if(key==='kate'&&s==='data_brief')
-    return say('kate',`Hi — Nadia, product. Welcome aboard. Churn's up four points this quarter, and we put prices up in February, so everyone's already decided what happened. Diane needs something for the board on Thursday. What she'll ask you for is a number. What she needs is to know whether to roll the price rise back.`,
+    return say('kate',`Hello, and welcome aboard! I'm Nadia, product — we're so glad you're here. Churn's up four points this quarter, and we put prices up in February, so everyone's already decided what happened. Diane needs something for the board on Thursday. What she'll ask you for is a number. What she really needs is to know whether to roll the price rise back.`,
       [{label:`Those aren't the same request.`,go:function(){
-        say('kate',`No, they're not — and you'll find that out the hard way at about four o'clock. Ravi's on the floor. Start with him, because three teams in this building count churn three different ways, and two of them are wrong for this question.`,
+        say('kate',`Exactly — well spotted, most people take until about four o'clock to notice that! Ravi's on the floor and he's lovely. Start with him, because three teams in this building count churn three different ways, and two of them don't fit this question.`,
           [{label:'On my way.',go:function(){ advance('metric'); }}]);
       }}]);
 
   /* ---------- 1. the metric ---------- */
   if(key==='mike'&&s==='metric'){
     return choose('mike',
-      `Ravi, staff data scientist — good to have you. Before you open anything: finance count churn as revenue lost over revenue at the start of the month. Support count any account that raises a cancellation. The dashboard counts logins going to zero for thirty days. All three say churn, and they disagree by nine points. Which do you use?`,
+      `Hello! Ravi, staff data scientist — really good to have you. Before you open anything: finance count churn as revenue lost over revenue at the start of the month. Support count any account that raises a cancellation. The dashboard counts logins going to zero for thirty days. All three say "churn", and they disagree by nine points. Which would you use?`,
       [
        {label:`The dashboard figure — it's what the company already looks at, so the numbers will match what people expect.`,ok:false,
-        note:`Consistent with a number nobody chose for this purpose. Thirty days of no logins includes every seasonal business that's shut for the winter. Want to try another?`},
+        note:`Familiar, yes! But nobody chose it for this purpose, and thirty days of no logins includes every seasonal business that's shut for the winter. Want to try another?`},
        {label:`Whichever is highest, so we're being conservative about the size of the problem.`,ok:false,
-        note:`Picking the number that makes the best story is the thing you're here to stop other people doing. Try again?`},
+        note:`Careful of you! But picking a number for the story it tells is exactly what we're here to help other people avoid. Try again?`},
        {label:`Work back from the decision. She's deciding whether to reverse a price rise, so it's revenue retained by cohort, measured from the month each account signed — and write the definition into the analysis so people can argue with it.`,ok:true}
       ],function(){
         filed('Metric definition','Meridian churn','Revenue retention by signup cohort, chosen from the decision and written down');
-        advance('confound','mike',`Right. Choosing a metric is a decision, not a lookup, and the decision it serves is the only thing that makes one choice better than another. Write the definition where people can see it, or in six weeks someone will quote your number for something it can't answer. Theo's in the kitchen with a chart he's very pleased about.`);
+        advance('confound','mike',`Lovely. Choosing a metric is a decision, not a lookup, and the decision it serves is what makes one choice better than another. Write the definition where people can see it, or in six weeks someone will quote your number for something it can't answer. Theo's in the kitchen with a chart he's very pleased about.`);
       });
   }
 
   /* ---------- 2. the confounder ---------- */
   if(key==='dan'&&s==='confound'){
     return choose('dan',
-      `Theo, analytics engineering. Look at this. Accounts with the mobile app installed churn thirty-one per cent less. Thirty-one. I've already written the slide — push the app harder, churn goes down. Tell me I'm a genius.`,
+      `Hiya — Theo, analytics engineering. Lovely to meet you! Look at this. Accounts with the mobile app installed churn thirty-one per cent less. Thirty-one! I've already written the slide — push the app harder, churn goes down. Go on, tell me I'm a genius.`,
       [
        {label:`It's a big effect on a big sample, so recommend the app push and monitor churn afterwards.`,ok:false,
-        note:`It's a big effect on the wrong question. You'd be spending a quarter's roadmap on something that might be entirely backwards. Want to try another?`},
+        note:`It is a big effect! But it might be answering the wrong question, and we'd be spending a quarter's roadmap on something that could be entirely backwards. Want to try another?`},
        {label:`Ask what else is true of accounts that install the app, compare like with like on size and engagement — and say plainly that only a randomised rollout settles which way the arrow points.`,ok:true},
        {label:`Dismiss it — correlation isn't causation, so it tells us nothing.`,ok:false,
-        note:`Too far the other way. It's a real pattern and worth chasing; it just isn't a cause yet. Correlation isn't causation is the beginning of the work, not a way out of it. Have another go?`}
+        note:`A bit too far the other way! It's a real pattern and worth chasing — it just isn't a cause yet. "Correlation isn't causation" is the start of the work, not the end. Have another go?`}
       ],function(){
         filed('Confounder check','Meridian churn','App effect explained by account size and engagement; experiment proposed');
-        advance('survivorship','dan',`Ah. It's the busy multi-practitioner accounts that install it, and they were never going to leave. Engaged people install apps; apps don't create engaged people — not by thirty-one points, anyway. Ravi's after you. Something about your data being missing on purpose.`);
+        advance('survivorship','dan',`Ahh, you're right. It's the busy multi-practitioner accounts that install it, and they were never going to leave. Engaged people install apps; apps don't create engaged people — not by thirty-one points, anyway. Thanks for catching that before the board did! Ravi's after you — something about your data being missing on purpose.`);
       });
   }
 
   /* ---------- 3. survivorship ---------- */
   if(key==='mike'&&s==='survivorship'){
     return choose('mike',
-      `Two things in your working. Your satisfaction scores come from the onboarding survey, which only fires on the last step of onboarding. And your feature-usage table was rebuilt in March from currently active accounts. So you're about to conclude that satisfied, feature-using accounts churn less.`,
+      `Here's a subtle one. Your satisfaction scores come from the onboarding survey, which only fires on the last step of onboarding. And your feature-usage table was rebuilt in March from currently active accounts. So you're about to conclude that satisfied, feature-using accounts churn less. Spot anything?`,
       [
        {label:`Note both as limitations in an appendix and carry on with the conclusion.`,ok:false,
-        note:`A limitation in an appendix is a conclusion in the summary. Your survey can't contain anyone who gave up during onboarding, and your usage table can't contain anyone who already left — so of course the survivors look happy and busy. Try again?`},
+        note:`Honest of you to note them! But the survey can't include anyone who gave up during onboarding, and the usage table can't include anyone who already left — so of course the survivors look happy and busy. Try again?`},
        {label:`Recognise that both sources exclude the very people the question is about, go back for a source that includes churned accounts, and weight or reframe rather than concluding from survivors.`,ok:true},
        {label:`Increase the sample — pull twelve months instead of three, which will dilute the bias.`,ok:false,
-        note:`Twelve months of the same missing people. More data with the same hole in it is just a more confident wrong answer. Have another go?`}
+        note:`More data would still have the same people missing, so we'd just get a more confident version of the same answer. Have another go?`}
       ],function(){
         filed('Survivorship check','Meridian churn','Survivor-only sources identified and replaced with full-population history');
-        advance('simpson','mike',`Yes. Ask who's definitionally absent from every table you touch — and the answer is usually the people you're asking about. Jen's in Ops, and she's got conversion going up and down at the same time.`);
+        advance('simpson','mike',`Yes, brilliant! Always ask who can't possibly be in the table you're using — it's usually the very people you're asking about. Jen's in Ops, and she's got conversion going up and down at the same time.`);
       });
   }
 
   /* ---------- 4. the mix shift ---------- */
   if(key==='jenny'&&s==='simpson'){
     return choose('jenny',
-      `Jen, data platform. So: trial-to-paid conversion is up two points overall this quarter. And it's down in clinics, down in salons, down in garages, down in other — every single segment. Both of those are correct. Explain it, or you can't use either.`,
+      `Hello! Jen, data platform — lovely to meet you. Here's a fun puzzle: trial-to-paid conversion is up two points overall this quarter. And it's down in clinics, down in salons, down in garages, down in other — every single segment. Both of those are correct. Can you explain it?`,
       [
        {label:`The overall figure is the one that matters — segments are noisy at that size.`,ok:false,
-        note:`You've picked the number you liked and called the rest noise. They aren't noise; they're every segment we have. Try again?`},
+        note:`Tempting! But they aren't noise — that's every segment we have, all moving the same way. Try again?`},
        {label:`The mix changed — we got a lot more of whichever segment converts best, so the total rose while each segment fell. Report the mix shift and the per-segment trend together, because the average is hiding the story.`,ok:true},
        {label:`It's a data quality problem — the segments must be double-counting somewhere.`,ok:false,
-        note:`Tempting, and no. This happens with perfectly clean data, and it's got a name. Have another go?`}
+        note:`Good instinct to check! But this happens with perfectly clean data, and it even has a name. Have another go?`}
       ],function(){
-        filed('Mix analysis','Meridian conversion','Simpson\u2019s paradox identified — clinic share up, every segment down');
-        advance('ab_test','jenny',`Correct — marketing went hard at clinics in January, clinics convert best, and the weighted average went up while we got worse at everything. An aggregate is a weighted average of things you chose not to look at. Theo's found statistical significance, by the way, and he's ready to ship.`);
+        filed('Mix analysis','Meridian conversion','Simpson’s paradox identified — clinic share up, every segment down');
+        advance('ab_test','jenny',`Exactly right! Marketing went hard at clinics in January, clinics convert best, and the weighted average went up while we got slightly worse at everything. An aggregate is a weighted average of things you chose not to look at. Theo's found statistical significance, by the way, and he's keen to ship.`);
       });
   }
 
   /* ---------- 5. the experiment ---------- */
   if(key==='dan'&&s==='ab_test'){
     return choose('dan',
-      `The new pricing page test. Day three, p equals nought point nought four, variant's up eleven per cent. Nadia's asking whether we can call it. Our pre-registered plan said two weeks and eighteen thousand sessions, and we're at four thousand.`,
+      `Me again! The new pricing page test. Day three, p equals nought point nought four, and the variant's up eleven per cent. Nadia's asking whether we can call it. Our pre-registered plan said two weeks and eighteen thousand sessions, and we're at four thousand. What do you reckon?`,
       [
        {label:`Ship it — significance is significance, and two more weeks of a worse page costs money.`,ok:false,
-        note:`You've stopped at the exact moment the noise was flattering. Peek often enough and a coin looks significant — which is why we wrote the plan down before we started. Try again?`},
+        note:`I know, it's exciting! But we'd be stopping at exactly the moment the noise looks flattering — peek often enough and even a coin looks significant. That's why we wrote the plan down. Try again?`},
        {label:`Keep it running and check daily — if it stays significant, ship early with confidence.`,ok:false,
-        note:`Checking daily and stopping when you like the answer is the same mistake with more steps. Have another go?`},
+        note:`Close, but checking daily and stopping when we like the answer is the same trap with more steps. Have another go?`},
        {label:`Run to the pre-registered sample and stop rule, report the effect with its interval rather than just the p-value, and note that eleven per cent on day three will shrink.`,ok:true}
       ],function(){
         filed('Experiment discipline','Meridian pricing test','Ran to the pre-registered stop rule; effect reported with interval');
-        advance('leakage','dan',`Fine. It settled at three per cent — still worth having, and a completely different conversation about the roadmap than eleven. Jen wants you. She says your churn model is too good.`);
+        advance('leakage','dan',`Fair enough — and you were right! It settled at three per cent. Still worth having, and a very different roadmap conversation than eleven. Jen would like you — she says your churn model is suspiciously good.`);
       });
   }
 
   /* ---------- 6. leakage and base rates ---------- */
   if(key==='jenny'&&s==='leakage'){
     return choose('jenny',
-      `So your churn model reports ninety-four per cent accuracy. Churn in this population runs at about six per cent. Two of your features are days since last login, computed as of today, and cancellation_reason_is_null. And you split train and test randomly across two years. Go on then.`,
+      `So, your churn model reports ninety-four per cent accuracy. Churn in this population runs at about six per cent. Two of your features are days since last login, computed as of today, and cancellation_reason_is_null. And you split train and test randomly across two years. What do you think?`,
       [
        {label:`Ninety-four per cent on a six per cent base rate is roughly predict nobody churns, so switch to precision, recall and a proper baseline comparison.`,ok:false,
-        note:`Right about the base rate — and you've left both time bombs in. Your cancellation-reason feature is the answer written on the back of the card, and a random split lets the model learn from next March to predict last January. Try again?`},
+        note:`Spot on about the base rate! But there are two sneaky problems still in there: the cancellation-reason feature is basically the answer, and a random split lets the model learn from next March to predict last January. Try again?`},
        {label:`Drop the features that are only knowable after the outcome, split by time so training never sees the future, and judge it on precision and recall against the base-rate baseline rather than accuracy.`,ok:true},
        {label:`Retrain with class weights to handle the imbalance and keep the feature set — the model should learn to discount weak signals itself.`,ok:false,
-        note:`You've fixed the imbalance and kept the leak. A model with the outcome in its inputs will happily learn it, weighted or not. Have another go?`}
+        note:`That fixes the imbalance, but the leak's still there — a model with the outcome in its inputs will happily learn it, weighted or not. Have another go?`}
       ],function(){
         filed('Model validation','Meridian churn model','Post-outcome features removed, time-based split, precision and recall against base rate');
-        advance('stakeholder','jenny',`Good. It scores far worse, and it's now worth something. Accuracy on a rare event is a vanity metric, a feature that only exists after the event is the answer on the back of the card, and a random split over time is quiet time travel. Right — Diane's in the war room and she wants a number.`);
+        advance('stakeholder','jenny',`Lovely. It scores much worse now, and it's actually worth something! Accuracy on a rare event can be a vanity metric, a feature that only exists after the event is the answer written on the back of the card, and a random split over time is quiet time travel. Right — Diane's in the war room, and she'd like a number.`);
       });
   }
 
   /* ---------- 7. the stakeholder who knows the answer ---------- */
   if(key==='owen'&&s==='stakeholder'){
     return choose('owen',
-      `Diane, revenue. I've got fifteen minutes. I need the slide that shows the February price rise didn't drive the churn — because I've read the cohorts and I don't think it did, and I'd rather not spend Thursday being shouted at by people who haven't. Can you get me that number?`,
+      `Hello — Diane, revenue. Thanks for coming! I've only got fifteen minutes, I'm afraid. I need the slide that shows the February price rise didn't drive the churn — I've read the cohorts and I don't think it did, and I'd rather not spend Thursday being shouted at by people who haven't. Can you get me that number?`,
       [
        {label:`"I can — I'll pull the comparison that supports it."`,ok:false,
-        note:`(You've just agreed to find evidence for a conclusion. If the data goes the other way, you now have to choose between your analysis and your credibility — and you set that trap yourself. Want another go?)`},
+        note:`(Helpful, but that means looking for evidence for a conclusion. If the data goes the other way, you'd be stuck choosing between the analysis and her expectations. Want another go?)`},
        {label:`"I can tell you what the data supports, which might not be that. What decision is Thursday actually making — whether to reverse the rise?"`,ok:true},
        {label:`"I can't produce a number to support a conclusion you've already reached."`,ok:false,
-        note:`Nor can I use that. I'll go with my own reading, then.  (Correct, and you've just removed the only careful person from the decision. Try again?)`}
+        note:`Oh. Well, I'll go with my own reading, then.  (Fair principle, but now the most careful person is out of the decision. Try again?)`}
       ],function(){
-        say('owen',`...Whether to reverse it, yes. And if we reverse it we lose the margin that pays for next year's hiring, so I'd rather be right than comfortable. What does it actually say?`,
+        say('owen',`...Good question. Whether to reverse it, yes. And if we reverse it, we lose the margin that pays for next year's hiring — so I'd honestly rather be right than comfortable. What does it actually say?`,
           [{label:'Mostly what you think. Not entirely.',go:function(){
-            say('owen',`Go on.`,
+            say('owen',`Go on — I'm listening.`,
               [{label:'Retention held in four segments and fell hard in two.',go:function(){
-                filed('Question, translated','Meridian','Reframed from "prove it wasn\u2019t the price" to "should we reverse it"');
+                filed('Question, translated','Meridian','Reframed from "prove it wasn’t the price" to "should we reverse it"');
                 startClock(90);
-                say('kate',`Which is the honest answer and a terrible moment for it, because the board pack locks in ninety seconds. Jen's in Ops — get one chart in there. Go.`,
+                say('kate',`Lovely — that's the honest answer, just at a tricky moment! The board pack locks in ninety seconds. Jen's in Ops — let's get one chart in there. You can do this — go!`,
                   [{label:'Go.',go:function(){ G.step='crisis_fix'; paintHUD(); closeDlg(); }}]);
               }}]);
           }}]);
@@ -2084,24 +2084,24 @@ function dataScript(key){
   }
 
   if(key==='jenny'&&s==='crisis_fix'){
-    return choose('jenny',`One chart, ninety seconds. What goes in?`,[
+    return choose('jenny',`I'm ready — one chart, ninety seconds! What goes in?`,[
       {label:`The headline number — churn attributable to price isn't significant overall — with the segment detail in the appendix.`,ok:false,
-       note:`That's a true sentence that will be read as the price rise was fine. And the two segments where it bit are the two she's about to make a decision about. Try again?`},
+       note:`True, but it'd be read as "the price rise was fine" — and the two segments where it bit are exactly the ones she's deciding about. Try again, quickly!`},
       {label:`Retention by cohort before and after February with the intervals shown, the two segments where it fell called out on the same chart, and one line on what this can't tell us.`,ok:true},
       {label:`A clean single-line chart of overall retention — anything more and a board audience stops looking.`,ok:false,
-       note:`Simplify the presentation, not the finding. You'd be hiding the only part of this that changes what they do. Have another go?`}
+       note:`Simple is good! But let's simplify the presentation, not the finding — otherwise we'd hide the part that changes what they do. Have another go?`}
     ],function(){
-      advance('crisis_show','jenny',`In the pack with eleven seconds to spare. Cohorts, intervals, the two bad segments named, and a sentence saying what it can't answer. Go and show her.`);
+      advance('crisis_show','jenny',`In the pack with eleven seconds to spare! Cohorts, intervals, the two segments named, and a sentence saying what it can't answer. Go and show her — she'll be so pleased.`);
     });
   }
 
   if(key==='owen'&&s==='crisis_show'){
     stopClock();
-    return say('owen',`So I keep the rise, and I go in on Thursday with the two segments we hurt and what we're doing about them.`,
+    return say('owen',`Oh, so I keep the rise, and I go in on Thursday with the two segments we hurt and what we're doing about them. That's perfect.`,
       [{label:'And with what the chart cannot tell you.',go:function(){
-        say('owen',`That line is the reason I'll be believed. I asked you for a number and you gave me a decision — nobody in this building does that.`,
+        say('owen',`That line is the reason I'll be believed. I asked you for a number and you gave me a decision — thank you so much.`,
           [{label:'...',go:function(){
-            say('kate',`That's the job. Not the model, not the p-value — that. Someone asked you to prove something, and your first move was to find out what they were deciding. Seven pieces of work, a model you made worse on purpose, and a board pack you didn't miss. You're an analyst now.`,
+            say('kate',`And that's the job, really. Not the model, not the p-value — that. Someone asked you to prove something, and your first move was to kindly find out what they were deciding. Seven pieces of work, a model you made more honest, and a board pack met. I'm so proud of you — you're an analyst now.`,
               [{label:'Thank you.',go:function(){ G.step='complete'; paintHUD(); closeDlg(); openCertificate(); }}]);
           }}]);
       }}]);
@@ -2110,30 +2110,31 @@ function dataScript(key){
   /* ---------- Sam: hints ---------- */
   if(key==='alex'){
     const h={
-      data_brief:`Nadia's in Product. Ask what gets decided, not what gets reported.`,
+      data_brief:`Hi, I'm Sam! Nadia's in Product. Ask what gets decided, not just what gets reported.`,
       metric:`Three definitions, nine points apart. Pick from the decision, then write it down.`,
       confound:`Ask what else is true of the people in the flattering group.`,
       survivorship:`Ask who can't possibly be in the table you're querying.`,
       simpson:`Up overall, down in every segment. Something about the mix changed.`,
       ab_test:`We wrote the stopping rule down for exactly this moment.`,
-      leakage:`Six per cent base rate. Work out what predict nobody churns would score.`,
-      stakeholder:`She's asking for a conclusion. Find out what she's deciding.`,
-      crisis_fix:`One chart, the uncertainty visible, and the bit she needs to act on.`,
-      crisis_show:`Go and show her — she hasn't seen it yet.`,
-      complete:`You got a VP to ask for a decision instead of a number. Pub?`
+      leakage:`Six per cent base rate. Work out what "predict nobody churns" would score.`,
+      stakeholder:`She's asking for a conclusion. Gently find out what she's deciding.`,
+      crisis_fix:`One chart, the uncertainty visible, and the bit she needs to act on. You've got this.`,
+      crisis_show:`Go and show her — she hasn't seen it yet!`,
+      complete:`You got a VP to ask for a decision instead of a number — amazing! Pub?`
     };
     return say('alex', h[s] || `Stuck? Ask what decision changes depending on the answer, and work back from there.`);
   }
 
   const idle={
-    kate:`Nothing new from me — go and finish what you've got.`,
-    mike:`Come back when you can tell me who's missing from the table.`,
-    jenny:`Bring me something with an interval on it and we'll get on fine.`,
-    dan:`Kettle's on. I've unpublished the app slide, before you ask.`,
-    owen:`I'll wait. Fifteen minutes, mind.`
+    kate:`Nothing new from me just yet — finish what you've got, and shout if you need anything.`,
+    mike:`Come back whenever you can tell me who's missing from the table — happy to talk it through.`,
+    jenny:`Bring me something with an interval on it, and we'll get on brilliantly.`,
+    dan:`Kettle's on, help yourself! I've unpublished the app slide, before you ask.`,
+    owen:`No rush — I'll wait. Fifteen minutes, mind!`
   };
   say(key, idle[key] || `...`);
 }
+
 
 const TRACK_GLOSSARY=[
   {t:"churn",l:"churn",m:"churn",
@@ -2200,10 +2201,10 @@ TRACK_DEFS.data={
   script:function(key){ return dataScript(key); },
   occupants:function(room){ return dataOccupants(room); },
   objectives:OBJ_DATA,
-  opening:{text:`Nine in the morning at Meridian. Churn's up four points, the price rise in February has already been convicted by everyone in the building, and the board pack locks at five.`,
+  opening:{text:`Nine in the morning at Meridian, and welcome to your first day! Churn's up four points, everyone in the building has already blamed February's price rise, and the board pack locks at five. Let's get stuck in.`,
            label:'Find Nadia.'},
   certTitle:'DATA CHRONICLES',
-  timeUp:{who:'kate',line:`Pack's locked. Diane goes in with her own reading and the two segments we hurt go unmentioned. Finish it anyway — missing a deadline you survive; not knowing what you'd have put in the chart, you don't.`},
+  timeUp:{who:'kate',line:`The pack's locked, I'm afraid, so Diane goes in with her own reading. Don't worry — we can still brief her before Thursday. Let's finish it anyway, so you know exactly what you'd put in the chart next time.`},
   certBody:['investigated four points of churn at Meridian — metric definition, confounding,',
             'survivorship, mix shift, experiment discipline and a leaking model — and turned',
             'a request to prove a conclusion into the decision it was actually for.'],
