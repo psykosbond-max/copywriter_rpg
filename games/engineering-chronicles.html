@@ -158,11 +158,10 @@
     <div id="map" class="map" aria-label="Floor map"></div>
   </div>
   <div id="coach">
-    <p><b class="n">1</b><span><b>Read the line above.</b> It tells you who to find
-      and which room they’re in. The map next to it shows where you are. Tap any
+    <p><b class="n">1</b><span><b>Read the line above.</b> That is your objective &mdash;
+      who to find, and which room. The map next to it shows where you are; tap any
       room to walk there.</span></p>
-    <p><b class="n">2</b><span><b>Then answer in the box below the office.</b> Nothing
-      happens until you tap one of the answers. That’s how the day begins.</span></p>
+    <p><b class="n">2</b><span>Tap an answer in the box below the office to start the game.</span></p>
     <button id="coachGo" type="button">Got it</button>
   </div>
   <div class="stage">
@@ -181,22 +180,22 @@
 
 <div class="veil" id="menu"><div class="inner center">
   <h2 id="menuTitle">Engineering Chronicles</h2>
-  <p class="lede" id="menuLede">A day at a software company, and a ticket that turns out not to be about speed.</p>
+  <p class="lede" id="menuLede">A day on a product team, and the ticket that turns out not to be about speed.</p>
   <button id="btnPlay" class="primary">Play game</button>
   <button id="btnLearn" class="ghost">Learn software engineering</button>
   <button id="btnTracks" class="ghost">Choose another track</button>
 </div></div>
 
 <div class="veil" id="nameScreen" style="display:none"><div class="inner center">
-  <h3>What’s your name?</h3>
+  <h3>What should they call you?</h3>
   <input id="nameInput" type="text" autocomplete="off" spellcheck="false" placeholder="Your name"/>
-  <p class="hintline">We’ll put it on your certificate at the end of the day.</p>
+  <p class="hintline">It goes on your certificate at the end of the day.</p>
   <button id="nameGo" class="primary" disabled>Start</button>
   <button id="backName" class="link">Back</button>
 </div></div>
 
 <div class="veil" id="avatarScreen" style="display:none"><div class="inner center">
-  <h3>Choose your character</h3>
+  <h3>And who are you today?</h3>
   <div class="avrow">
     <div class="avcard"><canvas id="av0" width="230" height="300"></canvas></div>
     <div class="avcard"><canvas id="av1" width="230" height="300"></canvas></div>
@@ -214,7 +213,7 @@
 
 <div class="veil" id="tracksScreen" style="display:none"><div class="inner">
   <h3>Choose another track</h3>
-  <p class="lede small">Software engineering, product, security, UX, and data science take place at Meridian, a software company. Copywriting, account management, brand strategy, and design take place at an ad agency across town. Electrical, mechanical, and chemical engineering take place at Hallam Works, which builds pump systems and control panels. Consulting takes place at Calder &amp; Hale, where you help another company solve its problem. Every track plays the same way, but each one is a different job with different lessons.</p>
+  <p class="lede small">Every track plays the same way, but each one is a different job with different lessons.</p>
   <div id="tracksBody"></div>
   <button id="backTracks" class="link">Back to menu</button>
 </div></div>
@@ -1344,9 +1343,9 @@ const $=id=>document.getElementById(id);
    Every term is also listed under What this teaches, for anything waved
    through at the time.                                                      */
 const TERM_ASK=[
-  'Quick question before I go on. Do you know what <b class="jt">%s</b> means?',
-  'Wait a second. Do you know what <b class="jt">%s</b> means?',
-  'Before I keep going, do you know what <b class="jt">%s</b> means?'
+  'Quick one before I go on \u2014 do you know what <b class="jt">%s</b> means?',
+  'Hang on. Do you know what <b class="jt">%s</b> means?',
+  'Before I carry on \u2014 do you know what <b class="jt">%s</b> means?'
 ];
 function termName(e){ return (e.l||e.t).replace(/^(?:a|an|the) /,''); }
 function termMatch(text){
@@ -1375,10 +1374,10 @@ function termCheck(speaker,text,options){
   const resume=function(){ G.termAsking=false; say(speaker,text,options); };
   rawSay(speaker, TERM_ASK[(G.termCount++)%TERM_ASK.length].replace('%s',termName(e)), [
     {label:'Yes, I know that one', go:resume},
-    {label:'No, please explain', go:function(){
+    {label:'No \u2014 explain it', go:function(){
       G.termsLearned.push(e.t);
       rawSay(speaker,'<span class="def"><b>'+termName(e)+'</b>'+e.d+'</span>',
-        [{label:'Got it, keep going', go:resume}]);
+        [{label:'Got it \u2014 carry on', go:resume}]);
     }}
   ]);
   return true;
@@ -1462,7 +1461,7 @@ function paintHUD(){
     c.className=L<=20?'urgent':'';
     if(L<=0&&G.step!=='complete'&&G.deadlineEnd){
       stopClock();
-      const tu=TRACK.timeUp||{who:'kate',line:`Time’s up. Finish it anyway. We don’t stop just because the clock did.`};
+      const tu=TRACK.timeUp||{who:'kate',line:`Time. Go and finish it anyway — we do not stop because the clock did.`};
       say(tu.who,tu.line);
       G.deadlineEnd=0;
     }
@@ -1474,7 +1473,7 @@ function openFolio(){
   el.querySelector('.inner').innerHTML='<h3>Work log</h3>'+
     (G.portfolio.length?G.portfolio.map(function(p){
       return '<div class="pf"><b>'+p.title+'</b><span>'+p.client+'</span><i>'+p.line+'</i></div>';
-    }).join(''):'<p class="empty">Nothing here yet.</p>')+
+    }).join(''):'<p class="empty">Nothing filed yet.</p>')+
     '<button id="folioClose">Close</button>';
   $('folioClose').onclick=function(){ el.style.display='none'; };
 }
@@ -1928,17 +1927,17 @@ CAST.owen={name:'Rachel', role:'Head of Customer Support', where:'War Room',
    specs:true, prop:'tablet', build:1.0, bw:20, beard:false};
 
 const OBJ_ENG={
-  ticket_brief:'Get your first ticket from Nadia in Product',
-  requirements:'Go over the ticket with Ravi on the Engineering floor',
-  code_review:'Ravi on the Engineering floor has a pull request for you to review',
-  testing:'Theo is in the Kitchen with the test results open',
-  tech_debt:'Go back to Ravi. The bookings code is in your way.',
-  shipping:'See Jen in Ops about releasing it safely',
-  incident:'Get to Ops right now. Something is broken.',
-  stakeholder:'Rachel is waiting for you in the War Room',
-  crisis_fix:'Hurry to Jen in Ops',
-  crisis_show:'Go back to Rachel in the War Room',
-  complete:'Day complete. You’re a software engineer now.'
+  ticket_brief:'Get the ticket from Nadia in Product',
+  requirements:'Ravi is on the Engineering floor — read the ticket with him first',
+  code_review:'Ravi again. There is a pull request waiting on you',
+  testing:'Theo is in the Kitchen with the CI dashboard open',
+  tech_debt:'Back to Ravi — the bookings module is in the way',
+  shipping:'Jen in Ops. It has to go out without breaking anything',
+  incident:'Ops. Now. Something is on fire',
+  stakeholder:'Rachel is waiting in the War Room',
+  crisis_fix:'Ops. Jen. Quickly',
+  crisis_show:'Back to Rachel in the War Room',
+  complete:'You are an engineer now'
 };
 
 function engOccupants(room){
@@ -1958,148 +1957,148 @@ function engScript(key){
 
   /* ---------- the ticket ---------- */
   if(key==='kate'&&s==='ticket_brief')
-    return say('kate',`Hi, I'm Nadia, the engineering manager. Welcome! Meridian makes scheduling software for businesses that take appointments, like clinics, fitness studios, and auto repair shops. Starting today, you're on the bookings team, and there's already a ticket with your name on it. MER-2291: "Add CSV export to the bookings list." The support team has asked for it eleven times this quarter.`,
-      [{label:'Sounds like an afternoon’s work.',go:function(){
-        say('kate',`Everyone says that. Ravi is on the Engineering floor, and he has strong opinions about tickets that "sound like an afternoon." Go over it with him before you write any code.`,
+    return say('kate',`Hello, and welcome to Meridian! I'm Nadia, engineering manager — we're so glad you've joined us. Meridian does scheduling for people who run appointments: clinics, studios, garages. You're on the bookings squad from today, and there's already a ticket with your name on it. MER-2291: add CSV export to the bookings list. Support have asked for it eleven times this quarter.`,
+      [{label:'Sounds like an afternoon.',go:function(){
+        say('kate',`Ha — everyone says that! Ravi's on the floor, and he's brilliant at spotting what's hiding in tickets like this. Have a read through it with him before you open an editor.`,
           [{label:'On my way.',go:function(){ advance('requirements'); }}]);
       }}]);
 
   /* ---------- 1. the problem behind the ticket ---------- */
   if(key==='mike'&&s==='requirements'){
     return choose('mike',
-      `Hi, I'm Ravi, the tech lead. That mostly means I read everything twice. Good to have you here. So, your ticket is one line: "Add CSV export to the bookings list." That's not a spec. It's a wish. What do you do with it?`,
+      `Hello! I'm Ravi, tech lead — which mostly means I read things twice. Really good to have you. So, your ticket is one line: add CSV export to the bookings list. That's more of a wish than a spec, though. What would you do with it?`,
       [
-       {label:`Start building. It's a small ticket, and the details will come up as I go.`,ok:false,
-        note:`They will come up. On Thursday, in production, in front of a clinic with two hundred thousand bookings. Want to try another one?`},
-       {label:`Find out who asked for it, what they do with the file after they download it, and how much data our biggest customer has.`,ok:true},
-       {label:`Send it back to Nadia and ask her for a proper spec first.`,ok:false,
-        note:`Nadia doesn't know either. She just wrote down what support told her. The people with the answers are the eleven customers who asked for it. Go be the person who finds out. Try again?`}
+       {label:`Start building. It's a small ticket — the details will show up as I write it.`,ok:false,
+        note:`They will show up — but probably on Thursday, in production, in front of a clinic with two hundred thousand bookings. Want to try another?`},
+       {label:`Find out who asked for it, what they do with the file once they've got it, and what our biggest account's data actually looks like.`,ok:true},
+       {label:`Send it back to Nadia and ask for a proper spec first.`,ok:false,
+        note:`Nadia doesn't know either, honestly — she wrote down what support told her. The people with the answer are the eleven customers who asked. You could be the one who finds out! Try again?`}
       ],function(){
-        filed('Ticket research','Meridian','Who asked for it, what they do with the file, and how big the largest account is');
-        advance('code_review','mike',`Exactly. A ticket is just a symptom someone wrote down. Support says three of those customers upload the file into their accounting software. And our biggest customer has 214,000 bookings, which changes everything about how we build this. Next: Sam opened a pull request on the same code, and it's been waiting for two days. Take a look.`);
+        filed('Ticket, opened properly','Meridian','Who asked, what they do with the file, and how big the biggest account is');
+        advance('code_review','mike',`Exactly — lovely! A ticket is a symptom someone wrote down. Support say three of them re-upload the file into their accounting tool, and our biggest account has 214,000 bookings — which changes the whole shape of this. Now, Sam's put up a PR on the same module and it's been waiting two days. Fancy having a look?`);
       });
   }
 
   /* ---------- 2. code review ---------- */
   if(key==='mike'&&s==='code_review'){
     return choose('mike',
-      `It's four hundred lines, and it works. But it loads bookings one at a time in a loop, so 100 rows means 101 database queries. It also loads every single result into memory with no limit. And one variable is named "data2." Sam is waiting, and the sprint ends Friday. What do you say in your review?`,
+      `Four hundred lines, and it works. It also loads bookings in a loop, so a hundred rows means a hundred and one queries. It pulls the whole result set into memory with no limit. And it calls a variable data2. Sam's waiting, and the sprint ends Friday. What would you put in the review?`,
       [
-       {label:`Approve it. It works, the team is waiting on it, and we can clean it up later.`,ok:false,
-        note:`"Later" never comes. And one of those three problems will crash the site when a big customer uses it. Try again?`},
-       {label:`Leave all fourteen comments with equal importance, and let Sam figure out which ones matter.`,ok:false,
-        note:`Fourteen equal comments isn't a review. It's just noise. The one that really matters is now buried between a naming preference and a missing period. Want to try again?`},
-       {label:`Block the pull request on the N+1 problem and the unlimited memory load, and explain clearly why each one breaks at 200,000 rows. Mark the variable name as a nit that doesn't block anything.`,ok:true}
+       {label:`Approve it. It works, the team's blocked, and we can tidy up later.`,ok:false,
+        note:`Kind to Sam, but "later" has a way of never coming — and one of those three things would take the site down at scale. Try again?`},
+       {label:`Leave all fourteen comments at the same weight and let Sam work out which matter.`,ok:false,
+        note:`Thorough! But fourteen equal comments make it hard for Sam to see which ones really matter — the important one gets buried between a naming quibble and a missing full stop. Have another go?`},
+       {label:`Block on the N+1 and the unbounded load, explain plainly why each breaks at 200k rows, and mark the naming as a nit that isn't blocking.`,ok:true}
       ],function(){
-        filed('Code review','Meridian','Two blocking problems with clear reasons, and the rest marked optional');
-        advance('testing','mike',`That's a real review. Say which comments are blocking and which are just preference, and explain why instead of just giving orders. Sam can discuss "this makes 101 queries for 100 rows." Sam can't do anything with "I'd do it differently." Theo is in the Kitchen, frowning at the test results.`);
+        filed('Code review','Meridian','Two blocking issues named with their consequence, the rest marked optional');
+        advance('testing','mike',`That's a lovely review. Say which comments block and which are preference, and give the reason rather than the instruction. "This is 101 queries at 100 rows" is something Sam can learn from; "I'd do it differently" isn't. Theo's in the kitchen, looking a bit worried about CI.`);
       });
   }
 
   /* ---------- 3. tests ---------- */
   if(key==='dan'&&s==='testing'){
     return choose('dan',
-      `Hi, I'm Theo. I handle testing and releases, and I'm the one who notices things. I have two things for you. First, your new test checks that exportRows calls formatRow exactly 214 times. Second, there's an older test in this code that fails about one time in six, and the team usually just reruns it until it passes. So what do you do?`,
+      `Hiya — Theo, QA and releases. I'm the person who notices things! Two for you. Your new test asserts that exportRows calls formatRow exactly 214 times. And there's a test on this module that fails about one run in six, and the team's habit is to hit rerun until it goes green. What would you do?`,
       [
-       {label:`Make the flaky test retry automatically so it stops blocking us, and keep my test the way it is.`,ok:false,
-        note:`Now the test results are lying to you. That test fails one in six times because there's a real timing bug in there. With automatic retries, nobody will ever notice it again, until a customer does. Try again?`},
-       {label:`Test what the user actually gets: the file contents for a normal account, an empty account, and a customer named "Okafor, Jr." with a comma in the name. And treat the flaky test as a bug to fix or remove, not something to rerun.`,ok:true},
-       {label:`Delete the flaky test since it's just noise, and keep my test so we know the loop runs.`,ok:false,
-        note:`That's half right, and half worse. Deleting it without investigating throws away the only clue about a real timing bug. And your test will still break as soon as someone cleans up that loop, even though nothing is actually wrong. Want to try again?`}
+       {label:`Add an automatic retry to the flaky one so CI stops blocking, and keep my test as it is.`,ok:false,
+        note:`Tempting, but that teaches the build to hide things. That test fails one in six because something in it is genuinely racy, and with a retry nobody would see it again — until a customer does. Try again?`},
+       {label:`Test what the user gets — the file contents for a normal account, an empty one, and a customer called Okafor, Jr. with a comma in the name. And treat the flaky test as a bug to fix or delete, not rerun.`,ok:true},
+       {label:`Delete the flaky test, it's just noise, and keep my call-count assertion so we know the loop runs.`,ok:false,
+        note:`Half right! But deleting it without looking throws away the only clue to a real race, and your assertion would still break whenever someone tidies that loop. Have another go?`}
       ],function(){
-        filed('Tests','Meridian','Tested real results and edge cases, and reported the flaky test as a bug');
-        advance('tech_debt','dan',`Good. A test that depends on how the code works will break when someone improves the code, and it'll keep passing when the results are wrong. That's exactly backwards. And a flaky test is a bug report nobody has read yet. Ravi wants to see you again. The old bookings code is in your way.`);
+        filed('Test suite','Meridian','Behaviour tested at the edges, flaky test raised as a defect rather than retried');
+        advance('tech_debt','dan',`Brilliant. A test that knows how the code works breaks when the code changes and passes when the behaviour breaks — exactly backwards. And a flaky test is just a bug report nobody's read yet. Ravi would like you back; the module's getting in your way.`);
       });
   }
 
   /* ---------- 4. tech debt ---------- */
   if(key==='mike'&&s==='tech_debt'){
     return choose('mike',
-      `Okay, here's your problem. The bookings query you need is in the middle of a two-thousand-line file called bookings_service.rb. Four different people have cursed at that file this month. You only need one function from it. What's your plan?`,
+      `Right, here's the tricky bit. The bookings query you need sits in the middle of a two-thousand-line file called bookings_service.rb that four people have grumbled at this month. You need one method out of it. What's the move?`,
       [
-       {label:`Rewrite the whole file properly first. It's the root of the problem, and it'll pay off later.`,ok:false,
-        note:`That's a two-week rewrite of a file you've known for one day, just to finish a one-line ticket. And there are no tests to tell you when you've broken something. Try again?`},
-       {label:`Leave it alone, and copy the query into my new file so I don't have to touch the old one.`,ok:false,
-        note:`Now the same code lives in two places, and the next bug fix will only reach one of them. You made the file worse by refusing to open it. Want to try again?`},
-       {label:`Pull out only the one function I need, add tests around it, and leave the rest alone. Then open a ticket for the rest of the cleanup, with an estimate of how many hours the mess costs us.`,ok:true}
+       {label:`Rewrite the module properly first. It's the root cause and it'll pay for itself.`,ok:false,
+        note:`I love the ambition! But it'd be a two-week rewrite of a file you've known for a day, to ship a one-line ticket — with no tests to tell you if something breaks. Try again?`},
+       {label:`Leave it alone and copy the query into my new file, so I don't have to touch it.`,ok:false,
+        note:`Understandable, but then the same logic lives in two places, and only one copy gets the fix next time. Have another go?`},
+       {label:`Carve out just the seam I need, put tests around that one method, leave the rest alone — and open a ticket for the remainder with the cost written down in hours.`,ok:true}
       ],function(){
-        filed('Refactor','Meridian','Pulled out one function with tests, and ticketed the rest with a cost attached');
-        advance('shipping','mike',`That's how tech debt really gets paid off: a little at a time, right where you're already working, in pieces small enough to review. A ticket that says "this costs us two days every quarter" gets scheduled. A ticket that says "this code is messy" never does. Jen is in Ops. It's time to release this.`);
+        filed('Refactor','Meridian','One seam extracted and tested, remainder ticketed with a cost attached');
+        advance('shipping','mike',`Perfect — that's how debt actually gets repaid: right where you're already working, in pieces small enough to review. And a ticket saying "this costs us two days a quarter" gets prioritised, where "this is messy" never does. Jen's in Ops — time to get it out the door.`);
       });
   }
 
   /* ---------- 5. shipping ---------- */
   if(key==='jenny'&&s==='shipping'){
     return choose('jenny',
-      `Hi, I'm Jen. I work on the platform team. So, your export needs a new column on a database table with forty million rows, plus a background job and a new endpoint. And it's Thursday afternoon. How do we get this into production safely?`,
+      `Hello! Jen, platform — lovely to meet you. So, your export needs a new column on a table with forty million rows, a background job, and an endpoint. And it's Thursday afternoon. How shall we get this to production?`,
       [
-       {label:`Do it all in one deploy: the migration, the backfill, and the code together. It's a small change, and it keeps everything in sync.`,ok:false,
-        note:`It stays in sync until it doesn't. Between the migration finishing and the new code starting, the old code will run into a table it doesn't recognize. And if something goes wrong, undoing it means reversing changes to forty million rows. Try again?`},
-       {label:`Add the new column first, and deploy code that works with both the old and new versions of the table. Fill in the old rows in small batches, then switch over. Put the endpoint behind a feature flag: off at first, then on for our team, then for 5 percent of customers.`,ok:true},
-       {label:`Put the endpoint behind a feature flag, but do the migration and backfill in the same deploy to save time.`,ok:false,
-        note:`The flag protects the new feature, but the migration is the part you can't undo. It's like putting a seatbelt on and then cutting the brakes. Want to try again?`}
+       {label:`One deploy — migration, backfill and code together. It's atomic that way, and it's a small change.`,ok:false,
+        note:`It sounds tidy, but between the migration landing and the new code running, old processes would hit a table shape they've never seen — and rolling back would mean un-migrating forty million rows. Try again?`},
+       {label:`Add the column first, and deploy code that works with both the old shape and the new. Backfill in batches, then switch reads over. Endpoint behind a flag: off, then on for us, then five per cent.`,ok:true},
+       {label:`Put the endpoint behind a flag, but ship the migration and backfill in the same deploy to save a round trip.`,ok:false,
+        note:`Nearly! The flag protects the feature, but the migration is the part that can't be undone, so it needs its own step. Have another go?`}
       ],function(){
-        filed('Release plan','Meridian','Add first, backfill, clean up last, behind a flag and rolled out in stages');
-        advance('incident','jenny',`That's it. Deploying code and releasing a feature are two separate steps, and ideally they happen on different days. Add things to the database first, make the code work with both versions, and only delete old things once nothing uses them anymore. Okay, it's live for 5 percent of customers. Go get some lunch.`);
+        filed('Release plan','Meridian','Expand, backfill, contract — behind a flag, rolled out in stages');
+        advance('incident','jenny',`That's it — lovely! Deploying and releasing are two different events, ideally on different days. Additive migrations first, code that copes with both shapes, and destructive changes last, once nothing reads the old shape. Right — it's live at five per cent. Go and grab some lunch, you've earned it.`);
       });
   }
 
   /* ---------- 6. the incident ---------- */
   if(key==='jenny'&&s==='incident'){
     return choose('jenny',
-      `It's 11:40. The error rate on the bookings API just jumped from 0.1 percent to 6 percent. The p95 response time has tripled. Your rollout reached 25 percent of customers nine minutes ago, and support already has two complaints. What's the very first thing you do?`,
+      `Sorry to interrupt lunch! It's eleven forty, and the error rate on the bookings API just went from nought point one per cent to six. p95 latency's tripled. Your rollout hit twenty-five per cent nine minutes ago, and support have two tickets already. Don't panic — what do we do first?`,
       [
-       {label:`Dig into the logs and find the root cause. I don't want to turn things off without knowing why.`,ok:false,
-        note:`That sounds responsible, but every minute you spend is another minute customers can't book appointments. Understanding the problem isn't the emergency. Stopping the damage is. Try again?`},
-       {label:`Turn off the feature flag. Watch the error rate to confirm it drops, so we know it was our change. Then investigate once customers are safe.`,ok:true},
-       {label:`I think I know what's wrong. I'll push a fix straight to production and watch it.`,ok:false,
-        note:`You think you know. That's an untested fix, made under pressure, going into a system that's already struggling. And the switch that would stop the problem is right there. Want to try again?`}
+       {label:`Pull the logs and traces and find the root cause — I don't want to flip things off blindly.`,ok:false,
+        note:`Very thorough of you! But every minute spent investigating is customers failing to book. Understanding can wait a few minutes; stopping the problem can't. Try again?`},
+       {label:`Turn the flag off. Watch the error rate come down to confirm it was us. Then investigate, with production out of danger.`,ok:true},
+       {label:`I think I know what it is — push a fix straight to prod and watch it.`,ok:false,
+        note:`Brave! But an untested fix, under pressure, into a struggling system is risky — especially when the thing that stops it is one toggle away. Have another go?`}
       ],function(){
-        filed('Incident response','Meridian','Stopped the damage first: flag off, recovery confirmed, then diagnosis');
-        advance('stakeholder','jenny',`The flag is off, and errors were back to normal in ninety seconds. Now we can investigate calmly instead of panicking. It was that unlimited query, running on one huge account. Exactly what Ravi told you to watch out for this morning. Stop the damage first, then figure out why. And rolling back isn't a failure. It's the safety net doing its job. Oh, and Rachel wants you in the War Room. Support has escalated something.`);
+        filed('Incident response','Meridian','Mitigated first — flag off, recovery confirmed, then diagnosis');
+        advance('stakeholder','jenny',`Flag's off, and errors are back to baseline in ninety seconds — well done, nice and calm. Now we can be curious instead of worried. It was the unbounded query on one enormous account, the very thing Ravi had you look for this morning. Mitigate, then diagnose. And rolling back isn't a failure — it's the feature working. Rachel would like to see you in the war room, by the way. Support have escalated something.`);
       });
   }
 
   /* ---------- 7. the stakeholder, and what they actually mean ---------- */
   if(key==='owen'&&s==='stakeholder'){
     return choose('owen',
-      `Hi, I'm Rachel, head of customer support. Thanks for coming up. Honestly, the export is great. But can you just make it faster? Forty seconds is too long. My team has started calling it the "coffee break button."`,
+      `Hello — Rachel, head of support. Thanks so much for coming up! The export is brilliant, honestly. But could you make it faster? Forty seconds is too long. My team have started calling it the kettle button.`,
       [
-       {label:`"Of course. I'll optimize the query. I can probably get it down to eight seconds."`,ok:false,
-        note:`(You just signed up for two days of work to hit a number she never asked for. She didn't say the query was slow. She said forty seconds is too long. That's about waiting, not about queries. Want to try again?)`},
-       {label:`"Before I change the speed, can I ask what your team does during those forty seconds? And what happens to the file after it downloads?"`,ok:true},
+       {label:`"Of course. I'll optimise the query — I can probably get it to eight seconds."`,ok:false,
+        note:`(Kind of you, but that's two days of work for a number she never asked for. She didn't say the query was slow — she said forty seconds is too long, which is really about waiting. Want another go?)`},
+       {label:`"Before I touch the speed — what's your team doing during those forty seconds, and what happens to the file once it lands?"`,ok:true},
        {label:`"Forty seconds is about right for two hundred thousand rows. It's a big export."`,ok:false,
-        note:`I'm sure it is. I'll just tell my team to keep waiting, then.  (You're right, but it doesn't help anyone. Try again?)`}
+        note:`Oh. Well, I'll tell the team to keep waiting, then.  (True, but it leaves her team with the same problem. Try again?)`}
       ],function(){
-        say('owen',`They just sit there watching a loading spinner, because if they click away, it cancels. And every Monday at 8 a.m., someone runs it for forty accounts in a row. That's half an hour of someone doing nothing. Then they attach each file to an email and send it to the customer. It's not really that it's slow. It's that they have to babysit it.`,
-          [{label:'So speed was never the real problem.',go:function(){
-            filed('Real requirement','Meridian','The problem was having to wait and watch, not the query speed');
+        say('owen',`Oh, good question. They sit there watching a spinner, because if they click away it cancels. And every Monday at eight, one of them runs it for forty accounts in a row — that's half an hour of someone doing nothing. Then they attach the file to an email and send it on. It's not really that it's slow. It's that they have to babysit it.`,
+          [{label:'Then speed was never the fix.',go:function(){
+            filed('Requirement, translated','Meridian','The problem was attended waiting, not query time');
             startClock(90);
-            say('kate',`Great catch, but terrible timing. The release freeze starts in ninety seconds, and support's Monday run is this Monday. After the freeze, nothing ships for two weeks. Jen is in Ops. Go!`,
-              [{label:'Go!',go:function(){ G.step='crisis_fix'; paintHUD(); closeDlg(); }}]);
+            say('kate',`What a great catch — just at a tricky moment! The release freeze starts in ninety seconds, support's Monday run is on Monday, and after the freeze it's a fortnight. Jen's in Ops. You can do this — go!`,
+              [{label:'Go.',go:function(){ G.step='crisis_fix'; paintHUD(); closeDlg(); }}]);
           }}]);
       });
   }
 
   if(key==='jenny'&&s==='crisis_fix'){
-    return choose('jenny',`Talk fast. What are we shipping?`,[
-      {label:`Optimize the query. If we get it to eight seconds, they'll stop complaining.`,ok:false,
-       note:`That's still eight seconds of someone watching a spinner, forty times every Monday morning. She just told you that's not what she needs. Try again, faster!`},
-      {label:`Have the export return right away and hand the work to our existing job queue. Then email the download link when it's ready. Turn it on for the support team only, so nobody else is affected.`,ok:true},
-      {label:`Raise the request timeout to 120 seconds so big exports stop failing.`,ok:false,
-       note:`That's not a fix. That just lets people wait even longer. Want to try again?`}
+    return choose('jenny',`I'm ready — quick, what are we shipping?`,[
+      {label:`Optimise the query. Get it to eight seconds and they'll stop complaining.`,ok:false,
+       note:`That's still eight seconds of watching a spinner, forty times on a Monday morning — the thing she just said she didn't need. Try again, quickly!`},
+      {label:`Return straight away, hand it to the job queue we already have, email the link when it's done. Flag on for support only, nobody else affected.`,ok:true},
+      {label:`Raise the request timeout to a hundred and twenty seconds so it stops dropping on big accounts.`,ok:false,
+       note:`That just means they can wait even longer! Have another go?`}
     ],function(){
-      advance('crisis_show','jenny',`Queued, flagged, and merged, with eleven seconds left before the freeze. It's a small change using tools we already run, so nothing new will wake anyone up at 3 a.m. Go show Rachel before she books that two-day optimization.`);
+      advance('crisis_show','jenny',`Queued, flagged, merged — in with eleven seconds before the freeze! Small change, infrastructure we already run, nothing new to get paged about at three in the morning. Go and show her — she'll love it.`);
     });
   }
 
   if(key==='owen'&&s==='crisis_show'){
     stopClock();
-    return say('owen',`Oh, it just emails it to us? So my team can start the next one right away!`,
-      [{label:'You can run all forty at once if you want.',go:function(){
-        say('owen',`It still takes forty seconds, doesn't it? And I don't care at all.`,
+    return say('owen',`Oh — it just emails it? So they can start the next one straight away!`,
+      [{label:'Forty at once, if you want.',go:function(){
+        say('owen',`It's still forty seconds, isn't it? And I honestly don't mind at all. Thank you!`,
           [{label:'...',go:function(){
-            say('kate',`That's the real job. Not the migration, not the feature flag. What you just did. Someone brought you a solution disguised as a complaint, and your first instinct was to ask what they were actually doing while they waited. You finished six pieces of work, handled an incident without making it worse, and beat the release freeze. You're a software engineer now.`,
+            say('kate',`And that's the job, really. Not the migration, not the flag — that. Someone brings you a solution dressed up as a complaint, and your first instinct was to ask what they were actually doing all that time. Six pieces of work, an incident handled calmly, and a freeze met. I'm so proud of you — you're an engineer now.`,
               [{label:'Thank you.',go:function(){ G.step='complete'; paintHUD(); closeDlg(); openCertificate(); }}]);
           }}]);
       }}]);
@@ -2108,137 +2107,137 @@ function engScript(key){
   /* ---------- Sam: hints ---------- */
   if(key==='alex'){
     const h={
-      ticket_brief:`Nadia is in Product. Ask what the ticket is for, not just what it says.`,
-      requirements:`A one-line ticket is someone's summary of a conversation you weren't part of. Go find that conversation.`,
-      code_review:`Some of my fourteen comments matter, and some are just personal taste. Say which is which. That's the whole skill.`,
-      testing:`If a test depends on how the code works, it'll break when you clean up the code and pass when the code is actually broken.`,
-      tech_debt:`Pull out the smallest piece that lets you finish. The full rewrite you're imagining would take three weeks, and nobody has three weeks.`,
-      shipping:`Add things first and delete things last. And a feature flag doesn't replace either step.`,
-      incident:`Stop the problem first, then figure out why it happened. In that order, every time.`,
-      stakeholder:`"Make it faster" is never really about milliseconds. Find out what people are doing while they wait.`,
-      crisis_fix:`Make the smallest change that solves the real complaint. Not the perfect version. The one that ships before the freeze.`,
-      crisis_show:`Go show her. She hasn't seen it yet.`,
-      complete:`You got the support team to stop caring about a number. That's a first around here. Drinks?`
+      ticket_brief:`Hi, I'm Sam! Nadia's in Product. Ask what the ticket is for, not just what it says.`,
+      requirements:`One line of ticket is someone's summary of a conversation you weren't in. Go and find the conversation.`,
+      code_review:`Some of my fourteen comments matter and some are just taste. Say which is which — that's the whole skill. And be kind to me!`,
+      testing:`If the test knows how the code works, it'll break when you tidy it and pass when you break it.`,
+      tech_debt:`Smallest seam that lets you finish. The rewrite you're picturing is three weeks, and nobody has three weeks.`,
+      shipping:`Additive first, destructive last — and the flag isn't a substitute for either.`,
+      incident:`Stop it happening, then find out why. That order, every time. You've got this.`,
+      stakeholder:`"Make it faster" is rarely about the milliseconds. Find out what they're doing while they wait.`,
+      crisis_fix:`Smallest change that answers the real complaint. Not the perfect version — the one that ships before the freeze.`,
+      crisis_show:`Go and show her — she hasn't seen it yet!`,
+      complete:`You got support to stop caring about a number — a first here! Pub to celebrate?`
     };
-    return say('alex', h[s] || `Stuck? Say out loud what breaks if you do nothing, and start there.`);
+    return say('alex', h[s] || `Stuck? Try saying out loud what breaks if you do nothing, and start there.`);
   }
 
   const idle={
-    kate:`I don't have anything new for you. Go finish what you're working on.`,
-    mike:`Come back when you can tell me what happens with two hundred thousand rows.`,
-    jenny:`Bring me something I can roll back, and we'll get along fine.`,
-    dan:`There's coffee in the pot. But your build is still failing.`,
-    owen:`I'll wait. My team is on the phones until five.`
+    kate:`Nothing new from me just yet — finish what you've got, and shout if you need anything.`,
+    mike:`Come back whenever you can tell me what happens at two hundred thousand rows — happy to talk it through.`,
+    jenny:`Bring me something I can roll back, and we'll get on brilliantly.`,
+    dan:`Kettle's on, help yourself! Your build's still red, mind.`,
+    owen:`No rush — I'll wait. My team are on the phones till five.`
   };
   say(key, idle[key] || `...`);
 }
 
+
 const TRACK_GLOSSARY=[
   {t:"ticket",l:"a ticket",m:"ticket",
-   d:"A single task written down in a project tracker, with an ID like MER-2291. It’s usually someone’s one-line summary of a much longer conversation."},
-  {t:"team",l:"a product team",m:"bookings team",
-   d:"A small, permanent team, usually a few engineers plus a designer and a product manager, that owns one part of the product."},
+   d:"One item of work written down in a tracker, with an ID like MER-2291. Usually somebody’s one-line summary of a much longer conversation."},
+  {t:"squad",l:"a squad",m:"squad",
+   d:"A small standing team — a few engineers, usually with a designer and a product person — that owns one part of the product."},
   {t:"spec",l:"a spec",m:"spec",
-   d:"Short for specification. A written description of what a piece of work needs to do, written before anyone builds it. It should be detailed enough that people can disagree with it."},
+   d:"A description of what a piece of work has to do, written down before anyone builds it. Detailed enough to disagree with."},
   {t:"csv",l:"a CSV",m:"CSV",
-   d:"A simple text file of rows and columns that spreadsheets and accounting software can open. Commas separate the columns, which is why a customer named “Okafor, Jr.” can cause problems."},
-  {t:"pr",l:"a pull request",m:"PR|pull request",
-   d:"A proposed set of code changes that teammates read and comment on before it becomes part of the main code."},
-  {t:"code review",l:"a code review",m:"code review|review",
-   d:"Reading a teammate’s proposed code changes and suggesting improvements before they ship. It’s half technical skill and half diplomacy."},
+   d:"A plain text file of rows and columns that spreadsheets and accounting tools can open. Commas separate the columns, which is why a customer called “Okafor, Jr.” is interesting."},
+  {t:"pr",l:"a PR",m:"PR|pull request",
+   d:"A pull request: a proposed set of code changes, put up for teammates to read and comment on before it joins the real thing."},
+  {t:"code review",l:"code review",m:"code review|review",
+   d:"Reading a colleague’s proposed change and saying what should alter before it ships. Half technical, half diplomacy."},
   {t:"nit",l:"a nit",m:"nit",
-   d:"A small, picky suggestion in a code review, like a variable name or a missing period. It’s worth mentioning, but it should never block the work."},
-  {t:"n+1",l:"the N+1 problem",m:"N\\+1",
-   d:"When code asks the database for a list, then makes one more request for every single item on it. 100 rows turns into 101 requests, and it only becomes a problem with lots of data."},
-  {t:"query",l:"a query",m:"quer(?:y|ies)",
-   d:"A single request to the database, like “give me these bookings.” One query is cheap. A thousand of them is expensive."},
+   d:"A small preference in a review — naming, spacing, a missing full stop — that is worth mentioning and should never block the work."},
+  {t:"n+1",l:"an N+1",m:"N\\+1",
+   d:"Code that asks the database once for a list, then once more for every single row. A hundred rows becomes a hundred and one trips, and it only hurts at scale."},
+  {t:"query",l:"a query",m:"query",
+   d:"A single question put to the database — “give me these bookings”. Cheap on its own, expensive a thousand times over."},
   {t:"production",l:"production",m:"production|prod",
-   d:"The live system that real customers are using right now, as opposed to the test copies developers work on."},
+   d:"The live system that real customers are using right now, as opposed to the copies you test on."},
   {t:"sprint",l:"a sprint",m:"sprint",
-   d:"A short, fixed period of work, usually two weeks. The team plans at the start and reviews what they did at the end."},
+   d:"A fixed short stretch of work, usually a fortnight, that a team plans at the start and reviews at the end."},
   {t:"flaky test",l:"a flaky test",m:"flaky test",
-   d:"A test that sometimes passes and sometimes fails, even when nothing has changed. It almost always points to a real bug, not bad luck."},
-  {t:"timing bug",l:"a timing bug",m:"timing bug|race condition",
-   d:"A bug that only shows up when two things happen in an unlucky order. It’s why a test can fail one time out of six. Engineers also call it a race condition."},
-  {t:"test",l:"an automated test",m:"your new test",
-   d:"Code that checks other code automatically. Good tests check what the user actually gets, not the steps the code took to get there."},
-  {t:"tech debt",l:"tech debt",m:"tech(?:nical)? debt",
-   d:"Shortcuts and messy code that make every future change slower and riskier, like interest on a loan. It’s best paid off in small pieces, right where you’re already working."},
-  {t:"refactor",l:"a refactor",m:"refactor",
-   d:"Reorganizing code to make it cleaner without changing what it does. Small refactors are easy to review. Giant rewrites rarely get finished."},
+   d:"A test that passes some runs and fails others without anything changing. Nearly always a real bug in the code or the test, not bad luck."},
+  {t:"race",l:"a race condition",m:"racy|race condition",
+   d:"A bug that only appears when two things happen in an unlucky order. It is why a test can fail one run in six."},
+  {t:"assert",l:"an assertion",m:"assert(?:s|ion)?",
+   d:"The line in a test that says what must be true. Assert on what the user gets, not on how the code got there."},
+  {t:"tech debt",l:"tech debt",m:"tech(?:nical)? debt|debt",
+   d:"Shortcuts and mess in code that you keep paying interest on in slower, riskier work. Repaid best in small pieces, where you are already standing."},
+  {t:"seam",l:"a seam",m:"seam",
+   d:"A clean line you can cut along in messy code — the smallest piece you can pull out, test and leave better than you found it."},
   {t:"migration",l:"a migration",m:"migration",
-   d:"A change to the structure of the database, like adding a new column. Unlike code, you can’t just switch it back off."},
-  {t:"backfill",l:"a backfill",m:"backfill|fill in the old rows",
-   d:"Filling in a new column for rows that already exist. It’s done in small batches, because updating forty million rows at once can crash the database."},
+   d:"A change to the shape of the database itself — adding a column, say. Unlike code, it cannot simply be switched back off."},
+  {t:"backfill",l:"a backfill",m:"backfill",
+   d:"Filling in a new column for rows that already exist, usually in batches, because forty million at once takes the database down with it."},
   {t:"deploy",l:"a deploy",m:"deploy(?:s|ed|ing|ment)?",
-   d:"Putting new code onto the live servers. That’s not the same as releasing a feature to customers. You can deploy code that’s switched off."},
+   d:"Putting new code onto the live servers. Not the same as releasing it to customers — you can deploy code that is switched off."},
   {t:"flag",l:"a feature flag",m:"(?:feature )?flag",
-   d:"An on/off switch in the code that controls a feature without another deploy. You can turn it on for nobody, for staff only, or for 5 percent of customers."},
+   d:"A switch in the code that turns a feature on or off without another deploy — for nobody, for staff only, or for five per cent of customers."},
   {t:"rollout",l:"a rollout",m:"rollout",
-   d:"Turning a feature on for a gradually growing share of customers. If something goes wrong, it only affects 5 percent of them instead of everyone."},
+   d:"Turning something on for a slowly increasing share of customers, so a problem hits five per cent rather than everyone."},
   {t:"rollback",l:"a rollback",m:"rollback|rolling back|roll back",
-   d:"Switching back to the previous version. It’s not a failure. It’s the safety net doing its job."},
+   d:"Putting the previous version back. Not a failure — it is the safety feature working."},
   {t:"error rate",l:"error rate",m:"error rate",
-   d:"The percentage of requests that fail. 0.1 percent is a normal day. 6 percent means customers can’t book appointments."},
-  {t:"p95",l:"p95 response time",m:"p95",
-   d:"How long the slowest 1 in 20 requests takes. Averages hide the people having a bad experience. The p95 number doesn’t."},
+   d:"The share of requests that fail. Nought point one per cent is a normal Tuesday; six per cent is customers unable to book."},
+  {t:"p95",l:"p95 latency",m:"p95",
+   d:"How long the slowest one in twenty requests takes. Averages hide the people having a bad time; p95 does not."},
   {t:"queue",l:"a job queue",m:"(?:job )?queue",
-   d:"A list of tasks that run in the background, so nobody has to sit and watch a screen while they happen."},
+   d:"A list of work handed off to be done in the background, so nobody sits watching a screen while it happens."},
   {t:"timeout",l:"a timeout",m:"timeout",
-   d:"How long a system waits before giving up on a request. Raising it usually just lets people wait longer. It doesn’t fix anything."},
+   d:"How long a system waits before giving up on a request. Raising it is usually permission to wait longer, not a fix."},
   {t:"freeze",l:"a release freeze",m:"(?:release |code )?freeze",
-   d:"A period when no new code is released, often around holidays or big events. Anything that misses the deadline has to wait."},
-  {t:"on call",l:"being on call",m:"wake anyone up|on call|oncall",
-   d:"Being responsible for fixing problems outside work hours. If something breaks at 3 a.m., an automatic alert wakes up whoever is on call."},
+   d:"A period when nothing new goes out — over a holiday, say, or a big event. Anything that misses it waits."},
+  {t:"paged",l:"being paged",m:"paged|get paged|on call|oncall",
+   d:"Being woken by an automatic alert because something is broken and you are on call for it."},
   {t:"escalate",l:"an escalation",m:"escalat(?:e|ed|es|ion)",
-   d:"When the support team passes a problem to the team that can actually change the product."},
+   d:"Support passing a problem up to the team that can actually change the product."},
   {t:"api",l:"an API",m:"API",
-   d:"The way one piece of software talks to another. Meridian’s own app uses it, and so do other companies’ tools."},
+   d:"The doorway one piece of software uses to talk to another. Your own screens are one thing knocking at it; other people’s tools are another."},
   {t:"endpoint",l:"an endpoint",m:"endpoint",
-   d:"One specific address in an API that does one job, like “give me this export.”"}
+   d:"One particular address on an API — a single door, like “give me this export”."}
 ];
 TRACK_DEFS.engineering={
   id:'engineering', name:'Software Engineering', title:'Engineering Chronicles',
-  blurb:'A one-line ticket, a 2,000-line file, and a site-wide problem at 11:40 a.m.',
+  blurb:'Understand software engineering',
   first:'ticket_brief',
-  roles:{mike:'Tech Lead', kate:'Engineering Manager', jenny:'Platform Engineer',
-         alex:'Senior Engineer', dan:'QA and Release Engineer',
-         owen:'Head of Customer Support', player:'New Software Engineer'},
+  roles:{mike:'Tech Lead', kate:'Engineering Manager', jenny:'Platform / SRE',
+         alex:'Senior Engineer', dan:'QA & Releases',
+         owen:'Head of Customer Support', player:'The new engineer'},
   glossary:TRACK_GLOSSARY,
   script:function(key){ return engScript(key); },
   occupants:function(room){ return engOccupants(room); },
   objectives:OBJ_ENG,
-  opening:{text:`It's 9 a.m. at Meridian. There's a ticket with only one line on it, a pull request that's been waiting for two days, and a release freeze at 5 p.m. that nobody has mentioned yet.`,
+  opening:{text:`Nine in the morning at Meridian, and welcome to your first day! Today there's a ticket with one line on it, a pull request that's been open two days, and a release freeze at five o'clock. Let's get stuck in.`,
            label:'Find Nadia.'},
   certTitle:'ENGINEERING CHRONICLES',
-  timeUp:{who:'kate',line:`The freeze has started. Now this won't ship for two weeks, so support will have to babysit that spinner for two more Mondays. Finish it anyway. You can recover from missing a freeze, but you need to know what you would have shipped.`},
-  certBody:['took a vague one-line ticket at Meridian all the way to production, with a code',
-            'review, tests, a small refactor, a staged release, and an incident stopped in ninety',
-            'seconds, then understood what a coworker needed instead of what they asked for.'],
+  timeUp:{who:'kate',line:`That's the freeze, I'm afraid, so it goes out in a fortnight and support have a couple more Mondays with the spinner. Don't worry — it happens. Let's finish it anyway, so you know exactly what you'd ship next time.`},
+  certBody:['worked a ticket at Meridian from one vague line to production — review, tests,',
+            'a refactor that stayed small, a staged release, and an incident mitigated in ninety',
+            'seconds — then heard what a stakeholder meant instead of what they asked for.'],
   lessons:[
     {t:'A ticket is a symptom, not a spec', c:'The ticket',
-     l:'A one-line ticket is someone’s summary of a conversation you weren’t part of. Find out who asked, what they do with the result, and how big the largest customer is.'},
-    {t:'Say which comments are blocking', c:'Code review',
-     l:'Fourteen equally weighted comments is just noise. Separate the problem that will break production from the variable name you’d have picked differently.'},
-    {t:'Explain why, don’t just give orders', c:'Code review',
-     l:'The author can respond to “this makes 101 queries for 100 rows.” Nobody can respond to “I’d do it differently.”'},
-    {t:'Test what the code does, not how it does it', c:'Tests',
-     l:'A test that checks how the code works breaks when you clean it up and passes when it’s broken. Check what the user gets, including the tricky cases.'},
+     l:'One line is someone’s summary of a conversation you weren’t in. Find out who asked, what they do afterwards, and what the largest account looks like.'},
+    {t:'Say which comments block', c:'Code review',
+     l:'Fourteen equal comments is weather, not review. Separate the thing that breaks production from the thing you’d have named differently.'},
+    {t:'Give the reason, not the instruction', c:'Code review',
+     l:'This is 101 queries at 100 rows is something the author can argue with. I’d do it differently isn’t.'},
+    {t:'Test what it does, not how it works', c:'Tests',
+     l:'A test that asserts how the code works breaks when you tidy it and passes when you break it. Assert what the user gets, awkward cases included.'},
     {t:'A flaky test is a bug report', c:'Tests',
-     l:'Rerunning until the tests pass just hides the truth. A test that fails one time in six has a timing bug, and if you ignore it, a customer will find it for you.'},
-    {t:'Pay off tech debt where you’re working', c:'Tech debt',
-     l:'Pull out the piece you need, test it, and leave the rest. A three-week rewrite never gets scheduled, and nobody can review it.'},
-    {t:'Put a cost on the debt you leave behind', c:'Tech debt',
-     l:'“This code is messy” never gets prioritized. “This costs us two days every quarter” is something a manager can weigh against other work.'},
-    {t:'Deploying and releasing are different steps', c:'Shipping',
-     l:'Add to the database first, make the code handle both versions, and delete old things last. A feature flag protects the feature, but nothing protects you from a change you can’t undo.'},
-    {t:'Stop the damage first, then find the cause', c:'Incidents',
-     l:'Understanding the problem isn’t the emergency. Turn it off, confirm things recover, and then investigate. Rolling back means the safety net worked.'},
-    {t:'“Make it faster” is never about milliseconds', c:'Stakeholders',
-     l:'Ask what people are doing while they wait. Forty seconds you can walk away from feels very different from forty seconds you have to watch.'}
+     l:'Retrying until green teaches the build to lie. One failure in six is a race, and a customer will find it for you.'},
+    {t:'Repay debt where you’re standing', c:'Tech debt',
+     l:'Extract the seam you need, test that, leave the rest. The three-week rewrite never gets scheduled and can’t be reviewed.'},
+    {t:'Put a cost on the debt you leave', c:'Tech debt',
+     l:'This is messy never gets prioritised. This costs us two days a quarter is a number someone can trade against.'},
+    {t:'Deploying and releasing are different', c:'Shipping',
+     l:'Additive migration first, code that copes with both shapes, destructive change last. The flag protects the feature; nothing protects a rollback you can’t run.'},
+    {t:'Mitigate first, diagnose second', c:'Incidents',
+     l:'Understanding isn’t the emergency. Turn it off, confirm it recovers, then be curious. Rolling back is the feature working.'},
+    {t:'Make it faster is never about milliseconds', c:'Stakeholders',
+     l:'Ask what they’re doing while they wait. Forty seconds you can walk away from isn’t the same forty seconds.'}
   ]
 };
-
 
 
 /* ==========================================================================
@@ -2270,31 +2269,31 @@ CAST.p_c={name:'You', role:'The new one', where:'Lobby',
 /* Any track not compiled into this build still shows in the picker. */
 const TRACK_STUBS={
   engineering:{id:'engineering',name:'Software Engineering',title:'Engineering Chronicles',
-    blurb:'A one-line ticket, a 2,000-line file, and a site-wide problem at 11:40 a.m.'},
+    blurb:'Understand software engineering'},
   product:{id:'product',name:'Product Management',title:'Product Chronicles',
-    blurb:'Forty-one feature requests, two teams, one quarter, and a $180,000 deal with a deadline attached.'},
+    blurb:'Explore product management'},
   security:{id:'security',name:'Security',title:'Security Chronicles',
-    blurb:'Eleven security problems, a questionnaire nobody reads, and one stolen token making 40,000 requests.'},
+    blurb:'Discover security engineering'},
   ux:{id:'ux',name:'UX Design',title:'UX Chronicles',
-    blurb:'61% of people quit the booking flow, three coworkers have theories, and nobody has watched a real user try it.'},
+    blurb:'Design the best UX ever'},
   data:{id:'data',name:'Data Science',title:'Data Chronicles',
-    blurb:'Customer churn is up four points, everyone thinks they already know why, and the board meets Thursday.'},
+    blurb:'Understand the story behind the numbers'},
   copywriting:{id:'copywriting',name:'Copywriting',title:'Copywriter Chronicles',
-    blurb:'Six briefs, one crisis, and a client who changes their mind at 4 p.m.'},
+    blurb:'Sell with words'},
   account:{id:'account',name:'Account Management',title:'Account Chronicles',
-    blurb:'A client who asks for the wrong thing, an agency that has to build it, and you stuck in the middle.'},
+    blurb:'Learn to manage shifting priorities'},
   brand:{id:'brand',name:'Brand Strategy',title:'Brand Chronicles',
-    blurb:'Figure out what a brand stands for, decide how its brands fit together, and learn when to say no.'},
+    blurb:'Create the strategy that makes your brand #1'},
   design:{id:'design',name:'Design Fundamentals',title:'Design Chronicles',
-    blurb:'Hierarchy, fonts, grids, and designs that still work once they’re printed.'},
+    blurb:'Change the way the world designs'},
   electrical:{id:'electrical',name:'Electrical Engineering',title:'Electrical Chronicles',
-    blurb:'A cable nobody sized properly, a pump that trips when it starts, and a reset button that could burn out a motor.'},
+    blurb:'Put your knowledge to the test'},
   mechanical:{id:'mechanical',name:'Mechanical Engineering',title:'Mechanical Chronicles',
-    blurb:'Three broken impellers in eight months, a frame that cracked at a sharp corner, and a truck waiting at the gate.'},
+    blurb:'Solve the problem every engineer dreads'},
   chemical:{id:'chemical',name:'Chemical Engineering',title:'Chemical Chronicles',
-    blurb:'Four percent of every tanker missing, two dangerous chemicals with the same hose fitting, and a client who wants more chlorine.'},
+    blurb:'Keep danger away using your skills'},
   consulting:{id:'consulting',name:'Consulting',title:'Consulting Chronicles',
-    blurb:'A benchmark nobody needs, three numbers that don’t agree, and a sentence the client wants deleted.'}
+    blurb:'Figure out the secret behind making a client happy'}
 };
 const TRACKS={};
 Object.keys(TRACK_STUBS).forEach(function(id){
@@ -2399,9 +2398,9 @@ function paintLessons(){
     return '<div class="lesson"><b>'+L.t+'</b><span>'+L.c+'</span><p>'+L.l+'</p></div>';
   }).join('');
   const gl=TRACK.glossary||[];
-  if(gl.length) rows+='<div class="lesson"><b>Key terms</b><span>Glossary</span>'+
-    '<p>Every term used in this game. While you play, the first time a term comes up, '+
-    'the person speaking will stop and ask whether you know what it means.</p></div>'+
+  if(gl.length) rows+='<div class="lesson"><b>The words, plainly</b><span>Jargon</span>'+
+    '<p>Every term the day uses. While you play, the first time one of them comes up, '+
+    'whoever said it stops and asks whether you know it.</p></div>'+
     gl.map(function(e){
       return '<div class="lesson gl"><b>'+termName(e)+'</b><p>'+e.d+'</p></div>';
     }).join('');

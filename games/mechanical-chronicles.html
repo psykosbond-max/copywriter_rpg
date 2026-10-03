@@ -158,11 +158,10 @@
     <div id="map" class="map" aria-label="Floor map"></div>
   </div>
   <div id="coach">
-    <p><b class="n">1</b><span><b>Read the line above.</b> It tells you who to find
-      and which room they’re in. The map next to it shows where you are. Tap any
+    <p><b class="n">1</b><span><b>Read the line above.</b> That is your objective &mdash;
+      who to find, and which room. The map next to it shows where you are; tap any
       room to walk there.</span></p>
-    <p><b class="n">2</b><span><b>Then answer in the box below the office.</b> Nothing
-      happens until you tap one of the answers. That’s how the day begins.</span></p>
+    <p><b class="n">2</b><span>Tap an answer in the box below the office to start the game.</span></p>
     <button id="coachGo" type="button">Got it</button>
   </div>
   <div class="stage">
@@ -181,22 +180,22 @@
 
 <div class="veil" id="menu"><div class="inner center">
   <h2 id="menuTitle">Mechanical Chronicles</h2>
-  <p class="lede" id="menuLede">A day at an engineering company, and a measurement that was never the real problem.</p>
+  <p class="lede" id="menuLede">A day at an engineering works, and a dimension that was never the problem.</p>
   <button id="btnPlay" class="primary">Play game</button>
   <button id="btnLearn" class="ghost">Learn mechanical engineering</button>
   <button id="btnTracks" class="ghost">Choose another track</button>
 </div></div>
 
 <div class="veil" id="nameScreen" style="display:none"><div class="inner center">
-  <h3>What’s your name?</h3>
+  <h3>What should they call you?</h3>
   <input id="nameInput" type="text" autocomplete="off" spellcheck="false" placeholder="Your name"/>
-  <p class="hintline">We’ll put it on your certificate at the end of the day.</p>
+  <p class="hintline">It goes on your certificate at the end of the day.</p>
   <button id="nameGo" class="primary" disabled>Start</button>
   <button id="backName" class="link">Back</button>
 </div></div>
 
 <div class="veil" id="avatarScreen" style="display:none"><div class="inner center">
-  <h3>Choose your character</h3>
+  <h3>And who are you today?</h3>
   <div class="avrow">
     <div class="avcard"><canvas id="av0" width="230" height="300"></canvas></div>
     <div class="avcard"><canvas id="av1" width="230" height="300"></canvas></div>
@@ -214,7 +213,7 @@
 
 <div class="veil" id="tracksScreen" style="display:none"><div class="inner">
   <h3>Choose another track</h3>
-  <p class="lede small">Software engineering, product, security, UX, and data science take place at Meridian, a software company. Copywriting, account management, brand strategy, and design take place at an ad agency across town. Electrical, mechanical, and chemical engineering take place at Hallam Works, which builds pump systems and control panels. Consulting takes place at Calder &amp; Hale, where you help another company solve its problem. Every track plays the same way, but each one is a different job with different lessons.</p>
+  <p class="lede small">Every track plays the same way, but each one is a different job with different lessons.</p>
   <div id="tracksBody"></div>
   <button id="backTracks" class="link">Back to menu</button>
 </div></div>
@@ -1507,7 +1506,7 @@ lobby:{
   name:'Reception', wall:'#dfe3e7', wallHi:'#edf0f3', wallDk:'#c4cad1', skirt:'#2b323c',
   material:'Terrazzo, a steel counter, and a cutaway pump behind glass',
   desc:'Terrazzo laid true and sealed. A steel counter with the wordmark behind it, a wall of test certificates and type approvals, two cable drums waiting to go out on Thursday, and a pump cut in half in a glass case, so the people who come to be convinced can see an impeller.',
-  exits:'Right → Project Office<br/>Down → Cafeteria',
+  exits:'Right → Project Office<br/>Down → Canteen',
   doors:[{side:'right',at:240},{side:'bottom',at:400}],
   floor(){ terrazzoCool(31); },
   draw(){
@@ -1573,7 +1572,7 @@ studio:{
   name:'Test Bay', wall:'#2a2b28', wallHi:'#37382f', wallDk:'#1f201d', skirt:'#161714',
   material:'Sealed concrete, a skid on the test rig, and a jib crane over it',
   desc:'Bea runs this. A skid on the test rig with the motor coupled up, a jib crane over it, a granite table for anything that has to be measured properly, pipe stacked by size, a vice bench with the tools laid out, and a pallet of castings that came in this morning.',
-  exits:'Left → Cafeteria<br/>Up → Project Office<br/>Right → Briefing Room',
+  exits:'Left → Canteen<br/>Up → Project Office<br/>Right → Briefing Room',
   doors:[{side:'left',at:240},{side:'top',at:400},{side:'right',at:240}],
   floor(){ shopFloor(71); },
   draw(){
@@ -1595,7 +1594,7 @@ studio:{
     grain(FX,FY,FW,FH,.06);
   }},
 breakroom:{
-  name:'Cafeteria', wall:'#dfe3e7', wallHi:'#edf0f3', wallDk:'#c4cad1', skirt:'#3b444f',
+  name:'Canteen', wall:'#dfe3e7', wallHi:'#edf0f3', wallDk:'#c4cad1', skirt:'#3b444f',
   material:'Tile, a long table, and a notice board with one thing on it that matters',
   desc:'Colin makes the tea in here. A counter with the kettle and a machine nobody has read the instructions for, one long table, a boot rack by the door, and a notice board carrying four out-of-date posters and one toolbox talk from Tuesday.',
   exits:'Up → Reception<br/>Right → Test Bay',
@@ -1655,7 +1654,7 @@ const CAST={
    legs:'#a8a49c', legsDk:'#8d8981', shoe:'#33302b',
    skin:'#f0c8a0', skinDk:'#cfa079', hair:'#3a2a1c', hairHi:'#5a4430', cut:'undercut',
    specs:true, prop:'coffee', build:0.96, bw:19, beard:false},
- dan:{name:'Colin', role:'Maintenance Technician', where:'Cafeteria',
+ dan:{name:'Colin', role:'Maintenance Fitter', where:'Canteen',
    accent:'#a78bfa', top:'#7d9070', topDk:'#5f6f54', style:'tee', tee:'#7d9070',
    legs:'#3f4a5c', legsDk:'#2f3747', shoe:'#f2ece0',
    skin:'#a0673a', skinDk:'#7d4c28', hair:'#22201d', hairHi:'#3a352d', cut:'beanie',
@@ -1905,9 +1904,9 @@ const $=id=>document.getElementById(id);
    Every term is also listed under What this teaches, for anything waved
    through at the time.                                                      */
 const TERM_ASK=[
-  'Quick question before I go on. Do you know what <b class="jt">%s</b> means?',
-  'Wait a second. Do you know what <b class="jt">%s</b> means?',
-  'Before I keep going, do you know what <b class="jt">%s</b> means?'
+  'Quick one before I go on \u2014 do you know what <b class="jt">%s</b> means?',
+  'Hang on. Do you know what <b class="jt">%s</b> means?',
+  'Before I carry on \u2014 do you know what <b class="jt">%s</b> means?'
 ];
 function termName(e){ return (e.l||e.t).replace(/^(?:a|an|the) /,''); }
 function termMatch(text){
@@ -1936,10 +1935,10 @@ function termCheck(speaker,text,options){
   const resume=function(){ G.termAsking=false; say(speaker,text,options); };
   rawSay(speaker, TERM_ASK[(G.termCount++)%TERM_ASK.length].replace('%s',termName(e)), [
     {label:'Yes, I know that one', go:resume},
-    {label:'No, please explain', go:function(){
+    {label:'No \u2014 explain it', go:function(){
       G.termsLearned.push(e.t);
       rawSay(speaker,'<span class="def"><b>'+termName(e)+'</b>'+e.d+'</span>',
-        [{label:'Got it, keep going', go:resume}]);
+        [{label:'Got it \u2014 carry on', go:resume}]);
     }}
   ]);
   return true;
@@ -2023,7 +2022,7 @@ function paintHUD(){
     c.className=L<=20?'urgent':'';
     if(L<=0&&G.step!=='complete'&&G.deadlineEnd){
       stopClock();
-      const tu=TRACK.timeUp||{who:'kate',line:`Time’s up. Finish it anyway. We don’t stop just because the clock did.`};
+      const tu=TRACK.timeUp||{who:'kate',line:`Time. Go and finish it anyway — we do not stop because the clock did.`};
       say(tu.who,tu.line);
       G.deadlineEnd=0;
     }
@@ -2035,7 +2034,7 @@ function openFolio(){
   el.querySelector('.inner').innerHTML='<h3>Work log</h3>'+
     (G.portfolio.length?G.portfolio.map(function(p){
       return '<div class="pf"><b>'+p.title+'</b><span>'+p.client+'</span><i>'+p.line+'</i></div>';
-    }).join(''):'<p class="empty">Nothing here yet.</p>')+
+    }).join(''):'<p class="empty">Nothing filed yet.</p>')+
     '<button id="folioClose">Close</button>';
   $('folioClose').onclick=function(){ el.style.display='none'; };
 }
@@ -2489,16 +2488,16 @@ CAST.owen={name:'Iona', role:'Engineering Manager, Ravensworth Dairy', where:'Br
    specs:true, prop:'tablet', build:1.0, bw:20, beard:false};
 
 const OBJ_MECH={
-  skid_brief:'Get the pump skid brief from Maggie in the Project Office',
-  npsh:'Arun is in the Design Office. The pump keeps destroying impellers.',
-  tolerance:'Go back to Arun. A bearing housing was made exactly to the drawing and still fails.',
+  skid_brief:'Get the skid brief from Maggie in the Project Office',
+  npsh:'Arun is in the Design Office — the pump is eating impellers',
+  tolerance:'Arun again. A bearing housing that was made to the drawing',
   fatigue:'Bea is in the Test Bay with the frame that cracked',
-  joint:'Colin is in the Cafeteria, and the pipe joint is still leaking',
-  dfm:'Go back to Bea. She can’t build the drawing you sent her.',
-  client:'Iona is waiting for you in the Briefing Room',
-  crisis_fix:'Hurry to Bea in the Test Bay',
-  crisis_show:'Go back to Iona in the Briefing Room',
-  complete:'Day complete. You’re a mechanical engineer now.'
+  joint:'Colin is in the Canteen, and the flange is still weeping',
+  dfm:'Back to Bea. She cannot make the drawing you have sent her',
+  client:'Iona is waiting in the Briefing Room',
+  crisis_fix:'Test Bay. Bea. Quickly',
+  crisis_show:'Back to Iona in the Briefing Room',
+  complete:'You are a mechanical engineer now'
 };
 
 function mechOccupants(room){
@@ -2518,135 +2517,135 @@ function mechScript(key){
 
   /* ---------- the brief ---------- */
   if(key==='kate'&&s==='skid_brief')
-    return say('kate',`Hi, I'm Maggie, the engineering director. Welcome to Hallam Works! We design and build pump skids and process equipment for dairies, breweries, and water treatment plants. Starting this morning, you're on the Ravensworth Dairy project. Their transfer skid gets loaded onto a truck at 5 p.m., and right now, I wouldn't put it on one.`,
-      [{label:'What’s wrong with it?',go:function(){
-        say('kate',`The pump has gone through three impellers in eight months. The frame cracked at a weld, and nobody believes it was overloaded. And Bea can't build from the drawing we sent her. Arun is in the Design Office. Start with the pump, because that's the problem costing the client money every week.`,
+    return say('kate',`Hello, and welcome to Hallam Works! I'm Maggie, engineering director — we're really glad you're here. We design and build the pump skids and process packages that end up in dairies, breweries and water treatment works. You're on Ravensworth Dairy from this morning. Their transfer skid goes on a lorry at five o'clock, and it needs a bit of love before it's ready.`,
+      [{label:'What is wrong with it?',go:function(){
+        say('kate',`The pump has been through three impellers in eight months. The frame cracked at a weld, and nobody thinks it was overloaded. And Bea can't quite make the drawing we've sent her. Arun's in the Design Office and he's lovely — start with the pump, because that's the one costing them money every week.`,
           [{label:'On my way.',go:function(){ advance('npsh'); }}]);
       }}]);
 
   /* ---------- 1. cavitation ---------- */
   if(key==='mike'&&s==='npsh'){
     return choose('mike',
-      `Hi, I'm Arun Pillai, the principal mechanical engineer. That mostly means I'm the one asking where the numbers came from. Good to have you here. The transfer pump rattles like a bag of wrenches and destroys an impeller every few months. It pulls warm water up from a tank ten feet below it, through a long suction pipe with a strainer in it. What's going on?`,
+      `Hello! Arun Pillai, principal mechanical — which mostly means I'm the one who asks where the number came from. Really good to have you. The transfer pump rattles like a bag of spanners and chews an impeller every few months. It lifts warm water out of a balance tank, three metres below it, through a long suction line with a strainer in it. What do you think's going on?`,
       [
-       {label:`The pump is too small for the job. Install the next size up.`,ok:false,
-        note:`A bigger pump pulls even harder on the same suction pipe, and that's what's hurting it in the first place. You'd just make the noise louder. Want to try another one?`},
-       {label:`Compare the pressure available at the pump's inlet with the pressure the pump needs there, accounting for the lift, the pipe losses, the strainer, and the water temperature. Then fix the suction side, not the pump.`,ok:true},
-       {label:`Partly close the outlet valve to calm it down.`,ok:false,
-        note:`That changes where the pump runs on its curve and makes it a little quieter, but the bubbles keep collapsing on the impeller. You just turned off the alarm. Try again?`}
+       {label:`It's undersized for the duty. Fit the next frame size up.`,ok:false,
+        note:`Good thought, but a bigger pump pulls harder on the same suction line — which is the very thing that's hurting it. It'd just get louder. Want to try another?`},
+       {label:`Work out the head available at the suction against the head the pump needs there — the lift, the losses, the strainer, and the temperature of the water — and fix the suction side rather than the pump.`,ok:true},
+       {label:`Throttle the discharge valve to settle it down.`,ok:false,
+        note:`That moves it along its curve and quietens it a little, but the bubbles keep collapsing on the impeller. It hides the problem rather than fixing it. Try again?`}
       ],function(){
-        filed('Cavitation','Ravensworth Dairy','Compared available and required NPSH: suction pipe, strainer, and water temperature');
-        advance('tolerance','mike',`That's it. It's cavitating. The pressure at the impeller drops so low that the warm water starts to boil. Bubbles form and collapse, and they chip away the metal. We'll make the suction pipe shorter and wider, move the strainer where someone will actually clean it, and stop making it lift warm water ten feet. Next, the bearing housing. It was made exactly to your drawing.`);
+        filed('Cavitation','Ravensworth Dairy','NPSH available compared with NPSH required — suction line, strainer and liquid temperature');
+        advance('tolerance','mike',`That's it — well spotted! It's cavitating: the pressure at the impeller drops below the point where warm water boils, bubbles form and collapse, and the metal wears away. Shorten and enlarge the suction, move the strainer somewhere it'll actually get cleaned, and stop it lifting warm water three metres. Now — shall we look at the bearing housing? It was made exactly to the drawing.`);
       });
   }
 
   /* ---------- 2. fits and tolerances ---------- */
   if(key==='mike'&&s==='tolerance'){
     return choose('mike',
-      `The bearing housing runs smoothly on the test bench, but it seizes up after twenty minutes once it gets hot. The shop measured it, and every dimension is within the tolerance on the drawing. On the drawing, each part is measured from the one before it, all the way across. What do you change?`,
+      `Here's a puzzle. The bearing housing runs sweetly on the bench and seizes after twenty minutes at temperature. The shop measured it: every dimension is inside the tolerance on the drawing. The drawing dimensions each part from the one before it, all the way across. What would you change?`,
       [
-       {label:`Widen the hole by a few thousandths of an inch on the bench until it stops seizing.`,ok:false,
-        note:`That fixes this one, but the next forty will still seize in the field. And you just threw away the only evidence of why it happened. Want to try again?`},
-       {label:`Specify the fit the bearing actually needs, measure everything from one datum instead of chaining the dimensions, and allow for the housing and shaft expanding at different rates when they get hot.`,ok:true},
-       {label:`Tighten the tolerance on every dimension so they can't add up.`,ok:false,
-        note:`Now it costs three times as much, takes twice as long to make, and still seizes. The real problem is heat expansion, not small measurement differences. Try again?`}
+       {label:`Open the bore up a few hundredths on the bench until it stops seizing.`,ok:false,
+        note:`That would fix this one, but the next forty would still seize in service — and we'd lose the evidence of why. Have another go?`},
+       {label:`Specify the fit the bearing actually needs, dimension from one functional datum instead of chaining dimensions, and allow for the housing and shaft growing at different rates when they are hot.`,ok:true},
+       {label:`Tighten the tolerance on every dimension so the stack cannot add up.`,ok:false,
+        note:`Then it costs three times as much, takes twice as long, and still seizes — because the real culprit is thermal growth, not scatter. Try again?`}
       ],function(){
-        filed('Fits and datums','Ravensworth Dairy','One datum, the right fit for the bearing, and room for thermal growth');
-        advance('fatigue','mike',`Good. If a part matches the drawing and still fails, the drawing is the problem. A bearing needs the right fit, not just a number inside a tolerance. Chained dimensions let every tolerance add up in the same direction. And hot steel expands whether the drawing mentions it or not. Bea is in the Test Bay with the frame that cracked. She brought the broken piece.`);
+        filed('Fits and datums','Ravensworth Dairy','Functional datum, the right fit for the bearing, and clearance for thermal growth');
+        advance('fatigue','mike',`Brilliant. If it's made to the drawing and still wrong, it's the drawing that needs fixing. Chained dimensions let every tolerance add up in the same direction, and hot steel grows whether or not the drawing mentions it. Bea's in the Test Bay with the frame that cracked — she's brought the broken bit to show you.`);
       });
   }
 
   /* ---------- 3. fatigue ---------- */
   if(key==='jenny'&&s==='fatigue'){
     return choose('jenny',
-      `Hi, I'm Bea Novak, the production manager. Nice to meet you! Here's the frame. It cracked at the edge of a weld, in a sharp inside corner, after about four million cycles. It never came close to its rated load. The pump on it runs at 24 hertz, and the frame's natural frequency is about 25. What do you think?`,
+      `Hello! Bea Novak, production — lovely to meet you. Here's the frame. It cracked at the toe of a weld, in a sharp inside corner, after about four million cycles. It never saw anything like its rated load. The pump on it runs at twenty-four hertz and the frame's first mode is about twenty-five. What do you reckon?`,
       [
-       {label:`Use thicker steel plate. More metal means more safety margin.`,ok:false,
-        note:`That's thicker plate for a load it never exceeded. And you just made it slightly stiffer, which moves it even closer to the pump's running speed. It'll crack again in a different corner. Want to try another one?`},
-       {label:`Treat it as metal fatigue at a stress raiser. Round off that sharp corner, move the edge of the weld away from where the frame bends or grind it smooth, and change the frame's natural frequency so it's far from the pump's running speed.`,ok:true},
-       {label:`Add reinforcing plates everywhere and weld it all solid.`,ok:false,
-        note:`Every reinforcing plate adds another weld edge in another stressed corner, and you've changed the natural frequency by guessing. Want to try again?`}
+       {label:`Go up a plate thickness. More metal, more margin.`,ok:false,
+        note:`It feels safer, but the load never exceeded the rating — and thicker plate nudges the frame even closer to the running speed. It'd likely crack again in a different corner. Want to try another?`},
+       {label:`Treat it as fatigue at a stress raiser: radius that corner, move the weld toe out of the bending zone or dress it, and shift the frame's natural frequency well away from the running speed.`,ok:true},
+       {label:`Add gussets everywhere and weld it all up solid.`,ok:false,
+        note:`Each gusset adds another weld toe in another stressed corner, and changes the frequency by guesswork. Have another go?`}
       ],function(){
-        filed('Fatigue failure','Ravensworth Dairy','Removed the stress raiser, moved the weld edge, and changed the frame’s natural frequency');
-        advance('joint','jenny',`Right. Fatigue doesn't care about your rated load. It cares about how many times the load repeats, and how sharp the corner is. Four million cycles on a sharp weld edge is a crack waiting to happen. And running a machine on a frame that vibrates at the same speed is asking for trouble. Colin is in the Cafeteria. The pipe joint is still leaking.`);
+        filed('Fatigue failure','Ravensworth Dairy','Stress raiser removed, weld toe moved, and the frame detuned from the running speed');
+        advance('joint','jenny',`Exactly right! Fatigue doesn't care about the rated load — it cares about how many times, and how sharp the corner is. And a frame that rings at the same speed as the machine on it will always find a weak spot. Colin's in the canteen — the flange is still weeping, and he'd love a hand.`);
       });
   }
 
   /* ---------- 4. the bolted joint ---------- */
   if(key==='dan'&&s==='joint'){
     return choose('dan',
-      `Hi, I'm Colin Baxter, a maintenance technician. I'm the one they send whenever something drips. That pump's outlet flange has gone through three gaskets in a year. I've tightened it, retightened it while it was hot, and put in a thicker gasket. It still leaks. What am I doing wrong?`,
+      `Hiya — Colin Baxter, maintenance fitter. I'm the one who gets sent when it drips! Good to meet you. That discharge flange has had three gaskets in a year. I've tightened it, I've nipped it up hot, I've put a thicker gasket in. Still weeps. What am I doing wrong?`,
       [
-       {label:`Keep tightening. Another quarter turn on each bolt should seal it.`,ok:false,
-        note:`I've been doing that for a year. Two of those bolts are stretched now, and one flange face is visibly warped. Try again?`},
-       {label:`Not much, actually. It's the piping. A section without support is pulling the joint open, so no amount of bolt tension will hold it.`,ok:true},
-       {label:`Use a softer, thicker gasket to fill the gap.`,ok:false,
-        note:`A thicker gasket relaxes more and squeezes out the sides, and the joint is still being pulled open twice every shift. Want to try again?`}
+       {label:`Keep going round it. Another quarter turn on each bolt should close it.`,ok:false,
+        note:`I've been doing that for a year, bless me. Two of those studs are stretched now, and one flange face is visibly dished. Try again?`},
+       {label:`Nothing much. It's the pipework: an unsupported run is pulling the joint open, so no amount of bolt tension will hold it.`,ok:true},
+       {label:`Fit a softer, thicker gasket so it takes up the gap.`,ok:false,
+        note:`A thicker gasket relaxes more and squeezes out sideways, and the joint's still being pulled open twice a shift. Have another go?`}
       ],function(){
-        filed('Bolted joint','Ravensworth Dairy','Supported the piping, and used the right gasket, bolt tension, and tightening pattern');
-        advance('dfm','dan',`Thank you. That's forty feet of full pipe hanging off one connection, and nobody put a support under it. And while we're at it: a flange is a designed joint. It needs the right gasket for the liquid and temperature, the bolts tightened in a crisscross pattern to a calculated torque, and no pipe weight trying to pry it apart. Bea wants to talk to you about the drawing.`);
+        filed('Bolted joint','Ravensworth Dairy','Pipework supported, correct gasket and preload, tightened in sequence to a torque figure');
+        advance('dfm','dan',`Oh, thank you — that's a weight off my mind! Twelve metres of full pipe hanging off one nozzle, and nobody's put a support under it. And while we're here: a flange is a designed joint — the right gasket for the fluid and temperature, bolts tightened in a crossing sequence to a calculated figure, and no pipe loads prising it apart. Bea's after you about the drawing, by the way.`);
       });
   }
 
   /* ---------- 5. design for manufacture ---------- */
   if(key==='jenny'&&s==='dfm'){
     return choose('jenny',
-      `Here's your skid drawing. It looks great. But it has a tolerance of a few thousandths of an inch on every single dimension, including the frame. There are two welds I can only reach if I cut the frame apart afterward. There are no lifting points. And the pump seal can only be replaced if we lift the whole skid off the floor. What are we changing?`,
+      `Right, your skid drawing! It's lovely. It also has a tenth of a millimetre on every dimension including the frame, two welds I can only reach if I cut the frame apart afterwards, no lifting points, and the pump seal can only come out if we lift the whole skid off its feet. What shall we change?`,
       [
-       {label:`Leave it. The shop can work around it. They always do.`,ok:false,
-        note:`We can, but it takes about twice as long, and someone has to guess which dimensions you really meant. That's how you end up with a skid that doesn't fit anything. Try again?`},
-       {label:`Loosen every tolerance. If tight tolerances are the problem, get rid of them.`,ok:false,
-        note:`Now the pump and motor shafts don't line up, because those two actually needed tight tolerances. Tolerance isn't about style. It goes wherever the function needs it. Want to try again?`},
-       {label:`Use tight tolerances only where the function needs them, leave room to reach the welds and replace the seal, and add lifting points where the weight actually is.`,ok:true}
+       {label:`Leave it — the shop can work round it, they always do.`,ok:false,
+        note:`We can, but at about twice the hours, and with somebody guessing which dimensions you really meant. Try again?`},
+       {label:`Open every tolerance right up. If tight tolerances are the problem, take them off.`,ok:false,
+        note:`Then the pump and motor shafts won't line up, because those two genuinely need it. Tolerance belongs where the function is. Have another go?`},
+       {label:`Put the tight tolerances only where the function needs them, design access for welding and for changing the seal, and add lifting points where the load actually is.`,ok:true}
       ],function(){
-        filed('Design for manufacturing','Ravensworth Dairy','Tight tolerances only where needed, room for welding and repairs, and lifting points');
-        advance('client','jenny',`Now that's a drawing I can build. Tight tolerances cost money everywhere you put them, so only use them where they matter. And if a technician can't reach something, someone will end up reaching it badly at 2 a.m. Iona from Ravensworth Dairy is here, and she has a request.`);
+        filed('Design for manufacture','Ravensworth Dairy','Tolerance where function needs it, weld and maintenance access, lifting points designed in');
+        advance('client','jenny',`Now that's a drawing I can build — thank you! Tolerance costs money everywhere you put it, so put it where it does something. And if a fitter can't get at it, someone's going to struggle at two in the morning. Iona's here from Ravensworth, and she's got a request.`);
       });
   }
 
   /* ---------- 6. the client, and what she actually needs ---------- */
   if(key==='owen'&&s==='client'){
     return choose('owen',
-      `Hi, I'm Iona Beattie, the engineering manager at Ravensworth Dairy. It looks great, it really does. Just one thing: can you make the skid smaller? It has to fit through a 36-inch doorway, and yours is five feet wide.`,
+      `Hello — Iona Beattie, engineering manager at Ravensworth. Lovely to meet you. It looks good, it really does. One thing — could you make the skid smaller? It has to come through a nine hundred wide doorway, and yours is one and a half metres across.`,
       [
-       {label:`"Of course. I'll shrink the design to fit through 36 inches."`,ok:false,
-        note:`(You just agreed to squeeze a working pump system into a doorway. The piping gets tighter, the seal gets harder to reach, and in a year, someone will be lifting the whole thing out just to replace a rubber ring. Want to try again?)`},
-       {label:`"Before I redraw anything, is that doorway the only way in? And what happens on the day you need to replace the pump seal?"`,ok:true},
-       {label:`"36 inches isn't possible with that pump. You'd have to knock down a wall."`,ok:false,
-        note:`Then I'll ask someone who says yes, and live with whatever shows up.  (You're right, but you just handed the job to whoever is least careful. Try again?)`}
+       {label:`"Of course — I'll shrink the layout to nine hundred."`,ok:false,
+        note:`(Kind of you, but squeezing a working pump set into a doorway makes the pipework tighter and the seal harder to reach — and in a year someone's lifting the whole thing out to change an O-ring. Want another go?)`},
+       {label:`"Before I redraw anything — is the doorway the only way in, and what happens the day you need to change that seal?"`,ok:true},
+       {label:`"Nine hundred isn't possible with that pump. You'd have to take a wall out."`,ok:false,
+        note:`Oh. Then I suppose I'll ask someone else.  (You're right about the pump, but she's left without a way forward. Try again?)`}
       ],function(){
-        say('owen',`...Yes, that doorway is the only way in while the production line is running. And the seal? Honestly, last time we lost half a shift. We had to take the piping apart and roll the whole thing out on a pallet jack.`,
-          [{label:'So the doorway is the limit, and losing half a shift is the real problem.',go:function(){
-            say('owen',`...Nobody has ever asked about the second part. Everyone just measures the door.`,
+        say('owen',`...Oh, good question. The doorway's the only way in with the line running, yes. And the seal — honestly, last time we lost half a shift. We had to break the pipework and lift the whole thing out on a pallet truck.`,
+          [{label:'So the doorway is the constraint, and half a shift is the actual problem.',go:function(){
+            say('owen',`...Do you know, nobody's asked about the second one. Everyone just measures the door.`,
               [{label:'Then it comes in as two halves that bolt together.',go:function(){
-                filed('Real requirement','Ravensworth Dairy','She asked for a narrower skid, but needed it to fit through the door and to change a seal quickly');
+                filed('Requirement, translated','Ravensworth Dairy','The ask was a narrower skid; the need was getting in through the door and changing a seal without losing a shift');
                 startClock(90);
-                say('kate',`That's the right answer, but the timing couldn't be worse. The truck is at the gate, the crane is booked for 5:10, and after that, the next slot is Tuesday. Splitting it moves the lifting points. Bea is in the Test Bay. Go!`,
-                  [{label:'Go!',go:function(){ G.step='crisis_fix'; paintHUD(); closeDlg(); }}]);
+                say('kate',`Lovely — that's exactly right, just at a tricky moment! The lorry's at the gate, the crane's booked for ten past five, and after that it's Tuesday. Splitting it moves the lifting points. Bea's in the Test Bay. You can do this — go!`,
+                  [{label:'Go.',go:function(){ G.step='crisis_fix'; paintHUD(); closeDlg(); }}]);
               }}]);
           }}]);
       });
   }
 
   if(key==='jenny'&&s==='crisis_fix'){
-    return choose('jenny',`Ninety seconds. How are we getting this onto the truck?`,[
-      {label:`Two sections, using the same lifting points as before, with the slings hanging straight from the crane hook.`,ok:false,
-       note:`With a load that narrow, the slings pull in at 45 degrees, so each one carries about 40 percent more than you calculated. And the center of gravity moved when you split it. Try again, quickly!`},
-      {label:`Two sections, lifted separately. Recalculate the lifting points for the actual sling angle, use a spreader beam so the slings hang straight down, and mark the center of gravity on both halves.`,ok:true},
-      {label:`Lift it in one piece as drawn, and remove the doorway on site next week.`,ok:false,
-       note:`That's the customer's wall, on the customer's production line, during a shutdown they haven't even scheduled. Want to try again?`}
+    return choose('jenny',`I'm ready — ninety seconds! How's this getting on the lorry?`,[
+      {label:`Two sections, same lugs as before, slings straight off the crane hook.`,ok:false,
+       note:`The slings come in at forty-five degrees on a load that narrow, so each leg carries about half again what we calculated — and the centre of gravity moved when we split it. Try again, quickly!`},
+      {label:`Two sections, lifted separately: lugs recalculated for the sling angle we'll actually use, a spreader beam so the legs pull vertically, and the centre of gravity marked on both halves.`,ok:true},
+      {label:`Lift it in one piece as drawn and take the doorway out on site next week.`,ok:false,
+       note:`That's the customer's wall, on the customer's line, in a shutdown they haven't booked. Have another go?`}
     ],function(){
-      advance('crisis_show','jenny',`It's on the truck with eleven seconds to spare. Two halves, lifting points calculated for the real sling angle, a spreader beam, and the centers of gravity painted on. Go show Iona before she signs for the version she asked for.`);
+      advance('crisis_show','jenny',`On the lorry with eleven seconds to spare! Two halves, lugs to the angle they're actually slung at, spreader beam, centres of gravity painted on. Go and show her — she'll love it.`);
     });
   }
 
   if(key==='owen'&&s==='crisis_show'){
     stopClock();
-    return say('owen',`Two halves. So it fits through the door, and when the seal wears out, the pump end comes out on its own.`,
+    return say('owen',`Two halves! So it comes through the door, and the pump end comes out on its own when the seal goes. That's brilliant.`,
       [{label:'Twenty minutes instead of half a shift.',go:function(){
-        say('owen',`I've had four of these built. You're the first person who asked what happens on the day it breaks.`,
+        say('owen',`I've had four of these built. You're the first who asked what happens the day it breaks. Thank you so much.`,
           [{label:'...',go:function(){
-            say('kate',`That's the real job. Not the fatigue calculations, not the tolerances. What you just did. Someone gave you a measurement, and you went and found out what they were really dealing with. You finished six pieces of work, didn't miss the truck, and delivered a skid people can actually maintain. You're a mechanical engineer now.`,
+            say('kate',`And that's the job, really. Not the fatigue sums, not the tolerances — that. Somebody gives you a dimension, and you take the time to find out what they're really up against. Six pieces of work, a lorry met, and a skid somebody can actually maintain. I'm so proud of you — you're a mechanical engineer now.`,
               [{label:'Thank you.',go:function(){ G.step='complete'; paintHUD(); closeDlg(); openCertificate(); }}]);
           }}]);
       }}]);
@@ -2655,128 +2654,138 @@ function mechScript(key){
   /* ---------- Nell: hints ---------- */
   if(key==='alex'){
     const h={
-      skid_brief:`Maggie is in the Project Office. Ask what's going on the truck, and when.`,
-      npsh:`Three impellers in eight months doesn't mean the pump is too small. Look at the suction side.`,
-      tolerance:`If it matches the drawing and still fails, look at the drawing. Ask what everything is measured from.`,
-      fatigue:`It never reached its rated load. Count the cycles, and look at the corner where it cracked.`,
-      joint:`He's tightened it, heated it, and used a thicker gasket. Look at what's hanging off that connection.`,
-      dfm:`Tight tolerances cost money everywhere you put them. Ask which dimensions actually matter.`,
-      client:`She gave you a measurement. Ask what happens on the day the seal wears out.`,
-      crisis_fix:`Splitting it moved the center of gravity, and the slings aren't hanging straight.`,
-      crisis_show:`Go show her. She hasn't seen it yet.`,
-      complete:`You talked a client out of a narrower skid, with a good reason. Drinks?`
+      skid_brief:`Hi, I'm Nell! Maggie's in the Project Office. Ask what goes on the lorry, and when.`,
+      npsh:`Three impellers in eight months usually isn't a pump that's too small. Have a look at the suction side.`,
+      tolerance:`Made to the drawing and still wrong means it's the drawing. Ask what it's dimensioned from.`,
+      fatigue:`It never saw its rated load. Count the cycles and look at the corner it cracked in.`,
+      joint:`He's tightened it, warmed it and thickened it. Look at what's hanging off the nozzle.`,
+      dfm:`Tolerance costs money everywhere you put it. Ask which dimensions actually do something.`,
+      client:`She's given you a dimension. Ask what happens the day the seal goes.`,
+      crisis_fix:`Splitting it moved the centre of gravity, and the slings aren't vertical. You've got this.`,
+      crisis_show:`Go and show her — she hasn't seen it yet!`,
+      complete:`You talked a client out of a narrower skid, with a good reason. Brilliant! Pub?`
     };
-    return say('alex', h[s] || `Stuck? Say what the load is, how many times it happens, and where it goes into the metal.`);
+    return say('alex', h[s] || `Stuck? Try saying what the load is, how many times it happens, and where it goes into the metal.`);
   }
 
   const idle={
-    kate:`I don't have anything new for you. Go finish what you're working on.`,
-    mike:`Come back when you can tell me where the number came from.`,
-    jenny:`Bring me a drawing I can build, and we'll get along fine.`,
-    dan:`There's coffee in the pot. And that flange is still dripping.`,
-    owen:`I'll wait. But the truck won't.`
+    kate:`Nothing new from me just yet — finish what you've got, and shout if you need anything.`,
+    mike:`Come back whenever you can tell me where the number came from — happy to go through it with you.`,
+    jenny:`Bring me a drawing I can build, and we'll get on brilliantly.`,
+    dan:`Kettle's on, help yourself! That flange is still dripping, mind.`,
+    owen:`No rush — I'll wait. The lorry won't, though!`
   };
   say(key, idle[key] || `...`);
 }
 
+
 const TRACK_GLOSSARY=[
   {t:"skid",l:"a skid",m:"skid",
-   d:"A complete package of pumps, piping, valves, and controls built onto one frame at the factory. It arrives as one unit instead of being assembled on site."},
-  {t:"npsh",l:"NPSH",m:"NPSH|pressure available at the pump's inlet",
-   d:"Net positive suction head. It compares how much pressure is available at the pump’s inlet with how much the pump needs there. If there’s less available than required, the pump cavitates."},
+   d:"A complete package of pumps, pipework, valves and controls built onto one frame at the works, so it arrives as a unit instead of being assembled on site."},
+  {t:"duty",l:"a duty",m:"duty(?: point)?",
+   d:"What a pump is asked to do: how much liquid, lifted how high, against what resistance. Everything about the pump follows from it."},
+  {t:"head",l:"head",m:"head",
+   d:"Pressure expressed as a height of liquid — a pump that makes thirty metres of head could push water thirty metres up a pipe. It makes the sums about lifting and losses easy to compare."},
+  {t:"npsh",l:"NPSH",m:"NPSH|head available at the suction",
+   d:"Net positive suction head: how much pressure is available at the pump inlet, against how much the pump needs there. Available less than required, and it cavitates."},
   {t:"cavitation",l:"cavitation",m:"cavitat(?:e|es|ed|ing|ion)",
-   d:"When bubbles of vapor form in the low-pressure area at a pump’s inlet and then collapse against the metal. It sounds like gravel, and it destroys impellers."},
+   d:"Bubbles of vapour forming in the low-pressure region at a pump inlet and collapsing against the metal. It sounds like gravel and it eats impellers."},
   {t:"impeller",l:"an impeller",m:"impeller",
-   d:"The spinning part inside a pump that actually moves the liquid. It’s the part cavitation destroys, a tiny bit at a time."},
-  {t:"suction pipe",l:"the suction pipe",m:"suction(?: pipe| side)?",
-   d:"The pipe that feeds liquid into a pump. A suction pipe that’s long, narrow, warm, or blocked causes most pump problems, and a bigger pump won’t fix it."},
+   d:"The spinning part inside a pump that actually moves the liquid. It is the part cavitation destroys, a few grams at a time."},
+  {t:"suction line",l:"the suction line",m:"suction(?: line| side)?",
+   d:"The pipework feeding a pump. Long, narrow, warm or blocked suction is the cause of most pump misery, and no bigger pump will fix it."},
   {t:"strainer",l:"a strainer",m:"strainer",
-   d:"A mesh basket that catches debris before it reaches a pump. It only works if someone can reach it to clean it, and that’s a design decision."},
-  {t:"fit",l:"a fit",m:"the right fit",
-   d:"How tightly a shaft sits in a hole: loose enough to slide, or tight enough to grip. A bearing needs a specific fit, not just a measurement within tolerance."},
+   d:"A mesh basket that catches debris before it reaches a pump. It only works if somebody can reach it to clean it, which is a design decision."},
+  {t:"throttle",l:"throttling",m:"throttl(?:e|ed|ing)",
+   d:"Closing a valve to restrict flow. It moves a pump along its curve and wastes energy, and it hides symptoms rather than curing them."},
+  {t:"fit",l:"a fit",m:"\\bfit\\b",
+   d:"How tight a shaft sits in a hole: clearance to slide, interference to grip. A bearing needs a specified fit, not just a dimension inside a tolerance."},
   {t:"tolerance",l:"a tolerance",m:"tolerance(?:s|d)?",
-   d:"How far a measurement is allowed to vary from the drawing. Tight tolerances cost money everywhere they appear, so they belong only where the part’s function needs them."},
+   d:"How far a dimension is allowed to stray from the drawing. Tight tolerance costs money everywhere it appears, so it belongs only where the function needs it."},
   {t:"datum",l:"a datum",m:"datum|datums",
-   d:"The surface or line that every other measurement is taken from. Measure each feature from one datum, and errors stay small. Chain the measurements, and errors add up."},
-  {t:"chaining",l:"chained dimensions",m:"chain(?:ed|ing)? (?:the )?dimensions",
-   d:"When each measurement on a drawing is taken from the one before it. The small allowed errors can all add up in one direction, so every part passes inspection, but the assembly still doesn’t fit."},
-  {t:"thermal growth",l:"thermal growth",m:"thermal growth|heat expansion|expanding at different rates",
-   d:"Metal gets bigger as it heats up. Different metals expand by different amounts, which is how a housing that runs smoothly when cold seizes after twenty minutes."},
-  {t:"fatigue",l:"metal fatigue",m:"fatigue",
-   d:"Cracking caused by a load repeating many times, even though it’s far below the metal’s strength. It depends on how many times and how sharp the corner is, not how heavy the load is."},
-  {t:"cycles",l:"cycles",m:"cycles",
-   d:"How many times a load is applied and removed. A joint that survives a million cycles can fail at four million, which is why fatigue is about counting, not weighing."},
-  {t:"stress raiser",l:"a stress raiser",m:"stress rais(?:er|ers)",
-   d:"A sharp corner, hole, or notch where stress builds up to several times the average in the part. Round it off, and a crack has nowhere to start."},
-  {t:"weld edge",l:"a weld edge",m:"weld edge|edge of (?:a|the) weld",
-   d:"The line where the weld meets the original plate. It’s rough and full of tiny notches, which is where fatigue cracks usually start. Engineers call it the weld toe."},
-  {t:"natural frequency",l:"a natural frequency",m:"natural frequency|hertz",
-   d:"The speed at which a structure naturally wants to vibrate when you hit it. Run a machine at that speed, and the vibration builds up instead of dying away."},
-  {t:"bolt tension",l:"bolt tension",m:"bolt tension",
-   d:"The stretch deliberately put into bolts when they’re tightened. That’s what actually holds a joint shut. Too little and it leaks. Too much and the bolts stretch permanently. Engineers also call it preload."},
-  {t:"torque",l:"torque",m:"torque|crisscross pattern|tightening pattern",
-   d:"The twisting force used to tighten a bolt. Flange bolts are tightened a little at a time in a crisscross pattern to a calculated torque, so the gasket gets squeezed evenly."},
+   d:"The face or axis every other dimension is measured from. Dimension each feature from a functional datum and the errors stay put; chain them and the errors add up."},
+  {t:"stack",l:"a tolerance stack",m:"tolerance stack|the stack|stack(?:s|ed|ing)?",
+   d:"What happens when tolerances add in the same direction along a chain of dimensions: every part passes inspection and the assembly still does not fit."},
+  {t:"thermal growth",l:"thermal growth",m:"thermal growth|growing at different rates|thermal expansion",
+   d:"Metal getting bigger as it gets hot. Two different metals grow by different amounts, which is how a housing that runs sweetly cold seizes after twenty minutes."},
+  {t:"fatigue",l:"fatigue",m:"fatigue",
+   d:"Cracking caused by many cycles of load well below the strength of the material. It is about how many times and how sharp the corner is, not how heavy."},
+  {t:"cycles",l:"cycles",m:"cycles|four million cycles",
+   d:"How many times a load comes on and off. A joint that survives a million cycles can fail at four, which is why fatigue is counted rather than weighed."},
+  {t:"stress raiser",l:"a stress raiser",m:"stress rais(?:er|ers)|stress concentration",
+   d:"A sharp corner, hole or notch where stress crowds together, several times higher than the average in the part. Radius it and the crack has nowhere to start."},
+  {t:"weld toe",l:"a weld toe",m:"weld toe",
+   d:"The line where the weld metal meets the parent plate. It is rough, full of tiny notches and where fatigue cracks usually start, so keep it out of the highest stress."},
+  {t:"gusset",l:"a gusset",m:"gusset(?:s)?",
+   d:"A triangular plate welded in to stiffen a corner. Useful in the right place, and every one adds more weld toe into a stressed area."},
+  {t:"natural frequency",l:"a natural frequency",m:"natural frequency|first mode|hertz",
+   d:"The rate at which a structure wants to vibrate when you hit it. Run a machine at that rate and the movement builds up instead of dying away."},
+  {t:"preload",l:"preload",m:"preload|bolt tension",
+   d:"The tension deliberately put into bolts when they are tightened, which is what actually holds a joint shut. Too little and it leaks; too much and studs stretch."},
+  {t:"torque sequence",l:"a torque sequence",m:"torque(?: figure| sequence)?|crossing sequence|tightened in sequence",
+   d:"Tightening flange bolts a little at a time in a crossing pattern to a calculated figure, so the gasket is squeezed evenly instead of nipped up on one side."},
   {t:"gasket",l:"a gasket",m:"gasket(?:s)?",
-   d:"Soft material squeezed between two flange faces to seal them. It should be chosen for the liquid, temperature, and pressure, not for whatever’s in the truck."},
+   d:"The soft material squeezed between two flange faces to seal them. Chosen for the fluid, the temperature and the pressure — not by what is in the van."},
   {t:"flange",l:"a flange",m:"flange(?:s)?",
-   d:"A bolted pipe joint made of two flat faces, a gasket, and a ring of bolts. It’s a designed joint, and it can’t hold against piping that’s pulling it apart."},
-  {t:"pipe support",l:"a pipe support",m:"support(?:s)?",
-   d:"A bracket or hanger that holds up the weight of a pipe. Without one, the pipe’s weight and movement land on whatever it’s bolted to."},
-  {t:"mechanical seal",l:"a mechanical seal",m:"(?:pump )?seal",
-   d:"The part that stops liquid from leaking where the shaft enters a pump. It wears out, so how easily it can be replaced is a design question, not just a maintenance one."},
-  {t:"dfm",l:"design for manufacturing",m:"design for manufacturing|DFM",
-   d:"Designing something that can actually be built with the tools, hands, and space available, including room to weld it, lift it, and repair it later."},
-  {t:"lifting point",l:"a lifting point",m:"lifting point(?:s)?",
-   d:"A metal loop or lug designed and calculated to carry the weight of the equipment on a crane hook. It goes where the weight is, not wherever there was room to weld one."},
-  {t:"sling angle",l:"sling angle",m:"sling angle|slings",
-   d:"How far the crane’s lifting straps lean from vertical. The wider the angle, the more force in each strap. At 45 degrees, each one carries about 40 percent more than a straight lift."},
+   d:"A bolted pipe joint: two machined faces, a gasket, and a ring of bolts. It is a designed joint, and it cannot hold against pipework trying to pull it apart."},
+  {t:"nozzle",l:"a nozzle",m:"nozzle(?:s)?",
+   d:"The pipe connection on a pump or vessel. Loads from unsupported pipework end up here, which is why pipe supports are part of the design rather than an afterthought."},
+  {t:"pipe loads",l:"pipe loads",m:"pipe loads|pulling the joint open|unsupported (?:run|pipework)",
+   d:"The weight and thermal movement of pipework pressing on whatever it is bolted to. Support the pipe and the joint stops working for a living."},
+  {t:"mechanical seal",l:"a mechanical seal",m:"(?:mechanical )?seal(?:s)?",
+   d:"The part that stops liquid escaping where a shaft enters a pump. It is a wearing part, so how easily it can be changed is a design question, not a maintenance one."},
+  {t:"dfm",l:"design for manufacture",m:"design for manufacture|DFM",
+   d:"Drawing something that can actually be built with the tools, hands and access available — including room to weld it, lift it and maintain it later."},
+  {t:"lifting point",l:"a lifting point",m:"lifting point(?:s)?|lifting lug(?:s)?|lug(?:s)?",
+   d:"A lug or eye designed and calculated for taking the weight of the thing on a crane hook. Where the load actually is, not where there was room to weld one on."},
+  {t:"sling angle",l:"sling angle",m:"sling angle|slings|slung",
+   d:"How far from vertical the crane slings run. The wider the angle, the more force in each leg — at forty-five degrees each one carries about half again the vertical load."},
   {t:"spreader beam",l:"a spreader beam",m:"spreader beam",
-   d:"A beam hung under the crane hook, so the slings hang straight down onto a wide load instead of pulling inward at an angle."},
-  {t:"center of gravity",l:"the center of gravity",m:"center of gravity|centers of gravity",
-   d:"The point where a load balances. If you lift a load that isn’t hung directly over it, the load swings, which is why it gets painted on the frame."}
+   d:"A beam hung under the crane hook so the slings drop vertically onto a wide load, instead of pulling inwards at an angle."},
+  {t:"centre of gravity",l:"the centre of gravity",m:"centre of gravity|centres of gravity",
+   d:"The point a load balances about. Lift a load that is not slung over it and it swings, which is why it gets painted on the frame."}
 ];
 TRACK_DEFS.mechanical={
   id:'mechanical', name:'Mechanical Engineering', title:'Mechanical Chronicles',
-  blurb:'Three broken impellers in eight months, a frame that cracked at a sharp corner, and a truck waiting at the gate.',
+  blurb:'Solve the problem every engineer dreads',
   first:'skid_brief',
   roles:{mike:'Principal Mechanical Engineer', kate:'Engineering Director', jenny:'Production Manager',
-         alex:'Junior Engineer', dan:'Maintenance Technician',
-         owen:'Engineering Manager, Ravensworth Dairy', player:'New Mechanical Engineer'},
+         alex:'Graduate Engineer', dan:'Maintenance Fitter',
+         owen:'Engineering Manager, Ravensworth Dairy', player:'The new mechanical engineer'},
   glossary:TRACK_GLOSSARY,
   script:function(key){ return mechScript(key); },
   occupants:function(room){ return mechOccupants(room); },
   objectives:OBJ_MECH,
-  opening:{text:`It's 9 a.m. at Hallam Works. A pump skid is supposed to go on a truck at 5 p.m., its pump has destroyed three impellers, and its frame cracked where nobody thought it could.`,
+  opening:{text:`Nine in the morning at Hallam Works, and welcome to your first day! Today there's a transfer skid that goes on a lorry at five, a pump that has eaten three impellers, and a frame that cracked where nobody thought it could. Let's get stuck in.`,
            label:'Find Maggie.'},
   certTitle:'MECHANICAL CHRONICLES',
-  timeUp:{who:'kate',line:`It's 5 p.m., and the truck left without it. The next crane slot is Tuesday, after the client's shutdown, so it'll sit in our yard for two weeks. Finish it anyway. You can recover from a missed truck, but you need to know how you would have lifted it.`},
-  certBody:['found out why a pump kept destroying impellers, fixed a drawing that was followed',
-            'correctly but still wrong, diagnosed a fatigue crack, and used tight tolerances',
-            'only where they mattered, then got a pump skid onto a truck in two halves.'],
+  timeUp:{who:'kate',line:`That's five o'clock, I'm afraid, and the lorry's had to go without it. The next crane slot is Tuesday, so it'll wait in our yard for a fortnight. Don't worry — it happens. Let's finish it anyway, so you know exactly how you'd lift it next time.`},
+  certBody:['found out why a pump was eating impellers, fixed a drawing that was made correctly',
+            'and still wrong, read a fatigue crack instead of thickening the plate, and put',
+            'tolerance where it earns its money — then got a skid onto a lorry in two halves.'],
   lessons:[
-    {t:'A bigger pump won’t fix a suction problem', c:'Pumps',
-     l:'Compare the pressure available at the inlet with the pressure the pump needs. Lift, pipe losses, the strainer, and water temperature all reduce what’s available, and a bigger pump just pulls harder on the same pipe.'},
+    {t:'A bigger pump is not a suction fix', c:'Pumps',
+     l:'Compare the head available at the inlet with the head the pump needs there. Lift, losses, strainer and liquid temperature all come off the available side, and a bigger pump pulls harder on the same pipe.'},
     {t:'Cavitation sounds like gravel and eats metal', c:'Pumps',
-     l:'Bubbles forming and collapsing at the impeller wear it away a little at a time. Partly closing the outlet valve reduces the noise, but not the damage.'},
+     l:'Bubbles forming and collapsing at the impeller take it away a few grams at a time. Throttling the discharge quietens the noise and not the damage.'},
     {t:'Made to the drawing and still wrong', c:'Drawings',
-     l:'If every measurement passes and the part still seizes, the drawing is the problem. Measure from one datum, specify the fit, and leave room for hot metal to expand.'},
-    {t:'Chained dimensions add up', c:'Drawings',
-     l:'When each measurement is taken from the last one, all the small errors can add up in one direction. Every part passes inspection, but the assembly still doesn’t fit.'},
-    {t:'Fatigue is about repetitions, not weight', c:'Failures',
-     l:'A crack after four million cycles from a load it never exceeded is fatigue at a stress raiser. Round off the corner, and move the weld edge away from where the frame bends.'},
-    {t:'Don’t run a machine on a frame that vibrates at the same speed', c:'Failures',
-     l:'When a machine’s speed matches the frame’s natural frequency, the vibration builds up instead of fading. Change the frequency on purpose instead of adding metal and guessing.'},
-    {t:'A flange can’t fight the piping', c:'Joints',
-     l:'Unsupported pipe pulls a joint open again and again, and no amount of bolt tension will hold it. Support the pipe first, then use the right gasket and tighten in a crisscross pattern.'},
-    {t:'Use tight tolerances only where they matter', c:'Manufacturing',
-     l:'Tight tolerances cost money everywhere they appear. Put them on the shafts that must line up, and leave them off the frame.'},
-    {t:'If a technician can’t reach it, nobody maintains it', c:'Manufacturing',
-     l:'Leave room to reach the welds you need and the parts that wear out. Anything hard to reach will get reached badly, at 2 a.m.'},
-    {t:'A measurement is someone’s solution', c:'Working with clients',
-     l:'The 36-inch doorway was the limit. Losing half a shift to change a seal was the real problem, and only one of them was ever mentioned.'}
+     l:'If every dimension passes and the thing seizes, the drawing is the fault. Dimension from a functional datum, specify the fit, and leave room for hot metal to grow.'},
+    {t:'Chained dimensions stack up', c:'Drawings',
+     l:'Each dimension measured from the last lets all the tolerances add in one direction. Every part passes inspection and the assembly still does not fit.'},
+    {t:'Fatigue counts cycles, not kilograms', c:'Failure',
+     l:'A crack at four million cycles from a load it never exceeded is fatigue at a stress raiser. Radius the corner and move the weld toe out of the bending zone.'},
+    {t:'Do not run a machine on a frame that rings', c:'Failure',
+     l:'When the running speed sits on the structure’s natural frequency, movement builds instead of dying away. Detune it deliberately rather than stiffening it by guess.'},
+    {t:'A flange cannot fight the pipework', c:'Joints',
+     l:'Unsupported pipe pulls a joint open twice a shift, and no amount of bolt tension holds it. Support the pipe first, then the right gasket and preload in a crossing sequence.'},
+    {t:'Tolerance only where function needs it', c:'Manufacture',
+     l:'Tight tolerance costs money everywhere it appears. Put it on the shafts that must line up and take it off the frame that must not.'},
+    {t:'If a fitter cannot reach it, nobody maintains it', c:'Manufacture',
+     l:'Design access for the welds you need and the parts that wear. Anything unreachable gets reached badly, at two in the morning.'},
+    {t:'A dimension is somebody’s solution', c:'Clients',
+     l:'Nine hundred millimetres was the doorway. Half a shift to change a seal was the problem, and only one of the two was ever mentioned.'}
   ]
 };
-
 
 
 /* ==========================================================================
@@ -2808,31 +2817,31 @@ CAST.p_c={name:'You', role:'The new one', where:'Lobby',
 /* Any track not compiled into this build still shows in the picker. */
 const TRACK_STUBS={
   engineering:{id:'engineering',name:'Software Engineering',title:'Engineering Chronicles',
-    blurb:'A one-line ticket, a 2,000-line file, and a site-wide problem at 11:40 a.m.'},
+    blurb:'Understand software engineering'},
   product:{id:'product',name:'Product Management',title:'Product Chronicles',
-    blurb:'Forty-one feature requests, two teams, one quarter, and a $180,000 deal with a deadline attached.'},
+    blurb:'Explore product management'},
   security:{id:'security',name:'Security',title:'Security Chronicles',
-    blurb:'Eleven security problems, a questionnaire nobody reads, and one stolen token making 40,000 requests.'},
+    blurb:'Discover security engineering'},
   ux:{id:'ux',name:'UX Design',title:'UX Chronicles',
-    blurb:'61% of people quit the booking flow, three coworkers have theories, and nobody has watched a real user try it.'},
+    blurb:'Design the best UX ever'},
   data:{id:'data',name:'Data Science',title:'Data Chronicles',
-    blurb:'Customer churn is up four points, everyone thinks they already know why, and the board meets Thursday.'},
+    blurb:'Understand the story behind the numbers'},
   copywriting:{id:'copywriting',name:'Copywriting',title:'Copywriter Chronicles',
-    blurb:'Six briefs, one crisis, and a client who changes their mind at 4 p.m.'},
+    blurb:'Sell with words'},
   account:{id:'account',name:'Account Management',title:'Account Chronicles',
-    blurb:'A client who asks for the wrong thing, an agency that has to build it, and you stuck in the middle.'},
+    blurb:'Learn to manage shifting priorities'},
   brand:{id:'brand',name:'Brand Strategy',title:'Brand Chronicles',
-    blurb:'Figure out what a brand stands for, decide how its brands fit together, and learn when to say no.'},
+    blurb:'Create the strategy that makes your brand #1'},
   design:{id:'design',name:'Design Fundamentals',title:'Design Chronicles',
-    blurb:'Hierarchy, fonts, grids, and designs that still work once they’re printed.'},
+    blurb:'Change the way the world designs'},
   electrical:{id:'electrical',name:'Electrical Engineering',title:'Electrical Chronicles',
-    blurb:'A cable nobody sized properly, a pump that trips when it starts, and a reset button that could burn out a motor.'},
+    blurb:'Put your knowledge to the test'},
   mechanical:{id:'mechanical',name:'Mechanical Engineering',title:'Mechanical Chronicles',
-    blurb:'Three broken impellers in eight months, a frame that cracked at a sharp corner, and a truck waiting at the gate.'},
+    blurb:'Solve the problem every engineer dreads'},
   chemical:{id:'chemical',name:'Chemical Engineering',title:'Chemical Chronicles',
-    blurb:'Four percent of every tanker missing, two dangerous chemicals with the same hose fitting, and a client who wants more chlorine.'},
+    blurb:'Keep danger away using your skills'},
   consulting:{id:'consulting',name:'Consulting',title:'Consulting Chronicles',
-    blurb:'A benchmark nobody needs, three numbers that don’t agree, and a sentence the client wants deleted.'}
+    blurb:'Figure out the secret behind making a client happy'}
 };
 const TRACKS={};
 Object.keys(TRACK_STUBS).forEach(function(id){
@@ -2937,9 +2946,9 @@ function paintLessons(){
     return '<div class="lesson"><b>'+L.t+'</b><span>'+L.c+'</span><p>'+L.l+'</p></div>';
   }).join('');
   const gl=TRACK.glossary||[];
-  if(gl.length) rows+='<div class="lesson"><b>Key terms</b><span>Glossary</span>'+
-    '<p>Every term used in this game. While you play, the first time a term comes up, '+
-    'the person speaking will stop and ask whether you know what it means.</p></div>'+
+  if(gl.length) rows+='<div class="lesson"><b>The words, plainly</b><span>Jargon</span>'+
+    '<p>Every term the day uses. While you play, the first time one of them comes up, '+
+    'whoever said it stops and asks whether you know it.</p></div>'+
     gl.map(function(e){
       return '<div class="lesson gl"><b>'+termName(e)+'</b><p>'+e.d+'</p></div>';
     }).join('');
