@@ -2515,110 +2515,110 @@ function elecScript(key){
 
   /* ---------- the brief ---------- */
   if(key==='kate'&&s==='panel_brief')
-    return say('kate',`Hi — I'm Maggie, engineering director. Welcome to Hallam Works. We design and build the control panels and pump skids that end up in water treatment works and food factories. You're on the Wearside Water job from this morning: one pumping station, two forty-five kilowatt pumps, one panel. It witnesses at five o'clock with their inspector standing next to it.`,
+    return say('kate',`Hello, and welcome to Hallam Works! I'm Maggie, engineering director — we're really glad to have you. We design and build the control panels and pump skids that end up in water treatment works and food factories. You're on the Wearside Water job from this morning: one pumping station, two forty-five kilowatt pumps, one panel. It witnesses at five o'clock with their inspector standing next to it.`,
       [{label:'What has gone wrong with it?',go:function(){
-        say('kate',`Three things, and every one of them is somebody's guess. Site want a bigger cable. The lead pump trips about every second start. And the panel came back from inspection with a list. Arun's in the Design Office — start with the cable, because that's the one they've already ordered.`,
+        say('kate',`Three things, and so far each one is somebody's best guess. Site want a bigger cable. The lead pump trips about every second start. And the panel came back from inspection with a list. Arun's in the Design Office and he's lovely — start with the cable, because that's the one they've already ordered.`,
           [{label:'On my way.',go:function(){ advance('load_cable'); }}]);
       }}]);
 
   /* ---------- 1. sizing a cable ---------- */
   if(key==='mike'&&s==='load_cable'){
     return choose('mike',
-      `Arun Pillai — principal electrical, which mostly means I ask where the number came from. Good to have you. Site have asked for the next size up of cable out to the wet well. A hundred and eighty metres, buried in a duct with three other circuits, and they reckon volt drop is why the pump struggles. Do we send them a bigger cable?`,
+      `Hello! Arun Pillai, principal electrical — which mostly means I'm the one who asks where the number came from. Really good to have you. Site have asked for the next size up of cable out to the wet well. A hundred and eighty metres, buried in a duct with three other circuits, and they reckon volt drop is why the pump struggles. Do we send them a bigger cable?`,
       [
        {label:`Yes. It's cheap next to a site visit, and it makes the complaint go away.`,ok:false,
-        note:`A hundred and eighty metres of it, and we still wouldn't know what's wrong. A bigger cable fixes volt drop and nothing else — if the trip is the starter, we've bought copper to hide it. Want to try another?`},
+        note:`Tempting! But it's a hundred and eighty metres of it, and we still wouldn't know what's wrong. A bigger cable fixes volt drop and nothing else — if the trip is the starter, we've just bought copper to hide it. Want to try another?`},
        {label:`Work out the design current first, then volt drop over the hundred and eighty metres, then derate for four circuits in one duct at that ground temperature — and check the protective device can still clear a fault at the far end.`,ok:true},
        {label:`Fit a larger breaker instead, so it stops tripping on start.`,ok:false,
-        note:`Now the cable is protected by a device that needs more current before it notices anything, and a fault at the far end might never clear at all. You've weakened the protection to quieten a symptom. Try again?`}
+        note:`Then the cable's protected by a device that needs more current before it notices anything, and a fault at the far end might never clear at all. It quietens the symptom but weakens the protection. Try again?`}
       ],function(){
         filed('Cable sizing','Wearside Water','Design current, volt drop, derating for the duct, and the protective device checked at the far end');
-        advance('motor_start','mike',`That's it. A cable is sized four times over — the current it carries, the volt drop at the end of it, what's packed around it, and whether the fuse can still see a fault through it. Ours passes on three and fails on the derating. So they do need a bigger cable, and now we can tell them why. Right. That trip.`);
+        advance('motor_start','mike',`That's it, well done! A cable is sized four times over — the current it carries, the volt drop at the end, what's packed around it, and whether the fuse can still see a fault through it. Ours passes on three and fails on the derating. So they do need a bigger cable, and now we can tell them why. Right — shall we look at that trip?`);
       });
   }
 
   /* ---------- 2. starting a motor ---------- */
   if(key==='mike'&&s==='motor_start'){
     return choose('mike',
-      `Same pump. Forty-five kilowatts, direct on line, and it trips the overload about one start in two. The site electrician has already wound the overload setting up twice. What's actually happening?`,
+      `Same pump. Forty-five kilowatts, direct on line, and it trips the overload about one start in two. The site electrician has already wound the overload setting up twice. What do you think is actually happening?`,
       [
        {label:`Wind the overload up one more mark. It clearly needs the headroom.`,ok:false,
-        note:`That's the third time somebody's done that, and each time the motor got a bit less protection. An overload that never trips is a heater with a label on it. Have another go?`},
+        note:`That would be the third time, and each time the motor gets a little less protection. An overload that never trips isn't protecting anything. Have another go?`},
        {label:`Find out whether it's inrush, the wrong protection curve, or the pump starting against a valve that hasn't opened yet — then pick the start method and set the protection to the motor's own curve.`,ok:true},
        {label:`Fit a variable speed drive. It'll soft-start it and we can trim the duty later.`,ok:false,
-        note:`Quite possibly the right kit, bought before the question. A drive brings harmonics, a cable length limit and screened cable nobody has ordered — and if the valve is still shut, it trips anyway. Try again?`}
+        note:`Quite possibly the right kit — but we'd be buying it before we know the cause. A drive brings harmonics, a cable length limit and screened cable nobody's ordered, and if the valve's still shut, it trips anyway. Try again?`}
       ],function(){
         filed('Motor starting','Wearside Water','Cause established before the cure — start method and protection matched to the motor curve');
-        advance('discrimination','mike',`Good. The actuator is slower than the pump, so it starts against a closed valve — that's a high-torque start, not a sick motor. Soft starter, an interlock so it waits for the valve, and protection set to the motor curve instead of to the patience of whoever is on site. Bea's in the Test Bay with the station's fault records, and they make no sense at all.`);
+        advance('discrimination','mike',`Brilliant. The actuator is slower than the pump, so it starts against a closed valve — that's a high-torque start, not a sick motor. Soft starter, an interlock so it waits for the valve, and protection set to the motor curve. Bea's in the Test Bay with the station's fault records, which are a bit of a puzzle — she'd love your help.`);
       });
   }
 
   /* ---------- 3. discrimination ---------- */
   if(key==='jenny'&&s==='discrimination'){
     return choose('jenny',
-      `Bea Novak, production — nice to meet you. Look at this. Last month a float switch shorted in the wet well. Two amp circuit. The whole station went dark: both pumps, the panel, the telemetry, the lot. How do we stop that happening again?`,
+      `Hello! Bea Novak, production — lovely to meet you. Have a look at this. Last month a float switch shorted in the wet well. Two amp circuit. And the whole station went dark: both pumps, the panel, the telemetry, the lot. How do we stop that happening again?`,
       [
        {label:`Put a bigger fuse on the float circuit so a small fault doesn't blow it.`,ok:false,
-        note:`The little fuse wasn't the problem. The problem is that the big one upstream went first, and it will do it again on any fault down there. Try again?`},
+        note:`The little fuse wasn't really the problem, though. The trouble is that the big one upstream went first, and it'll do it again on any fault down there. Try again?`},
        {label:`Grade the protection: prove the earth fault loop impedance at the float, and make the nearest device clear that fault well before the one upstream — checked against the curves, not the labels on the door.`,ok:true},
        {label:`Put a one-second delay on every device upstream, so the little ones always win the race.`,ok:false,
-        note:`You've bought discrimination by making every fault last a second longer — including the one somebody is holding at the time. Grade it where the curves cross. Have another go?`}
+        note:`Clever, but that makes every fault last a second longer — including one somebody might be touching at the time. Better to grade it where the curves cross. Have another go?`}
       ],function(){
         filed('Discrimination','Wearside Water','Protection graded on the curves, loop impedance proved at the far end');
-        advance('isolation','jenny',`Right. A fault should be cleared by the device nearest to it, and you prove that on the curves rather than hoping. That float circuit now takes out the float circuit. Colin's in the canteen — he's read the commissioning programme and he has something to say about Friday.`);
+        advance('isolation','jenny',`Perfect. A fault should be cleared by the device nearest to it, and we prove that on the curves rather than hoping. Now the float circuit only takes out the float circuit. Colin's in the canteen — he's read the commissioning programme and he'd like a word about Friday.`);
       });
   }
 
   /* ---------- 4. safe isolation ---------- */
   if(key==='dan'&&s==='isolation'){
     return choose('dan',
-      `Colin Baxter, maintenance fitter — I'm the one they send when it goes off at three in the morning. The programme has me testing the interlocks on Friday afternoon with the panel live, because the slot's tight. Commissioning say gloves and a face shield and I'll be fine. Will I?`,
+      `Hiya — Colin Baxter, maintenance fitter. I'm the one they send when it goes off at three in the morning! Good to meet you. The programme has me testing the interlocks on Friday afternoon with the panel live, because the slot's tight. Commissioning say gloves and a face shield and I'll be fine. Will I?`,
       [
        {label:`It's a couple of readings. Gloves, shield, take your time.`,ok:false,
-        note:`So you've authorised live working because the programme is tight. That sentence is in every report I've ever read about somebody getting hurt. Want to try another?`},
+        note:`I know the programme's tight, but that would be authorising live work just to save time — and that's how people get hurt. Want to try another?`},
        {label:`No. Isolate it, lock it off with your own lock, prove dead with a proving unit, and do every test that can be done dead. Anything that genuinely needs it energised goes on a permit, with a risk assessment and a second person.`,ok:true},
        {label:`Then Friday's off, and the programme will have to move.`,ok:false,
-        note:`Correct, and no use to anybody. The tests still have to happen and now I'm the one ringing the client. Start with which ones we can do dead. Try again?`}
+        note:`Right instinct! But the tests still need doing, and someone has to ring the client. Let's start with which ones we can do dead. Try again?`}
       ],function(){
         filed('Safe isolation','Hallam Works','Isolate, lock, prove dead — the two genuinely live tests moved onto a permit');
-        advance('panel_build','dan',`Thank you. Nine of the eleven tests can be done dead, and the two that can't are a permit with two of us and a plan. And for the record, the programme didn't authorise anything — programmes never do. Bea's got the inspection list, by the way. It's longer than you'd like.`);
+        advance('panel_build','dan',`Thank you — really. Nine of the eleven tests can be done dead, and the two that can't go on a permit, with two of us and a plan. It's nice to have someone look out for me. Bea's got the inspection list, by the way. It's a bit longer than you'd like!`);
       });
   }
 
   /* ---------- 5. the panel itself ---------- */
   if(key==='jenny'&&s==='panel_build'){
     return choose('jenny',
-      `Inspection list, three items. The enclosure is IP54 and it's going into a pump house that gets hosed down. There's four hundred volt and instrument wiring sharing one trunking. And the emergency stop goes into the PLC and comes back out of an output. Tell me what we're doing about them.`,
+      `Right, the inspection list — three items. The enclosure is IP54 and it's going into a pump house that gets hosed down. There's four hundred volt and instrument wiring sharing one trunking. And the emergency stop goes into the PLC and comes back out of an output. What shall we do about them?`,
       [
        {label:`Fit a fan in the door, label the trunking properly, and note the emergency stop in the manual.`,ok:false,
-        note:`A fan in an IP54 door in a washdown room, a label that does nothing about induced noise, and a stop button that works only while software is having a good day. Three problems, three plasters. Try again?`},
+        note:`Those are quick fixes, but a fan in an IP54 door in a washdown room lets water in, a label won't stop induced noise, and the stop button still relies on the software behaving. Try again?`},
        {label:`IP66 enclosure sized for the heat it actually dissipates at that ambient, power and signal segregated with a gap and crossings at right angles, and the emergency stop hardwired through a safety relay to the contactor coils — the PLC gets a contact for indication only.`,ok:true},
        {label:`Move the lot into a bigger enclosure. That deals with the heat and gives us room to separate things.`,ok:false,
-        note:`Two out of three, and the one you've left is the one that stops a person. Have another go?`}
+        note:`That's two out of three! The one left over is the most important, though — the one that stops a person. Have another go?`}
       ],function(){
         filed('Panel design','Wearside Water','IP66 for washdown, heat calculated, power and signal segregated, emergency stop hardwired through a safety relay');
-        advance('client','jenny',`That's a panel. Safety doesn't go through software — it goes through contacts you can see and a relay you can test. And an enclosure is sized by the heat inside it and the weather outside it, not by what's on the shelf. Helen's here from Wearside, and she's brought a request.`);
+        advance('client','jenny',`Now that's a panel — lovely work! Safety doesn't go through software; it goes through contacts you can see and a relay you can test. And an enclosure is sized by the heat inside and the weather outside, not by what's on the shelf. Helen's here from Wearside, and she's brought a request.`);
       });
   }
 
   /* ---------- 6. the client, and what she actually needs ---------- */
   if(key==='owen'&&s==='client'){
     return choose('owen',
-      `Helen Ashworth, asset manager at Wearside. The panel looks smart, genuinely. One thing though — can you add a remote reset? When that pump trips at three in the morning, Colin drives forty minutes to press a button and forty minutes home. I'd rather press it from my desk.`,
+      `Hello — Helen Ashworth, asset manager at Wearside. Lovely to meet you. The panel looks smart, genuinely. One thing, though — could you add a remote reset? When that pump trips at three in the morning, Colin drives forty minutes to press a button and forty minutes home. I'd much rather press it from my desk.`,
       [
        {label:`"Of course — I'll wire a reset in from the telemetry."`,ok:false,
-        note:`(You've just agreed to restart a tripped pump from forty miles away without asking what tripped it. The first time it's a rag round the impeller, you'll restart it four times into a blockage. Want another go?)`},
+        note:`(Kind of you, but that means restarting a tripped pump from forty miles away without knowing what tripped it. If it's a rag round the impeller, it'd just keep restarting into the blockage. Want another go?)`},
        {label:`"Before I wire anything — what does Colin find when he gets there? Is it the same trip every time?"`,ok:true},
        {label:`"You can't remote-reset a motor protection trip. It's there for a reason."`,ok:false,
-        note:`I'm sure it is. I'll put the request to your director in writing, then.  (You were right, and you've left her with a three in the morning problem and nobody to solve it with. Try again?)`}
+        note:`Oh. Well, I'll put the request to your director in writing, then.  (You're right about the trip, but she's still left with her three in the morning problem. Try again?)`}
       ],function(){
-        say('owen',`...A rag round the impeller, mostly. Or a pair of jeans — it's a combined sewer up there. He clears it, presses reset, and off it goes. Sometimes it's nothing and it just needed the button.`,
+        say('owen',`...Oh, good question. A rag round the impeller, mostly. Or a pair of jeans — it's a combined sewer up there! He clears it, presses reset, and off it goes. Sometimes it's nothing and it just needed the button.`,
           [{label:'So a reset from your desk would restart it into the blockage.',go:function(){
-            say('owen',`...Which is what I've been asking four suppliers for. Not one of them asked me what he finds when he gets there.`,
+            say('owen',`...Ah. Which is what I've been asking four suppliers for. Not one of them asked me what he finds when he gets there. Thank you.`,
               [{label:'Then the button was never the fix.',go:function(){
                 filed('Requirement, translated','Wearside Water','The ask was a reset button; the need was not driving out for a trip nobody can diagnose');
                 startClock(90);
-                say('kate',`Which is the right answer at the worst possible moment. The panel witnesses at five, the inspector is in the yard, and that logic has to be in it before he opens the door. Bea's in the Test Bay. Go.`,
+                say('kate',`Lovely — that's exactly the right answer, just at a tricky moment! The panel witnesses at five, the inspector's in the yard, and that logic needs to be in before he opens the door. Bea's in the Test Bay. You can do this — go!`,
                   [{label:'Go.',go:function(){ G.step='crisis_fix'; paintHUD(); closeDlg(); }}]);
               }}]);
           }}]);
@@ -2626,24 +2626,24 @@ function elecScript(key){
   }
 
   if(key==='jenny'&&s==='crisis_fix'){
-    return choose('jenny',`Ninety seconds. What am I wiring?`,[
+    return choose('jenny',`I'm ready — we've got ninety seconds. What am I wiring?`,[
       {label:`Remote reset straight to the start contactor, with a five-minute lockout.`,ok:false,
-       note:`Five minutes later it starts into the same rag, and five after that, and then the motor is scrap. Try again — quickly.`},
+       note:`Five minutes later it starts into the same rag, and five after that, and then the motor's done for. Try again, quickly!`},
       {label:`Remote restart only for a thermal overload, twice, an hour apart — and a blockage or high-torque trip locks out, alarms with the reason, and can only be reset at the panel. Emergency stop stays hardwired either way.`,ok:true},
       {label:`Automatic restart after any trip, and send an alarm so somebody can look at it later.`,ok:false,
-       note:`The alarm lands at the same three in the morning, by which time the pump has been arguing with a pair of jeans since midnight. Have another go?`}
+       note:`The alarm would still land at three in the morning, by which time the pump's been battling a pair of jeans since midnight. Have another go?`}
     ],function(){
-      advance('crisis_show','jenny',`Wired, tested, terminals tight — eleven seconds on the clock. Two resets from the desk for the trip that deserves one, and a lockout with a reason for the trip that doesn't. Go and show her, before the inspector reaches the door.`);
+      advance('crisis_show','jenny',`Wired, tested, terminals tight — with eleven seconds to spare! Two resets from the desk for the trip that deserves one, and a lockout with a reason for the trip that doesn't. Go and show her before the inspector reaches the door.`);
     });
   }
 
   if(key==='owen'&&s==='crisis_show'){
     stopClock();
-    return say('owen',`So it tells me which trip it was. And if it's the rag, it won't let me pretend it isn't.`,
+    return say('owen',`Oh, so it tells me which trip it was. And if it's the rag, it won't let me pretend it isn't. That's brilliant.`,
       [{label:'And Colin gets told what he is driving to.',go:function(){
-        say('owen',`Four suppliers said yes to the button. You're the first one who asked what he finds when he gets there.`,
+        say('owen',`Four suppliers said yes to the button. You're the first who asked what he finds when he gets there. Thank you so much.`,
           [{label:'...',go:function(){
-            say('kate',`That's the job. Not the cable sizing, not the safety relay — that. Somebody hands you a solution and you go and find out what the problem was. Six pieces of work, a witness test you didn't miss, and an inspector who found nothing. You're an electrical engineer now.`,
+            say('kate',`And that's the job, really. Not the cable sizing, not the safety relay — that. Somebody hands you a solution, and you kindly go and find out what the problem was. Six pieces of work, a witness test met, and an inspector who found nothing. I'm so proud of you — you're an electrical engineer now.`,
               [{label:'Thank you.',go:function(){ G.step='complete'; paintHUD(); closeDlg(); openCertificate(); }}]);
           }}]);
       }}]);
@@ -2652,29 +2652,30 @@ function elecScript(key){
   /* ---------- Nell: hints ---------- */
   if(key==='alex'){
     const h={
-      panel_brief:`Maggie's in the Project Office. Ask what witnesses at five, and who is standing next to it.`,
-      load_cable:`Four checks on a cable, not one. They have only mentioned volt drop.`,
+      panel_brief:`Hi, I'm Nell! Maggie's in the Project Office. Ask what witnesses at five, and who'll be standing next to it.`,
+      load_cable:`Little tip: there are four checks on a cable, not one. They've only mentioned volt drop.`,
       motor_start:`Ask what the pump is starting against before you touch the overload.`,
-      discrimination:`A two amp fault took out forty-five kilowatts. Look at the curves, not the labels.`,
-      isolation:`He is asking you to authorise live working. The right answer is not the brave one.`,
+      discrimination:`A two amp fault took out forty-five kilowatts. Have a look at the curves, not the labels.`,
+      isolation:`He's asking you to authorise live working. The right answer here is the careful one, not the brave one.`,
       panel_build:`Washdown, heat, segregation — and the one item that stops a person.`,
-      client:`She has asked for a button. Find out what Colin finds when he gets there.`,
-      crisis_fix:`Not every trip deserves a reset. Say which ones do, and what happens to the rest.`,
-      crisis_show:`Go and show her — she has not seen it yet.`,
-      complete:`You got a client to un-ask for a reset button. First time here. Pub?`
+      client:`She's asked for a button. Find out what Colin finds when he gets there.`,
+      crisis_fix:`Not every trip deserves a reset. Decide which ones do, and what happens to the rest. You've got this.`,
+      crisis_show:`Go and show her — she hasn't seen it yet!`,
+      complete:`You got a client to un-ask for a reset button — a first here! Pub to celebrate?`
     };
-    return say('alex', h[s] || `Stuck? Say out loud what current flows, for how long, and what notices. Start there.`);
+    return say('alex', h[s] || `Stuck? Try saying out loud what current flows, for how long, and what notices. That usually helps.`);
   }
 
   const idle={
-    kate:`Nothing new from me — go and finish what you have got.`,
-    mike:`Come back when you can tell me where the number came from.`,
-    jenny:`Bring me something I can build and test and we will get on fine.`,
-    dan:`Kettle's on. And I'm still not working on it live, mind.`,
-    owen:`I'll wait. Five o'clock, though.`
+    kate:`Nothing new from me just yet — finish what you've got, and shout if you need anything.`,
+    mike:`Come back whenever you can tell me where the number came from — happy to go through it with you.`,
+    jenny:`Bring me something I can build and test, and we'll get on brilliantly.`,
+    dan:`Kettle's on, help yourself! Still not working on it live, mind.`,
+    owen:`No rush — I'll wait. Five o'clock, though!`
   };
   say(key, idle[key] || `...`);
 }
+
 
 const TRACK_GLOSSARY=[
   {t:"design current",l:"design current",m:"design current",
@@ -2751,10 +2752,10 @@ TRACK_DEFS.electrical={
   script:function(key){ return elecScript(key); },
   occupants:function(room){ return elecOccupants(room); },
   objectives:OBJ_ELEC,
-  opening:{text:`Nine in the morning at Hallam Works. A panel that witnesses at five with the client's inspector next to it, a pump that trips every second start, and a bigger cable somebody has already ordered.`,
+  opening:{text:`Nine in the morning at Hallam Works, and welcome to your first day! Today there's a panel that witnesses at five with the client's inspector next to it, a pump that trips every second start, and a bigger cable somebody has already ordered. Let's get stuck in.`,
            label:'Find Maggie.'},
   certTitle:'ELECTRICAL CHRONICLES',
-  timeUp:{who:'kate',line:`Five o'clock. The inspector has gone home, the panel goes back on the test bay until he can come again — a fortnight — and Colin drives out every time it rains. Finish it anyway: missing a witness test you survive; not knowing what you would have wired, you don't.`},
+  timeUp:{who:'kate',line:`That's five o'clock, I'm afraid. The inspector's gone home, so the panel waits on the test bay until he can come again in a fortnight. Don't worry — it happens. Let's finish it anyway, so you know exactly what you'd wire next time.`},
   certBody:['sized a cable four ways, found out what a pump was really starting against, graded',
             'the protection, kept a fitter off a live panel and got an emergency stop out of',
             'software — then turned a reset button into logic that knows which trip it was.'],
