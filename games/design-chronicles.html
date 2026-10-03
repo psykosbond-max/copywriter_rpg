@@ -1633,132 +1633,132 @@ function designScript(key){
 
   /* ---------- the brief ---------- */
   if(key==='kate'&&s==='museum_brief')
-    return say('kate',`Hi — Kate. Welcome. So: Quarry Lane Museum reopens in six weeks after two years shut. They need a poster campaign — six-sheets, bus stops, a bit of press. Their old material looked like a parish newsletter, and they know it.`,
+    return say('kate',`Hello, and welcome! I'm Kate — so glad you're here. So: Quarry Lane Museum reopens in six weeks after two years shut. They need a poster campaign — six-sheets, bus stops, a bit of press. Their old material looked like a parish newsletter, and they know it.`,
       [{label:'What do they want it to do?',go:function(){
-        say('kate',`Get people who've never been to look twice. Mike's got the first layout on his desk and he isn't happy with it. Go and be not happy with it too.`,
+        say('kate',`Get people who've never been to look twice. Mike's got the first layout on his desk and he's not quite happy with it yet. Go and have a look together — a fresh pair of eyes will really help.`,
           [{label:'On my way.',go:function(){ advance('hierarchy'); }}]);
       }}]);
 
   /* ---------- 1. hierarchy ---------- */
   if(key==='mike'&&s==='hierarchy'){
     return choose('mike',
-      `Right, here it is. Museum name at 90pt, REOPENING at 90pt, the date at 90pt, a quote from the curator at 60pt, and the funder logos along the bottom. Everything's shouting. What do you do?`,
+      `Hello! Grab a seat. Here it is: museum name at 90pt, REOPENING at 90pt, the date at 90pt, a quote from the curator at 60pt, and the funder logos along the bottom. Everything's shouting a bit. What would you do?`,
       [
        {label:`Shrink the curator quote and the logos so the top three can breathe.`,ok:false,
-        note:`You've made the quiet things quieter and left three things fighting for first. Something still has to win. Want to try another?`},
+        note:`Good start, but that makes the quiet things quieter and leaves three things fighting for first place. Something still has to win. Want to try another?`},
        {label:`Decide what the one thing is — OPEN AGAIN — make it enormous, and demote everything else two clear steps.`,ok:true},
        {label:`Balance them all at 70pt so the poster reads as one block.`,ok:false,
-        note:`Now nothing's loud. A poster with no hierarchy is a paragraph at a bus stop, and nobody reads a paragraph at a bus stop. Try again?`}
+        note:`Now nothing's loud, though. A poster with no hierarchy is a paragraph at a bus stop, and people rarely stop to read those. Try again?`}
       ],function(){
         filed('Poster hierarchy','Quarry Lane','One thing first — OPEN AGAIN, then the date, then everything else');
-        advance('type_size','mike',`Right. Hierarchy isn't making things smaller, it's deciding what wins and then being brutal about the gap. Two steps, not half a step — if people have to work out what matters most, you haven't designed it. Jenny will want a word about the typeface.`);
+        advance('type_size','mike',`Yes, exactly! Hierarchy isn't making things smaller, it's deciding what wins and then being bold about the gap. Two steps, not half a step — if people have to work out what matters most, it isn't designed yet. Jenny would love a word about the typeface.`);
       });
   }
 
   /* ---------- 2. type at size ---------- */
   if(key==='jenny'&&s==='type_size'){
     return choose('jenny',
-      `You've set OPEN AGAIN in that lovely high-contrast display face. I've printed you a proof at actual size and pinned it three metres away. Go and look, then tell me what you want to do.`,
+      `Hello! You've set OPEN AGAIN in that lovely high-contrast display face. I've printed you a proof at actual size and pinned it three metres away. Go and have a look, then tell me what you'd like to do.`,
       [
        {label:`Keep it — it's the most distinctive thing on the poster.`,ok:false,
-        note:`It is. It's also lost its hairlines at that size, and from there it reads as OPFN AGAlN. Distinctive is worth nothing if it isn't legible. Want to try another?`},
+        note:`It is gorgeous! But it's lost its hairlines at that size, and from over there it reads as OPFN AGAlN. Distinctive only helps if people can read it. Want to try another?`},
        {label:`Keep the display face for the big line, where the weight holds — and set the date and details in a plain grotesque that survives small.`,ok:true},
        {label:`Set the whole poster in the plain grotesque, to be safe.`,ok:false,
-        note:`Safe, and forgettable. You've solved legibility by removing every reason to look. Try again?`}
+        note:`Safe, but a bit forgettable. That solves legibility by taking away the reason to look. Try again?`}
       ],function(){
         filed('Type system','Quarry Lane','Display face for the big line, grotesque for everything that has to survive small');
-        advance('grid','jenny',`That's the pairing. One face for personality, one for work. And you looked at it printed rather than at 400% on a screen, which is the whole lesson. Mike wants you back — the layout's still sitting oddly.`);
+        advance('grid','jenny',`That's the pairing — lovely. One face for personality, one for work. And you looked at it printed rather than at 400% on a screen, which is the whole lesson. Mike would like you back — the layout's still sitting a little oddly.`);
       });
   }
 
   /* ---------- 3. grid and optical alignment ---------- */
   if(key==='mike'&&s==='grid'){
     return choose('mike',
-      `Everything's on the grid. Every box snaps. And it still looks wrong — the big line sits left of the block beneath it, and the gaps between the three details are identical but they read as two groups and a stray. Why?`,
+      `Here's a puzzle for you. Everything's on the grid, every box snaps — and it still looks wrong. The big line sits left of the block beneath it, and the gaps between the three details are identical but read as two groups and a stray. Why do you think that is?`,
       [
        {label:`It isn't wrong — the numbers are right, so it's fine.`,ok:false,
-        note:`The numbers are right and your eye says no. Your eye is the client. Have another go?`},
+        note:`The numbers are right, but your eye says no — and the eye is who we're designing for. Have another go?`},
        {label:`Align the big line optically — the O overshoots, so nudge it — and group the details by meaning, so related things sit closer than unrelated ones.`,ok:true},
        {label:`Increase all the gaps equally until it feels more spacious.`,ok:false,
-        note:`Now it's evenly wrong, with more air. Equal spacing between unequal things is how you end up with three items that read as two groups. Try again?`}
+        note:`Now it's evenly off, just with more air. Equal spacing between unequal things is how three items end up reading as two groups. Try again?`}
       ],function(){
         filed('Layout','Quarry Lane','Optically aligned, grouped by meaning rather than by measurement');
-        advance('contrast','mike',`Yes. Round letters overshoot, and proximity means relationship whether you meant it or not. If it looks aligned, it is aligned — the ruler's a tool, not a judge. Dan needs to see this before it goes anywhere.`);
+        advance('contrast','mike',`Spot on! Round letters overshoot, and proximity means relationship whether you meant it or not. If it looks aligned, it is aligned — the ruler's a tool, not a judge. Dan would like to see this before it goes anywhere.`);
       });
   }
 
   /* ---------- 4. contrast and access ---------- */
   if(key==='dan'&&s==='contrast'){
     return choose('dan',
-      `Dan — studio, and everything nobody else wants to do. Which today means telling you the date is mid-grey on pale stone and the museum is publicly funded. Also, you've put the accessible-entrance information in green and the step-free route in red.`,
+      `Hiya, I'm Dan — studio, and everything nobody else wants to do! Today that means a friendly heads-up: the date is mid-grey on pale stone, and the museum is publicly funded. Also, you've put the accessible-entrance information in green and the step-free route in red.`,
       [
        {label:`Darken the date until it passes contrast, and keep the colour coding for the routes.`,ok:false,
-        note:`Half a fix. Anyone who can't separate red from green still can't read your route map — and that's about one man in twelve. Want to try another?`},
+        note:`That's half of it! But anyone who can't separate red from green still can't read the route map — and that's about one man in twelve. Want to try another?`},
        {label:`Darken the date to clear contrast, and label the routes as well as colouring them.`,ok:true},
        {label:`Put a white box behind everything so it all passes.`,ok:false,
-        note:`You've passed a check and wrecked the poster. Accessibility is a constraint you design with, not a plaster you stick over the top. Try again?`}
+        note:`That passes the check but spoils the poster. Accessibility works best as something you design with, rather than a plaster over the top. Try again?`}
       ],function(){
         filed('Accessibility pass','Quarry Lane','Contrast raised, and nothing left carried by colour alone');
-        advance('production','dan',`Right. Never let colour carry meaning on its own — and the publicly funded ones do get audited. Jenny's got the print check.`);
+        advance('production','dan',`Perfect. Never let colour carry meaning on its own — and the publicly funded ones do get audited, so that's saved us a headache. Jenny's got the print check for you.`);
       });
   }
 
   /* ---------- 5. production ---------- */
   if(key==='jenny'&&s==='production'){
     return choose('jenny',
-      `Print check. Six-sheet, litho — and you've sent me an RGB file with the type running to the very edge of the artboard and the funder logos at 6mm tall. Tell me what's wrong with that sentence.`,
+      `Print check time! Six-sheet, litho — and the file's in RGB, with the type running to the very edge of the artboard and the funder logos at 6mm tall. Can you spot what needs fixing?`,
       [
        {label:`Convert to CMYK and send it over.`,ok:false,
-        note:`One of three. Your type's still going to be guillotined, and those logos will fill in to grey mush. Have another go?`},
+        note:`That's one of three! The type would still get trimmed off by the guillotine, and those logos would fill in to grey mush. Have another go?`},
        {label:`Convert to CMYK, add 5mm bleed with the type pulled inside the safe area, and scale the logos to their minimum reproduction size.`,ok:true},
        {label:`Leave it — the printer will sort the technical bits out.`,ok:false,
-        note:`The printer will do exactly what you sent, at three in the morning, for a hundred and forty sheets. Try again?`}
+        note:`The printer will do exactly what we send, at three in the morning, for a hundred and forty sheets — so it's worth getting right. Try again?`}
       ],function(){
         filed('Print-ready artwork','Quarry Lane','CMYK, bled, safe area respected, logos at minimum size');
-        advance('client_feedback','jenny',`That's a file I can send. Design that can't be made isn't design, it's a picture of design. Owen's in the meeting room.`);
+        advance('client_feedback','jenny',`Now that's a file I can send — thank you! Design that can't be made is only a picture of design. Owen's waiting in the meeting room.`);
       });
   }
 
   /* ---------- 6. the client, and the thing that goes wrong ---------- */
   if(key==='owen'&&s==='client_feedback'){
     return choose('owen',
-      `Owen Blackwood, visitor experience. It's smart, it really is. But — and the trustees will say this too — can we make the logo bigger? It feels like the museum isn't the main thing.`,
+      `Hello — Owen Blackwood, visitor experience. Lovely to meet you. It's smart, it really is. But — and the trustees will say this too — could we make the logo bigger? It feels like the museum isn't the main thing.`,
       [
        {label:`"Of course — I'll double it."`,ok:false,
-        note:`(You've just broken the hierarchy you spent all week building, to answer a question nobody asked. He didn't say the logo was too small. He said the museum didn't feel like the main thing. Want another go?)`},
+        note:`(Kind, but that breaks the hierarchy you spent all week building. He didn't actually say the logo was too small — he said the museum didn't feel like the main thing. Want another go?)`},
        {label:`"Making it bigger would fight the headline. Can I ask what's making the museum feel secondary — is it the size, or that the name isn't near the thing people will remember?"`,ok:true},
        {label:`"Bigger logos don't get noticed more — that's a common misconception."`,ok:false,
-        note:`I'm sure you're right. I'll take it to the trustees as it is, then.  (You won the argument and lost the client. Try again?)`}
+        note:`Oh. Well, I'm sure you're right. I'll take it to the trustees as it is, then.  (You might be right, but he's left feeling unheard. Try again?)`}
       ],function(){
-        say('owen',`...It's that it's down in the corner with the funders. It reads like we sponsored our own poster. If the name sat with OPEN AGAIN, I don't think I'd care how big it was.`,
+        say('owen',`...Oh, good question. It's that it's down in the corner with the funders. It reads like we sponsored our own poster! If the name sat with OPEN AGAIN, I don't think I'd mind how big it was.`,
           [{label:'That I can fix.',go:function(){
             filed('Client revision','Quarry Lane','Name moved to the headline — the real note, not the stated one');
             startClock(90);
-            say('kate',`Which is a twenty-minute fix — except the printer's file deadline is in ninety seconds, and after that it's next Thursday, which is after the reopening. Jenny's in the studio. Go.`,
+            say('kate',`Lovely, that's a twenty-minute fix — except the printer's file deadline is in ninety seconds, and after that it's next Thursday, which is after the reopening. Jenny's in the studio. You can do this — go!`,
               [{label:'Go.',go:function(){ G.step='crisis_fix'; paintHUD(); closeDlg(); }}]);
           }}]);
       });
   }
 
   if(key==='jenny'&&s==='crisis_fix'){
-    return choose('jenny',`Talk fast. What am I changing?`,[
+    return choose('jenny',`I'm ready! Quick — what am I changing?`,[
       {label:`Scale the logo up 200% where it is and resend.`,ok:false,
-       note:`That's the note he didn't give you. You'd be shipping the thing you just talked him out of. Try again — quickly.`},
+       note:`That's the note he didn't give you — we'd be sending the thing you just talked him out of. Try again, quickly!`},
       {label:`Lock the museum name to the headline as one unit, leave the funders at the bottom, keep the safe area.`,ok:true},
       {label:`Rebuild the top third properly — it'll only take twenty minutes.`,ok:false,
-       note:`We've got ninety seconds and a litho slot. Twenty minutes is next Thursday, which is after they open. Have another go?`}
+       note:`I'd love to, but we've got ninety seconds and a litho slot. Twenty minutes means next Thursday, after they open. Have another go?`}
     ],function(){
-      advance('crisis_show','jenny',`Done, exported, gone to the printer with eleven seconds on it. Go and show him, before he changes his mind about changing his mind.`);
+      advance('crisis_show','jenny',`Done, exported, and off to the printer with eleven seconds to spare! Go and show him — he'll love it.`);
     });
   }
 
   if(key==='owen'&&s==='crisis_show'){
     stopClock();
-    return say('owen',`Oh. That's it. That's exactly it — and it isn't any bigger, is it.`,
+    return say('owen',`Oh! That's it. That's exactly it — and it isn't any bigger, is it?`,
       [{label:'Not a point bigger.',go:function(){
-        say('owen',`I've asked four agencies to make a logo bigger. You're the first who asked me why.`,
+        say('owen',`I've asked four agencies to make a logo bigger. You're the first who asked me why. Thank you.`,
           [{label:'...',go:function(){
-            say('kate',`That's the job. Not the grid, not the typeface — that. A client describes a problem in the only language they've got, and your first instinct was to translate it rather than obey it. Six pieces and a print deadline you didn't miss. You're a designer now.`,
+            say('kate',`And that's the job, really. Not the grid, not the typeface — that. A client describes a problem in the only language they've got, and your first instinct was to understand it rather than just follow it. Six pieces and a print deadline met. I'm so pleased — you're a designer now.`,
               [{label:'Thank you.',go:function(){ G.step='complete'; paintHUD(); closeDlg(); openCertificate(); }}]);
           }}]);
       }}]);
@@ -1767,29 +1767,30 @@ function designScript(key){
   /* ---------- Alex: hints ---------- */
   if(key==='alex'){
     const h={
-      museum_brief:`Kate's in Servicing. Ask what the poster has to do, not what it has to contain.`,
-      hierarchy:`Three things at the same size means no things. Pick one and be brutal about the gap.`,
-      type_size:`Print it and walk away from it. Everything looks legible at 400% on a screen.`,
+      museum_brief:`Hi, I'm Alex! Kate's in Servicing. Ask what the poster has to do, not just what it has to contain.`,
+      hierarchy:`Three things at the same size means nothing stands out. Pick one and be bold about the gap.`,
+      type_size:`Print it and step back from it. Everything looks legible at 400% on a screen!`,
       grid:`If it looks aligned, it is aligned. The ruler's a tool, not a judge.`,
-      contrast:`Dan will check contrast, and whether anything's carried by colour alone. Both, not one.`,
+      contrast:`Dan will check contrast, and whether anything's carried by colour alone. Both matter.`,
       production:`Bleed, safe area, CMYK, minimum sizes. The printer does exactly what you send.`,
-      client_feedback:`Make the logo bigger is never about the logo. Find out what it's really about.`,
-      crisis_fix:`Smallest change that answers the real note. Not the best version — the shippable one.`,
-      crisis_show:`Go and show him. He hasn't seen it yet.`,
-      complete:`You got a client to un-ask for a bigger logo. That's a first here. Drink?`
+      client_feedback:`"Make the logo bigger" is rarely about the logo. Find out what it's really about — kindly.`,
+      crisis_fix:`Smallest change that answers the real note. Not the perfect version — the one we can send.`,
+      crisis_show:`Go and show him! He hasn't seen it yet.`,
+      complete:`You got a client to un-ask for a bigger logo — that's a first here! Drink?`
     };
-    return say('alex', h[s] || `Stuck? Tell me what has to be seen first, and we'll work back from there.`);
+    return say('alex', h[s] || `Stuck? Tell me what has to be seen first, and we'll work back from there together.`);
   }
 
   const idle={
-    kate:`Nothing new from me — go and finish what you've got.`,
-    mike:`Come back when something on it wins.`,
-    jenny:`Bring me a file and I'll tell you whether it can be made.`,
-    dan:`Kettle's on. And check your contrast before you get comfortable.`,
-    owen:`I'll wait. The trustees meet at four, mind.`
+    kate:`Nothing new from me just yet — finish what you've got, and shout if you need anything.`,
+    mike:`Come back when something on it wins — I can't wait to see it.`,
+    jenny:`Bring me a file whenever you're ready and I'll check it can be made.`,
+    dan:`Kettle's on, help yourself! And a little tip — check your contrast early.`,
+    owen:`No rush — I'll wait. The trustees meet at four, though!`
   };
   say(key, idle[key] || `...`);
 }
+
 
 const TRACK_GLOSSARY=[
   {t:"six-sheet",l:"a six-sheet",m:"six-sheet",
@@ -1852,10 +1853,10 @@ TRACK_DEFS.design={
   script:function(key){ return designScript(key); },
   occupants:function(room){ return designOccupants(room); },
   objectives:OBJ_DESIGN,
-  opening:{text:`Nine in the morning. There's a layout on the Creative Director's desk that nobody likes, including the person who made it — and a museum that reopens in six weeks.`,
+  opening:{text:`Nine in the morning, and welcome to your first day! There's a layout on the Creative Director's desk that isn't quite working yet, and a museum that reopens in six weeks. Let's help them shine.`,
            label:'Find Kate.'},
   certTitle:'DESIGN CHRONICLES',
-  timeUp:{who:'kate',line:`Time's gone. The file slot has gone with it, so the posters go up next Thursday — after they reopen. Finish it anyway — missing a deadline you survive; not knowing what you'd have changed, you don't.`},
+  timeUp:{who:'kate',line:`That's the time, I'm afraid — we've missed the file slot, so the posters go up next Thursday, after they reopen. Don't worry, it happens. Let's finish it anyway, so you know exactly what you'd change next time.`},
   certBody:['designed the Quarry Lane reopening campaign — hierarchy, type, layout, contrast',
             'and print-ready artwork — and translated a client note into the change they',
             'actually meant, with ninety seconds on the printer\u2019s deadline.'],
