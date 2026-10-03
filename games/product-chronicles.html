@@ -1957,128 +1957,128 @@ function pmScript(key){
 
   /* ---------- the quarter ---------- */
   if(key==='kate'&&s==='pm_brief')
-    return say('kate',`Hi — Nadia, head of product. Welcome aboard. Forty-one open feature requests, two squads, one quarter. Sales have promised three things, support have escalated two, and the CEO mentioned a dashboard in an all-hands that everyone heard as a commitment. You own next quarter's roadmap, and it goes out at five.`,
+    return say('kate',`Hello, and welcome aboard! I'm Nadia, head of product — we're so glad you're here. Here's where we are: forty-one open feature requests, two squads, one quarter. Sales have promised three things, support have escalated two, and the CEO mentioned a dashboard in an all-hands that everyone heard as a commitment. You own next quarter's roadmap, and it goes out at five.`,
       [{label:'And who decides what goes in?',go:function(){
-        say('kate',`You do — and that's the part nobody warns you about. Not by having good taste, but by being able to show your reasoning when six people disagree with it. Theo's in the kitchen with the request log. Start with what's actually being asked, because the list you've been handed is wrong.`,
+        say('kate',`You do! And the secret is that it isn't about having perfect taste — it's about being able to show your reasoning when people disagree. Theo's in the kitchen with the request log. Start with what's actually being asked, because the list you've been handed isn't quite right.`,
           [{label:'On my way.',go:function(){ advance('requests'); }}]);
       }}]);
 
   /* ---------- 1. what is actually being asked ---------- */
   if(key==='dan'&&s==='requests'){
     return choose('dan',
-      `Theo, support. Good to meet you. Your top request is calendar sync — thirty-eight tickets. Second is bulk reschedule, at nine. That's the list everyone's been quoting at you all week.`,
+      `Hiya — Theo, support. Lovely to meet you! Your top request is calendar sync — thirty-eight tickets. Second is bulk reschedule, at nine. That's the list everyone's been quoting at you all week.`,
       [
        {label:`Thirty-eight to nine is a clear signal — calendar sync goes first.`,ok:false,
-        note:`Thirty-eight tickets, yes. And I should mention: they're from four accounts. One of them raises a ticket every single time it happens. Want to try another?`},
+        note:`It does look clear! But I should mention: those thirty-eight tickets are from four accounts, and one of them raises a ticket every single time it happens. Want to try another?`},
        {label:`Count distinct accounts rather than tickets, check what each one was actually trying to do, and look at which requests are workarounds for something already broken.`,ok:true},
        {label:`Requests are a biased sample of loud customers — ignore the log and prioritise from strategy.`,ok:false,
-        note:`Biased, yes. Useless, no. You've just thrown away the only direct evidence you've got because it isn't tidy. Try again?`}
+        note:`It is biased, yes — but it's still the only direct evidence we've got, so it's worth a closer look rather than a bin. Try again?`}
       ],function(){
         filed('Demand analysis','Meridian Q3','Counted by account not ticket; six of nine bulk-reschedule requests were an onboarding bug');
-        advance('outcome','dan',`There you go. Calendar sync is four accounts, one of them very energetic. And six of the nine bulk-reschedule ones were people cleaning up a mess our own onboarding import made — so that's a bug, not a feature. Ravi's read your roadmap, by the way. He has views.`);
+        advance('outcome','dan',`There you go — brilliant! Calendar sync is four accounts, one of them very enthusiastic. And six of the nine bulk-reschedule ones were people cleaning up after our own onboarding import — so that's a bug, not a feature. Ravi's read your roadmap, by the way, and he'd love to chat.`);
       });
   }
 
   /* ---------- 2. outcomes, not features ---------- */
   if(key==='mike'&&s==='outcome'){
     return choose('mike',
-      `Ravi, tech lead. So your roadmap is fourteen feature names with months next to them. Calendar sync — July. What happens in August when we find out the sync isn't what people needed?`,
+      `Hello! Ravi, tech lead. So your roadmap is fourteen feature names with months next to them. Calendar sync — July. What happens in August if we find out sync isn't what people needed?`,
       [
        {label:`We amend the roadmap and communicate the change — plans change, everyone gets that.`,ok:false,
-        note:`Everyone says that and nobody means it. You've published fourteen promises, so every change is now a broken one, and you'll end up defending the list instead of the goal. Try again?`},
+        note:`In theory! But once fourteen promises are published, every change feels like a broken one, and we end up defending the list instead of the goal. Try again?`},
        {label:`Write each item as the outcome it's meant to produce, with a number and a date on the outcome rather than the build — and let the squad work out how.`,ok:true},
        {label:`Add engineering estimates to each feature so the dates are more credible.`,ok:false,
-        note:`More precise promises about the wrong thing. A confident date on a feature nobody's validated is worse than a vague one. Have another go?`}
+        note:`That makes the promises more precise, but they're still about the wrong thing — a confident date on a feature nobody's validated can be worse than a vague one. Have another go?`}
       ],function(){
         filed('Roadmap reframed','Meridian Q3','Outcomes with numbers, not fourteen feature names with months');
-        advance('capacity','mike',`Better. Cut onboarding drop-off from 38% to 25% by end of August survives us learning something. Calendar sync — July doesn't. It also tells my squad what to do when the obvious approach fails, which is most weeks. Jen's in Ops — she's done the arithmetic on your plan.`);
+        advance('capacity','mike',`Much better — thank you! "Cut onboarding drop-off from 38% to 25% by end of August" survives us learning something; "Calendar sync — July" doesn't. It also tells my squad what to do when the obvious approach fails, which happens most weeks. Jen's in Ops — she's done the arithmetic on your plan.`);
       });
   }
 
   /* ---------- 3. capacity ---------- */
   if(key==='jenny'&&s==='capacity'){
     return choose('jenny',
-      `Jen, engineering manager. So your plan assumes two squads of four, thirteen weeks, all on new work. Reality: oncall takes one person out permanently, we carry about twenty per cent bug and support load, there's a fortnight of leave booked in August, and one of mine is on a hiring panel. What do you do with the plan?`,
+      `Hello! Jen, engineering manager — lovely to meet you. So, your plan assumes two squads of four, thirteen weeks, all on new work. In reality: oncall takes one person out permanently, we carry about twenty per cent bug and support load, there's a fortnight of leave booked in August, and one of mine is on a hiring panel. What shall we do with the plan?`,
       [
        {label:`Keep the fourteen items and reprioritise in-quarter as things slip — that way we aim high.`,ok:false,
-        note:`Aiming high with someone else's hours. Everything ships at sixty per cent done, nothing gets finished, and in October we've got fourteen half-features and no outcome. Try again?`},
+        note:`I love the ambition! But with these hours, everything ships sixty per cent done, and in October we'd have fourteen half-features and no outcome. Try again?`},
        {label:`Plan against realistic capacity — roughly sixty per cent of nominal — keep an explicit buffer for the unplanned, and say out loud which items drop as a result.`,ok:true},
        {label:`Ask the team to protect the roadmap work and push support load to next quarter.`,ok:false,
-        note:`The support load is customers with broken things. You can defer it into a bigger pile, not out of existence. Have another go?`}
+        note:`The support load is customers with broken things, so pushing it back just makes a bigger pile later. Have another go?`}
       ],function(){
         filed('Capacity plan','Meridian Q3','Planned at realistic capacity with named drops and a buffer');
-        advance('slicing','jenny',`Thank you. Six items, not fourteen, and you've written down which eight aren't happening — which is the difference between a plan and a wish list. The uncomfortable bit is telling people, and you've just volunteered. Ravi's got the big one to scope.`);
+        advance('slicing','jenny',`Thank you — that's so helpful. Six items, not fourteen, and you've written down which eight aren't happening, which is the difference between a plan and a wish list. The tricky bit is telling people, but you'll be great at it. Ravi's got the big one to scope.`);
       });
   }
 
   /* ---------- 4. slicing ---------- */
   if(key==='mike'&&s==='slicing'){
     return choose('mike',
-      `The integration piece. Nine weeks, three providers, two-way sync, OAuth for each. That's a whole quarter for one squad, and we learn nothing until week nine. Cut it down.`,
+      `Right, the integration piece. Nine weeks, three providers, two-way sync, OAuth for each. That's a whole quarter for one squad, and we learn nothing until week nine. How could we make it smaller?`,
       [
        {label:`Build the backend sync engine first, then the UI in the second half — the hard part gets de-risked early.`,ok:false,
-        note:`Nine weeks of layers, and nobody can use any of it until the last one lands. Same risk, with a project plan stapled to it. Try again?`},
+        note:`Sensible-sounding! But it's still nine weeks of layers, and nobody can use any of it until the last one lands. Try again?`},
        {label:`Ship one provider, one direction, and a manual connect step — end to end, in two weeks, to real accounts. Then decide the rest from what happens.`,ok:true},
        {label:`Cut the third provider and the two-way sync, and ship what's left in six weeks.`,ok:false,
-        note:`Smaller, and still six weeks before anyone touches it. Trimming scope isn't the same as getting something in front of a customer. Have another go?`}
+        note:`Smaller, yes — but still six weeks before anyone touches it. Trimming scope isn't quite the same as getting something in front of a customer. Have another go?`}
       ],function(){
         filed('Scope slice','Meridian Q3','One provider, one direction, manual auth — end to end in two weeks');
-        advance('tradeoff','mike',`Yes. Thin and vertical, not thick and horizontal. A slice a real account can use tells you in a fortnight what nine weeks of design review can't. Jen's got your next problem: two things, one slot.`);
+        advance('tradeoff','mike',`Yes, lovely! Thin and vertical, not thick and horizontal. A slice a real account can use tells you in a fortnight what nine weeks of design review can't. Jen's got your next puzzle: two things, one slot.`);
       });
   }
 
   /* ---------- 5. the trade-off ---------- */
   if(key==='jenny'&&s==='tradeoff'){
     return choose('jenny',
-      `One slot left this quarter. Option A: calendar sync — four accounts, one of them our loudest, about eleven thousand a year between them, asked for on every call. Option B: the onboarding import bug — hits thirty-eight per cent of new signups in their first week, and we reckon we lose one in six of them. Nobody's ever raised a ticket about it, because they just leave.`,
+      `Here's a tough one. One slot left this quarter. Option A: calendar sync — four accounts, one of them our loudest, about eleven thousand a year between them, asked for on every call. Option B: the onboarding import bug — hits thirty-eight per cent of new signups in their first week, and we reckon we lose one in six of them. Nobody's ever raised a ticket about it, because they just leave.`,
       [
        {label:`A. The revenue is known and named, and those four accounts will churn if we keep saying no.`,ok:false,
-        note:`Eleven thousand you can see, against an unknown number of signups you can't — and you picked the one with a face attached. That's not a decision, that's the availability heuristic with a spreadsheet. Try again?`},
+        note:`Very understandable — it's eleven thousand you can see. But the signups we're losing are real too, just invisible, and there are far more of them. Picking the one with a face attached is the availability heuristic at work. Try again?`},
        {label:`B. The onboarding bug affects far more people and costs us silently. And write down the size of both, what B is expected to move, and what those four accounts get instead.`,ok:true},
        {label:`Split the slot and do a reduced version of both.`,ok:false,
-        note:`Two half things, neither finished, and now both sets of people are annoyed. The slot is one slot. Have another go?`}
+        note:`Kind to everyone, but we'd end up with two half things, neither finished, and both groups a bit disappointed. Have another go?`}
       ],function(){
         filed('Prioritisation call','Meridian Q3','Onboarding bug over calendar sync, with both sizes and the reasoning written down');
-        advance('saying_no','jenny',`Right. The people who leave never file a ticket, so a request log will always over-weight the customers you already have. And writing the reasoning down is the bit that saves you in October when someone asks why sync slipped. Speaking of which — Ravi wants an answer about his own idea.`);
+        advance('saying_no','jenny',`Exactly right. The people who leave never file a ticket, so a request log will always over-weight the customers you already have. And writing the reasoning down is what'll help you in October when someone asks why sync slipped. Speaking of which — Ravi would like an answer about his own idea.`);
       });
   }
 
   /* ---------- 6. saying no ---------- */
   if(key==='mike'&&s==='saying_no'){
     return choose('mike',
-      `Right, mine then. The plugin API. I've wanted it for a year, I think it's how we stop building integrations one at a time forever, and it's not on your six. What do you say to me?`,
+      `Right, my turn! The plugin API. I've wanted it for a year — I think it's how we stop building integrations one at a time forever — and it's not on your six. What do you say to me? Be honest, I can take it.`,
       [
        {label:`"It's on the backlog — we'll look at it next quarter."`,ok:false,
-        note:`So that's a no in a costume. I'll ask again in October, you'll say the same thing, and by January I'll have stopped bringing you ideas. Say the actual word. Try again?`},
+        note:`That's a gentle no, but it's a bit vague — I'd ask again in October, and eventually stop bringing ideas. A clear answer is kinder. Try again?`},
        {label:`"No, not this quarter — it lost to the onboarding bug, because that's 38% of new signups. What would change it: evidence that integrations are why accounts don't convert, or a second customer asking for the API itself."`,ok:true},
        {label:`"Good idea, let's get it in" — and then let it slide quietly down the list.`,ok:false,
-        note:`You've bought a fortnight of peace with your credibility. I'll find out, and then nothing you tell me about the roadmap will mean anything. Have another go?`}
+        note:`That buys a bit of peace, but I'd find out eventually, and then it'd be hard to trust the roadmap. Have another go?`}
       ],function(){
         filed('Roadmap decision','Meridian Q3','Plugin API declined with the reason, what it lost to, and what would change it');
-        advance('stakeholder','mike',`That I can work with. No, because X, and here's what would change my mind is a decision. It's on the backlog is a filing cabinet where ideas go to die, and everyone knows it. Gareth's in the war room, and he's brought a contract.`);
+        advance('stakeholder','mike',`Thank you — that I can work with! "No, because X, and here's what would change my mind" is a real decision. "It's on the backlog" just leaves people wondering. Gareth's in the war room, and he's brought a contract.`);
       });
   }
 
   /* ---------- 7. the commitment ---------- */
   if(key==='owen'&&s==='stakeholder'){
     return choose('owen',
-      `Gareth, sales. Northfield Health. Hundred and eighty thousand, three-year term, signature ready — conditional on single sign-on being live by March. Their security questionnaire has it as a hard requirement. I need it on the roadmap with that date, and I need it today.`,
+      `Hello — Gareth, sales. Great to meet you! Northfield Health. Hundred and eighty thousand, three-year term, signature ready — conditional on single sign-on being live by March. Their security questionnaire has it as a hard requirement. I need it on the roadmap with that date, ideally today.`,
       [
        {label:`"For a hundred and eighty thousand? Put it down for March, I'll make it work."`,ok:false,
-        note:`(You've just committed nine weeks of a squad you already spent, to a date you invented, for a requirement you haven't read. In March you'll break it, and it'll be your name on the slip. Want another go?)`},
+        note:`(Generous, but that commits nine weeks of a squad already spent, to a date we've invented, for a requirement we haven't read. In March it'd likely slip. Want another go?)`},
        {label:`"Before I commit to a date — can I speak to their IT lead about what specifically blocks sign-off? And has this come up in other enterprise deals, or just this one?"`,ok:true},
        {label:`"We can't commit to that. The quarter's planned and SSO is a nine-week build."`,ok:false,
-        note:`Then I lose the deal, and you own that too. You still haven't found out whether they need SSO, or something SSO happens to include. Try again?`}
+        note:`Oh. Then I might lose the deal.  (Fair point about capacity, but you haven't found out yet whether they need SSO, or something SSO happens to include. Try again?)`}
       ],function(){
-        say('owen',`...Fine. I'll get you their IT lead. And it's come up in nine of the last twelve enterprise conversations, if that helps.`,
+        say('owen',`...Fair enough, good thinking. I'll get you their IT lead. And it's come up in nine of the last twelve enterprise conversations, if that helps.`,
           [{label:'That changes what it is.',go:function(){
             say('owen',`How so? It's still one deal in front of me.`,
               [{label:'Nine of twelve is a pattern, not a favour.',go:function(){
-                say('owen',`Right — I've had their IT lead on the phone. She says the blocker isn't the login at all. It's leavers. When a nurse leaves, they need the account deactivated centrally within a day, and they can't prove that today. SSO was just how their template asks for it.`,
+                say('owen',`Ooh, okay. Right — I've had their IT lead on the phone. She says the blocker isn't the login at all. It's leavers. When a nurse leaves, they need the account deactivated centrally within a day, and they can't prove that today. SSO was just how their template asks for it.`,
                   [{label:'That is not nine weeks of work.',go:function(){
                     filed('Requirement translated','Meridian Q3','SSO request was central offboarding; and it is a pattern across nine of twelve deals');
                     startClock(90);
-                    say('kate',`That's about two weeks. And the roadmap publishes in ninety seconds, after which Gareth sends the addendum with whatever we've written in it. Ravi's on the floor. Go.`,
+                    say('kate',`Lovely — that's about two weeks! But the roadmap publishes in ninety seconds, and then Gareth sends the addendum with whatever we've written. Ravi's on the floor. You can do this — go!`,
                       [{label:'Go.',go:function(){ G.step='crisis_fix'; paintHUD(); closeDlg(); }}]);
                   }}]);
               }}]);
@@ -2087,24 +2087,24 @@ function pmScript(key){
   }
 
   if(key==='mike'&&s==='crisis_fix'){
-    return choose('mike',`Ninety seconds. What goes in the roadmap, and what goes in the contract?`,[
+    return choose('mike',`I'm ready — ninety seconds! What goes in the roadmap, and what goes in the contract?`,[
       {label:`Commit SSO for March — nine of twelve deals want it, so it's clearly right.`,ok:false,
-       note:`Nine of twelve want it written on a form. One of twelve has told us what they actually need. Commit nine weeks on that evidence and you've learned nothing from the last five minutes. Try again?`},
+       note:`Nine of twelve want it written on a form, but only one has told us what they actually need. Let's not commit nine weeks just yet. Try again, quickly!`},
       {label:`Commit the deactivation API this quarter with a date. Put SSO on the roadmap as next quarter's candidate, no date, with the discovery attached. And let the addendum say exactly that.`,ok:true},
       {label:`Commit both — deactivation now and SSO by March — so the deal's safe either way.`,ok:false,
-       note:`You've protected the deal by promising the thing you just established nobody asked for, out of capacity you haven't got. Have another go?`}
+       note:`That keeps the deal safe, but it promises the thing we've just learned nobody needs, from capacity we don't have. Have another go?`}
     ],function(){
-      advance('crisis_show','mike',`Published, eleven seconds to spare. Two weeks committed with a date, nine weeks named without one, and the reasoning under both. Go and tell Gareth before he sends the old version.`);
+      advance('crisis_show','mike',`Published, with eleven seconds to spare! Two weeks committed with a date, nine weeks named without one, and the reasoning under both. Go and tell Gareth before he sends the old version.`);
     });
   }
 
   if(key==='owen'&&s==='crisis_show'){
     stopClock();
-    return say('owen',`So I go back with deactivation in three weeks, and SSO as a candidate for next quarter. They'll ask about the date.`,
-      [{label:'And you can tell them the truth about why there isn\u2019t one.',go:function(){
-        say('owen',`Which is a better call than the one where I promise March and ring them in February. I've closed eleven of these. You're the first product person who asked me to put them on the phone instead of just saying no.`,
+    return say('owen',`So I go back with deactivation in three weeks, and SSO as a candidate for next quarter. They'll ask about the date, though.`,
+      [{label:'And you can tell them the truth about why there isn’t one.',go:function(){
+        say('owen',`Which is a much better call than promising March and ringing them in February. I've closed eleven of these, and you're the first product person who asked me to get them on the phone. Thank you!`,
           [{label:'...',go:function(){
-            say('kate',`That's the job. Not the roadmap tool, not the framework — that. Someone hands you a date and a requirement, and you go and find out which of the two is real. Six pieces of work, eight things you said no to in writing, and a publish deadline you didn't miss. You're a product manager now.`,
+            say('kate',`And that's the job, really. Not the roadmap tool, not the framework — that. Someone hands you a date and a requirement, and you take the time to find out which of the two is real. Six pieces of work, eight kind but clear noes in writing, and a publish deadline met. I'm so proud of you — you're a product manager now.`,
               [{label:'Thank you.',go:function(){ G.step='complete'; paintHUD(); closeDlg(); openCertificate(); }}]);
           }}]);
       }}]);
@@ -2113,30 +2113,31 @@ function pmScript(key){
   /* ---------- Sam: hints ---------- */
   if(key==='alex'){
     const h={
-      pm_brief:`Nadia's in Product. Ask who decides, and what you need to be able to show.`,
+      pm_brief:`Hi, I'm Sam! Nadia's in Product. Ask who decides, and what you need to be able to show.`,
       requests:`Thirty-eight tickets isn't thirty-eight customers. Ask Theo how many accounts.`,
       outcome:`If the roadmap names the solution, you can't change the solution.`,
-      capacity:`Oncall, bugs, leave, hiring. Nobody gets thirteen clean weeks.`,
+      capacity:`Oncall, bugs, leave, hiring. Nobody gets thirteen clean weeks!`,
       slicing:`What could one real account use in a fortnight?`,
       tradeoff:`The people who leave never file a ticket. Count them anyway.`,
-      saying_no:`It's on the backlog is a no that costs you the relationship too.`,
-      stakeholder:`He's brought you a date and a requirement. One's negotiable, one isn't real.`,
-      crisis_fix:`Commit what you know, name what you don't, and don't invent a date.`,
-      crisis_show:`Go and tell him before the addendum goes out.`,
-      complete:`You put eight noes in writing and still have sales on side. Pub?`
+      saying_no:`A clear, kind no with a reason is better than "it's on the backlog".`,
+      stakeholder:`He's brought you a date and a requirement. One's negotiable, and one might not be what it seems.`,
+      crisis_fix:`Commit what you know, name what you don't, and don't invent a date. You've got this.`,
+      crisis_show:`Go and tell him before the addendum goes out!`,
+      complete:`Eight noes in writing and sales still on side — amazing! Pub?`
     };
     return say('alex', h[s] || `Stuck? Ask what decision this changes, and what you'd need to show to defend it in October.`);
   }
 
   const idle={
-    kate:`Nothing new from me — go and finish the quarter.`,
-    mike:`Come back when it's a slice somebody can actually use.`,
-    jenny:`Bring me a plan that fits the hours we've really got.`,
-    dan:`Kettle's on. Four accounts, thirty-eight tickets, remember.`,
-    owen:`I'll wait. Signature's ready, mind.`
+    kate:`Nothing new from me just yet — finish the quarter, and shout if you need anything.`,
+    mike:`Come back whenever it's a slice somebody can actually use — I'm excited to see it.`,
+    jenny:`Bring me a plan that fits the hours we've really got, and we'll be golden.`,
+    dan:`Kettle's on, help yourself! Four accounts, thirty-eight tickets, remember.`,
+    owen:`No rush — I'll wait. Signature's ready, mind!`
   };
   say(key, idle[key] || `...`);
 }
+
 
 const TRACK_GLOSSARY=[
   {t:"roadmap",l:"a roadmap",m:"roadmap",
@@ -2195,10 +2196,10 @@ TRACK_DEFS.product={
   script:function(key){ return pmScript(key); },
   occupants:function(room){ return pmOccupants(room); },
   objectives:OBJ_PM,
-  opening:{text:`Nine in the morning at Meridian. Forty-one open requests, two squads, three things sales have already promised, and a roadmap that publishes at five o'clock whether it's right or not.`,
+  opening:{text:`Nine in the morning at Meridian, and welcome to your first day! Today there are forty-one open requests, two squads, three things sales have already promised, and a roadmap that publishes at five o'clock. Let's get stuck in.`,
            label:'Find Nadia.'},
   certTitle:'PRODUCT CHRONICLES',
-  timeUp:{who:'kate',line:`Published. Gareth's addendum went out with the old wording, so we've committed March for something nobody asked for. Finish it anyway — missing a deadline you survive; not knowing what you'd have written, you don't.`},
+  timeUp:{who:'kate',line:`That's the roadmap published, I'm afraid, and Gareth's addendum went out with the old wording. Don't worry — we can fix it with the client. Let's finish it anyway, so you know exactly what you'd write next time.`},
   certBody:['planned a quarter at Meridian — demand counted properly, outcomes instead of',
             'features, honest capacity, a two-week slice and eight documented noes — and',
             'turned a hundred-and-eighty-thousand-pound date into the requirement underneath it.'],
