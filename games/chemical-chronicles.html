@@ -2514,110 +2514,110 @@ function chemScript(key){
 
   /* ---------- the brief ---------- */
   if(key==='kate'&&s==='dose_brief')
-    return say('kate',`Hi — I'm Maggie, engineering director. Welcome to Hallam Works. We design and build the dosing rigs and process packages that end up in water treatment works, dairies and breweries. You're on Wearside Water from this morning: a chlorine dosing package for a service reservoir, plus the clean-in-place set that goes with it. They take a compliance sample at five o'clock.`,
+    return say('kate',`Hello, and welcome to Hallam Works! I'm Maggie, engineering director — we're really glad to have you. We design and build the dosing rigs and process packages that end up in water treatment works, dairies and breweries. You're on Wearside Water from this morning: a chlorine dosing package for a service reservoir, plus the clean-in-place set that goes with it. They take a compliance sample at five o'clock.`,
       [{label:'What is wrong with it?',go:function(){
-        say('kate',`Four per cent of the chemical we dose can't be accounted for. The new fill points have gone in next to each other and Colin has gone quiet about it. And the heat exchanger on the CIP set is four degrees short of temperature. Arun's in the Design Office — start with the four per cent, because everyone has already decided it's the meter.`,
+        say('kate',`Four per cent of the chemical we dose can't be accounted for. The new fill points have gone in right next to each other, and Colin's gone a bit quiet about it. And the heat exchanger on the CIP set is four degrees short of temperature. Arun's in the Design Office and he's lovely — start with the four per cent, because everyone's already decided it's the meter.`,
           [{label:'On my way.',go:function(){ advance('balance'); }}]);
       }}]);
 
   /* ---------- 1. the mass balance ---------- */
   if(key==='mike'&&s==='balance'){
     return choose('mike',
-      `Arun Pillai — principal process, which mostly means I ask where the number came from. Good to have you. We buy a tanker of sodium hypochlorite, we dose what the meter says, and four per cent of it is unaccounted for by the end of the month. Site want the meter calibrated. Do we calibrate the meter?`,
+      `Hello! Arun Pillai, principal process — which mostly means I'm the one who asks where the number came from. Really good to have you. We buy a tanker of sodium hypochlorite, we dose what the meter says, and four per cent of it is unaccounted for by the end of the month. Site want the meter calibrated. Do we calibrate the meter?`,
       [
        {label:`Yes — four per cent is about right for a meter that has been in two years.`,ok:false,
-        note:`It might be. And if it isn't, we've spent a day proving a good meter is good while four per cent of a tanker keeps going somewhere. Want to try another?`},
+        note:`It might be! But if it isn't, we've spent a day proving a good meter is good while four per cent of a tanker keeps going somewhere. Want to try another?`},
        {label:`Draw a boundary round the whole package first and account for everything crossing it — what goes in, what is dosed, what goes to drain on a flush, and what the hypochlorite loses to decomposition sitting warm in the tank. Then question the meter.`,ok:true},
        {label:`Add four per cent to the dose so the residual still comes out right.`,ok:false,
-        note:`Now we're overdosing to cover an unknown, and the day the unknown changes we find out in a compliance sample. Try again?`}
+        note:`That means overdosing to cover something we don't understand yet — and if that changes, we'd only find out in a compliance sample. Try again?`}
       ],function(){
         filed('Mass balance','Wearside Water','Boundary drawn and every stream accounted for — flushes, drain losses and decomposition — before the instrument was blamed');
-        advance('compat','mike',`That's it. A balance that doesn't close is telling you about a stream you haven't drawn. Two thirds of ours goes down the drain on the daily flush, and the rest decomposes in a tank that sits at twenty-six degrees in summer. The meter was fine. Colin's in the canteen, and he's seen the new fill points.`);
+        advance('compat','mike',`That's it — lovely thinking! A balance that doesn't close is telling you about a stream you haven't drawn yet. Two thirds of ours goes down the drain on the daily flush, and the rest decomposes in a tank that sits at twenty-six degrees in summer. The meter was fine all along. Colin's in the canteen — he's seen the new fill points and he'd love a word.`);
       });
   }
 
   /* ---------- 2. chemical compatibility ---------- */
   if(key==='dan'&&s==='compat'){
     return choose('dan',
-      `Colin Baxter, maintenance fitter — I'm the one on site when the tanker comes. The new fill points are a metre apart. Hypochlorite on the left, acid on the right, same size coupling on both, same grey cabinet, and the labels are on the inside of the door. Tell me that's fine.`,
+      `Hiya — Colin Baxter, maintenance fitter. I'm the one on site when the tanker comes! Good to meet you. The new fill points are a metre apart. Hypochlorite on the left, acid on the right, same size coupling on both, same grey cabinet, and the labels are on the inside of the door. Tell me that's fine?`,
       [
        {label:`It's labelled and the driver has a delivery note. That's the control.`,ok:false,
-        note:`On a wet afternoon, with the labels shut inside the door. Put those two in the same tank and you make chlorine gas in a chamber I stand in. Want to try another?`},
+        note:`On a wet afternoon, with the labels shut inside the door? If those two ever meet in the same tank, they make chlorine gas in a chamber I stand in. Want to try another?`},
        {label:`No. Different couplings so the wrong hose physically will not fit, separate bunds so a spill of one cannot reach the other, the fill points moved apart with the labels on the outside, and a delivery procedure with one of ours present.`,ok:true},
        {label:`Put a bigger warning sign on the cabinet and brief the hauliers.`,ok:false,
-        note:`A sign is an instruction to somebody in a hurry. The coupling is a design that doesn't care how busy they are. Have another go?`}
+        note:`Signs help, but they rely on someone in a hurry reading them. A coupling that won't fit works however busy they are. Have another go?`}
       ],function(){
         filed('Chemical compatibility','Wearside Water','Incompatible chemicals separated by coupling, bund and distance rather than by signage');
-        advance('heat','dan',`Thank you. Two incompatible chemicals, one coupling and a driver on his ninth drop: that's not an accident waiting, that's an accident booked in. If the wrong hose can't fit, the wrong thing can't happen. Arun's after you — the exchanger's still four degrees short.`);
+        advance('heat','dan',`Oh, thank you — I'll sleep better tonight! Two incompatible chemicals, one coupling and a driver on his ninth drop was always going to go wrong eventually. If the wrong hose can't fit, the wrong thing can't happen. Arun's after you — the exchanger's still four degrees short.`);
       });
   }
 
   /* ---------- 3. heat transfer ---------- */
   if(key==='mike'&&s==='heat'){
     return choose('mike',
-      `The CIP set has to reach eighty-five degrees to satisfy the brewery's own procedure. The plate exchanger gets to eighty-one and stops. Steam is at full, the pump is running, and the shift manager wants to turn the steam pressure up. What do we do?`,
+      `Right, the exchanger. The CIP set has to reach eighty-five degrees to satisfy the brewery's own procedure. The plate exchanger gets to eighty-one and stops. Steam is at full, the pump is running, and the shift manager wants to turn the steam pressure up. What would you do?`,
       [
        {label:`Turn the steam up. More driving force, more heat.`,ok:false,
-        note:`If the plates are fouled you've raised the temperature of the fouling, and on a caustic circuit you may bake it on harder. Try again?`},
+        note:`Makes sense at first glance! But if the plates are fouled, that just heats the fouling, and on a caustic circuit it might bake it on harder. Try again?`},
        {label:`Work out whether it is fouling, flow, or a sizing that was always optimistic — compare the temperature approach now against the day it was commissioned, then clean it and re-rate the duty honestly.`,ok:true},
        {label:`Run the circuit longer at eighty-one so the total heat delivered is the same.`,ok:false,
-        note:`Their procedure names a temperature because that is what kills the thing they are worried about. Time at the wrong temperature isn't a substitute, and it's their auditor, not ours. Have another go?`}
+        note:`Their procedure names a temperature because that's what kills the thing they're worried about — extra time at a lower temperature isn't quite the same, and it's their auditor who'd ask. Have another go?`}
       ],function(){
         filed('Heat transfer','Wearside Water','Approach temperature compared with commissioning data — fouling cleaned and the duty re-rated honestly');
-        advance('scaleup','mike',`Good. The approach was three degrees on day one and it's eleven now, which is fouling, not physics changing its mind. Clean it, then be honest that we sized it with nothing in reserve — four degrees of margin would have cost very little in plate area. Bea's in the Process Lab with the recipe that worked beautifully in the rig.`);
+        advance('scaleup','mike',`Spot on. The approach was three degrees on day one and it's eleven now — that's fouling, not physics changing its mind. Clean it, and let's be honest that we sized it with nothing in reserve; four degrees of margin would have cost very little in plate area. Bea's in the Process Lab with a recipe that worked beautifully in the rig.`);
       });
   }
 
   /* ---------- 4. scale-up ---------- */
   if(key==='jenny'&&s==='scaleup'){
     return choose('jenny',
-      `Bea Novak, production — nice to meet you. Your cleaning recipe: twenty litres in the lab, perfect. Eight cubic metres in the real vessel and it foams over the top, takes twenty minutes to mix instead of two, and the detergent never gets to the far side. What went wrong?`,
+      `Hello! Bea Novak, production — lovely to meet you. Here's a head-scratcher: your cleaning recipe was perfect at twenty litres in the lab. At eight cubic metres in the real vessel, it foams over the top, takes twenty minutes to mix instead of two, and the detergent never reaches the far side. What went wrong?`,
       [
        {label:`Nothing — scale it all up in proportion. Ten times the volume, ten times the impeller.`,ok:false,
-        note:`Same shape isn't the same behaviour. The power you need to keep it mixed doesn't scale with the volume, and the surface it foams at doesn't either. Want to try another?`},
+        note:`Lots of people think that! But the same shape doesn't behave the same at size. The power needed to keep it mixed doesn't scale with the volume, and neither does the surface it foams at. Want to try another?`},
        {label:`Keep the mixing intensity rather than the geometry — match power per unit volume and tip speed, check the mixing time at full size, add the surfactant where it is not falling through air, and prove it at pilot scale before promising a date.`,ok:true},
        {label:`Add antifoam and turn the agitator up until it mixes in two minutes.`,ok:false,
-        note:`Antifoam in a food plant is another chemical to justify, and a faster agitator shears the emulsion and heats the batch. You've treated two symptoms and learned nothing. Have another go?`}
+        note:`Antifoam in a food plant is another chemical to justify, and a faster agitator shears the emulsion and heats the batch. That treats the symptoms but not the cause. Have another go?`}
       ],function(){
         filed('Scale-up','Wearside Water','Mixing intensity matched rather than geometry, and proved at pilot scale before a date was given');
-        advance('relief','jenny',`Right. Geometric similarity is not dynamic similarity — the thing that stays the same is how hard you are working each cubic metre, not how the drawing looks. And a recipe that has never been made at size is a hypothesis with a delivery date. Arun wants you back. There's a vessel with a bursting disc on it and nobody can say why.`);
+        advance('relief','jenny',`Exactly right! Geometric similarity isn't dynamic similarity — what stays the same is how hard you're working each cubic metre, not how the drawing looks. And it's always worth proving a recipe at size before promising a date. Arun would like you back — there's a vessel with a bursting disc on it, and nobody's sure why.`);
       });
   }
 
   /* ---------- 5. relief and HAZOP ---------- */
   if(key==='mike'&&s==='relief'){
     return choose('mike',
-      `The batch vessel has a bursting disc, sized years ago for the fire case. Since then we've added a pump feeding it, an automatic valve on the outlet, and steam on the jacket. The disc vents straight out at head height beside the sample point. What's your position?`,
+      `This one's important. The batch vessel has a bursting disc, sized years ago for the fire case. Since then we've added a pump feeding it, an automatic valve on the outlet, and steam on the jacket. The disc vents straight out at head height beside the sample point. What do you think?`,
       [
        {label:`It has relief on it, sized by somebody competent. It's protected.`,ok:false,
-        note:`Sized for a fire, before there was a pump that can fill it against a shut valve. Protection is for the case you have, not the case you had. Try again?`},
+        note:`It was sized for a fire, though — before there was a pump that can fill it against a shut valve. Protection needs to match the plant we have now. Try again?`},
        {label:`Work the deviations through properly — no flow, no outlet, more heat — size the relief for the worst credible case rather than the one on file, and route the discharge somewhere nobody stands.`,ok:true},
        {label:`Add a high pressure alarm and a trip on the pump, and leave the disc as it is.`,ok:false,
-        note:`Now the last line of defence is the instrument that could be the thing that failed. Alarms are welcome and they are not relief. Have another go?`}
+        note:`Alarms are always welcome! But then the last line of defence is an instrument that could be the very thing that failed. Alarms aren't relief. Have another go?`}
       ],function(){
         filed('Relief and HAZOP','Wearside Water','Deviations worked through, relief sized for the worst credible case, discharge routed away from people');
-        advance('client','mike',`That's the discipline. Walk the deviations one at a time and ask what happens, what notices and what is left — then size for the worst case you can actually reach, and put the discharge where a person is not standing at ten past four with a sample bottle. Helen's here from Wearside, and she's asking for more chlorine.`);
+        advance('client','mike',`That's the discipline — well done. Walk the deviations one at a time and ask what happens, what notices, and what's left. Then size for the worst case you can actually reach, and put the discharge where nobody's standing at ten past four with a sample bottle. Helen's here from Wearside, and she's asking for more chlorine.`);
       });
   }
 
   /* ---------- 6. the client, and what she actually needs ---------- */
   if(key==='owen'&&s==='client'){
     return choose('owen',
-      `Helen Ashworth, asset manager at Wearside. A sample at the far end of the network came back under our target residual on Tuesday. I'd like you to put the dose up by half — it's easier than explaining another one to the regulator.`,
+      `Hello — Helen Ashworth, asset manager at Wearside. Lovely to meet you. A sample at the far end of the network came back under our target residual on Tuesday. I'd like you to put the dose up by half — it's easier than explaining another one to the regulator.`,
       [
        {label:`"Of course — I'll set the dose up fifty per cent this afternoon."`,ok:false,
-        note:`(You've just agreed to push more chlorine into a network without knowing where the last lot went. The taste complaints arrive within a week and the by-product limit is a harder conversation than a low residual. Want another go?)`},
+        note:`(Kind of you, but that pushes more chlorine into the network without knowing where the last lot went. Taste complaints would arrive within a week, and the by-product limit is a harder conversation than a low residual. Want another go?)`},
        {label:`"Before I touch the dose — was it low at the works as well, or only at the far end? And what changed on Tuesday?"`,ok:true},
        {label:`"Overdosing to hit one sample is how you fail the by-product limit instead."`,ok:false,
-        note:`I'm sure it is. I'll ask the operations team to do it, then.  (Correct, and now the dose goes up anyway and nobody has looked at the cause. Try again?)`}
+        note:`Oh. Well, I'll ask the operations team to do it, then.  (You're right, but now the dose goes up anyway and nobody's looked at the cause. Try again?)`}
       ],function(){
-        say('owen',`...Fine at the works. Low only at the far end, and only Tuesday. Which was the day they flushed the main up there, now you make me say it out loud.`,
+        say('owen',`...Oh, good question. Fine at the works. Low only at the far end, and only on Tuesday. Which was the day they flushed the main up there, now you mention it.`,
           [{label:'So the chlorine was used up by the main, not missing from the dose.',go:function(){
-            say('owen',`...And if I'd put the dose up by half, the whole town would have tasted it for a week to fix one sample in one dead end.`,
+            say('owen',`...Goodness. And if I'd put the dose up by half, the whole town would have tasted it for a week to fix one sample in one dead end. Thank you.`,
               [{label:'Then the dose was never the problem.',go:function(){
                 filed('Requirement, translated','Wearside Water','A low residual at one point after a flush, not a dosing shortfall — demand explained before the dose was changed');
                 startClock(90);
-                say('kate',`Which is right, and the timing is dreadful. They take the next compliance sample at five, and whatever control we ship has to be in the panel before it goes. Bea's in the Process Lab. Go.`,
+                say('kate',`Lovely — exactly right, just at a tricky moment! They take the next compliance sample at five, and whatever control we ship needs to be in the panel before it goes. Bea's in the Process Lab. You can do this — go!`,
                   [{label:'Go.',go:function(){ G.step='crisis_fix'; paintHUD(); closeDlg(); }}]);
               }}]);
           }}]);
@@ -2625,24 +2625,24 @@ function chemScript(key){
   }
 
   if(key==='jenny'&&s==='crisis_fix'){
-    return choose('jenny',`Ninety seconds. What is this rig actually doing to the dose?`,[
+    return choose('jenny',`I'm ready — ninety seconds! What should this rig actually do with the dose?`,[
       {label:`Fixed dose, set half higher, and we watch the samples for a month.`,ok:false,
-       note:`That is the thing she just talked herself out of, with a month of the town tasting it. Try again — quickly.`},
+       note:`That's the very thing she just talked herself out of — and the town would taste it for a month. Try again, quickly!`},
       {label:`Dose to a measured residual with a proper control loop, alarm when the demand jumps instead of chasing it, and log the flush events so a low sample can be explained rather than guessed at.`,ok:true},
       {label:`Automatic boost whenever a sample comes back low, so it corrects itself.`,ok:false,
-       note:`A sample is hours old and comes from one point in a network. You'd be correcting Tuesday's dead end on Thursday, everywhere. Have another go?`}
+       note:`A sample is hours old and comes from one point in the network, so we'd be correcting Tuesday's dead end on Thursday, everywhere. Have another go?`}
     ],function(){
-      advance('crisis_show','jenny',`Loop configured, alarm set on demand rather than dose, flush events logged — eleven seconds spare. Go and show her, before somebody turns a dial.`);
+      advance('crisis_show','jenny',`Loop configured, alarm set on demand rather than dose, flush events logged — with eleven seconds to spare! Go and show her before anyone turns a dial.`);
     });
   }
 
   if(key==='owen'&&s==='crisis_show'){
     stopClock();
-    return say('owen',`So it holds the residual where I want it, and it tells me when something in the network started eating it.`,
+    return say('owen',`Oh, so it holds the residual where I want it, and it tells me when something in the network starts eating it. That's brilliant.`,
       [{label:'And the flush shows up as a flush.',go:function(){
-        say('owen',`I've been asked for more chlorine by three contractors and given it to two of them. You're the first one who asked what changed on Tuesday.`,
+        say('owen',`Three contractors have asked me for more chlorine, and I gave it to two of them. You're the first who asked what changed on Tuesday. Thank you so much.`,
           [{label:'...',go:function(){
-            say('kate',`That's the job. Not the relief sizing, not the mass balance — that. Somebody hands you a number to turn up and you go and find out what happened. Six pieces of work, a compliance sample you didn't miss, and a town that won't taste it. You're a chemical engineer now.`,
+            say('kate',`And that's the job, really. Not the relief sizing, not the mass balance — that. Somebody hands you a number to turn up, and you kindly go and find out what happened. Six pieces of work, a compliance sample met, and a town that won't taste a thing. I'm so proud of you — you're a chemical engineer now.`,
               [{label:'Thank you.',go:function(){ G.step='complete'; paintHUD(); closeDlg(); openCertificate(); }}]);
           }}]);
       }}]);
@@ -2651,29 +2651,30 @@ function chemScript(key){
   /* ---------- Nell: hints ---------- */
   if(key==='alex'){
     const h={
-      dose_brief:`Maggie's in the Project Office. Ask what happens at five o'clock.`,
-      balance:`Everyone has decided it is the meter. Draw the boundary and count what crosses it.`,
-      compat:`Two chemicals, one size of coupling. Ask what a sign does that a fitting cannot.`,
+      dose_brief:`Hi, I'm Nell! Maggie's in the Project Office. Ask what happens at five o'clock.`,
+      balance:`Everyone's decided it's the meter. Draw the boundary and count what crosses it.`,
+      compat:`Two chemicals, one size of coupling. Ask what a sign does that a fitting can't.`,
       heat:`Ask what the approach temperature was on the day it was commissioned.`,
-      scaleup:`Same shape is not the same behaviour. Ask what stays constant when you scale.`,
+      scaleup:`Same shape isn't the same behaviour. Ask what stays constant when you scale.`,
       relief:`It was sized for a fire, before the pump was there. Walk the deviations.`,
-      client:`She has asked for a bigger number. Ask what changed on Tuesday.`,
-      crisis_fix:`Control to a measurement, and alarm on the thing that moved.`,
-      crisis_show:`Go and show her — she has not seen it yet.`,
-      complete:`You talked a utility out of overdosing a whole town. Pub?`
+      client:`She's asked for a bigger number. Ask what changed on Tuesday.`,
+      crisis_fix:`Control to a measurement, and alarm on the thing that moved. You've got this.`,
+      crisis_show:`Go and show her — she hasn't seen it yet!`,
+      complete:`You talked a utility out of overdosing a whole town — brilliant! Pub?`
     };
     return say('alex', h[s] || `Stuck? Draw the boundary, list what crosses it, and ask what happens if one stream stops.`);
   }
 
   const idle={
-    kate:`Nothing new from me — go and finish what you have got.`,
-    mike:`Come back when you can tell me where the number came from.`,
-    jenny:`Bring me a recipe that has been made at size and we will get on fine.`,
-    dan:`Kettle's on. Those fill points are still a metre apart, mind.`,
-    owen:`I'll wait. Five o'clock, though.`
+    kate:`Nothing new from me just yet — finish what you've got, and shout if you need anything.`,
+    mike:`Come back whenever you can tell me where the number came from — happy to go through it with you.`,
+    jenny:`Bring me a recipe that's been made at size, and we'll get on brilliantly.`,
+    dan:`Kettle's on, help yourself! Those fill points are still a metre apart, mind.`,
+    owen:`No rush — I'll wait. Five o'clock, though!`
   };
   say(key, idle[key] || `...`);
 }
+
 
 const TRACK_GLOSSARY=[
   {t:"dosing",l:"dosing",m:"dos(?:e|es|ed|ing)",
@@ -2756,10 +2757,10 @@ TRACK_DEFS.chemical={
   script:function(key){ return chemScript(key); },
   occupants:function(room){ return chemOccupants(room); },
   objectives:OBJ_CHEM,
-  opening:{text:`Nine in the morning at Hallam Works. Four per cent of a tanker of chemical that nobody can account for, two fill points a metre apart, and a compliance sample at five o'clock.`,
+  opening:{text:`Nine in the morning at Hallam Works, and welcome to your first day! Today there's four per cent of a tanker of chemical that nobody can account for, two fill points a metre apart, and a compliance sample at five o'clock. Let's get stuck in.`,
            label:'Find Maggie.'},
   certTitle:'CHEMICAL CHRONICLES',
-  timeUp:{who:'kate',line:`Five o'clock. They have taken the sample with the old fixed dose in the panel, and somebody in operations has already turned it up by half. Finish it anyway: missing a sample you survive; not knowing what you would have controlled, you don't.`},
+  timeUp:{who:'kate',line:`That's five o'clock, I'm afraid. They've taken the sample with the old fixed dose still in the panel, and someone in operations has already turned it up by half. Don't worry — we can put it right. Let's finish it anyway, so you know exactly what you'd control next time.`},
   certBody:['closed a mass balance instead of blaming a meter, separated two chemicals that must',
             'never meet, read fouling out of an approach temperature, scaled a recipe honestly and',
             'sized relief for the case that exists — then stopped a town being overdosed for one sample.'],
