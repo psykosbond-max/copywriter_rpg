@@ -1662,113 +1662,113 @@ function copywritingScript(key){
 
   /* ---------- 1. tagline ---------- */
   if(key==='kate'&&s==='first_brief')
-    return say('kate',`You're the new writer — I'm Kate, I run the projects. Welcome. Briefs come from me, feedback comes from me, and if one doesn't make sense, ask before you write rather than after. Straight in, then. Tidewater Swim School. Adult beginners, thirty to fifty-five. Every competitor talks about technique and qualified instructors. But research says the barrier isn't time or money — it's the embarrassment of being a beginner in public. They want a tagline.`,
-      [{label:'Got it.',go:function(){ advance('brief_tagline','kate',`Take it to Mike before writing anything.`); }}]);
+    return say('kate',`Hello, you must be our new writer! I'm Kate — I run the projects here, and it's lovely to have you. Briefs come from me, feedback comes from me, and if one ever doesn't make sense, just ask me before you start writing. No question's too small. Shall we dive in? Tidewater Swim School. Adult beginners, thirty to fifty-five. Every competitor talks about technique and qualified instructors, but their research says the real barrier isn't time or money — it's the embarrassment of being a beginner in public. They'd like a tagline.`,
+      [{label:'Got it.',go:function(){ advance('brief_tagline','kate',`Lovely. Have a chat with Mike before you write anything — he's brilliant at this.`); }}]);
 
   if(key==='mike'&&s==='brief_tagline')
-    return say('mike',`The brief hands you the answer, and most people walk straight past it. They've told you the barrier is embarrassment. So write to the embarrassment, not to the lessons.`,
+    return say('mike',`Welcome aboard! Here's a little secret: this brief has already handed you the answer, and most people walk right past it. They've told you the barrier is embarrassment. So write to the embarrassment, not to the lessons.`,
       [{label:'Show me the options.',go:function(){ G.step='craft_tagline'; paintHUD(); craftTagline(); }}]);
   if(key==='mike'&&s==='craft_tagline') return craftTagline();
 
   if(key==='kate'&&s==='deliver_tagline')
-    return say('kate',`There it is — the objection handled in six words. Client's taking it to print. First one done.`,
+    return say('kate',`Oh, that's lovely — the whole objection handled in six words. The client's taking it straight to print. Your first one's done!`,
       [{label:`What's next?`,go:function(){
-        say('kate',`Ferngate Garden Centre. Forty thousand subscribers, most haven't opened anything in a year, and they want to push the spring range. They've sent over a subject line they're rather fond of: Ferngate Spring Newsletter — April Edition.`,
-          [{label:'Oh dear.',go:function(){ advance('brief_email','kate',`Quite. Mike's expecting you.`); }}]);
+        say('kate',`Ferngate Garden Centre. Forty thousand subscribers, most of whom haven't opened anything in a year, and they want to push the spring range. They've sent over a subject line they're rather fond of: Ferngate Spring Newsletter — April Edition.`,
+          [{label:'Oh dear.',go:function(){ advance('brief_email','kate',`I know! But that's why we've got you. Mike's expecting you.`); }}]);
       }}]);
 
   /* ---------- 2. email ---------- */
   if(key==='mike'&&s==='brief_email')
-    return say('mike',`Two jobs, two lines. The subject line earns the open. The first line earns the scroll. The client's version does neither — it tells them what the email is, then says hello.`,
+    return say('mike',`Emails are fun. Two jobs, two lines: the subject line earns the open, and the first line earns the scroll. The client's version, bless them, does neither — it tells people what the email is, then says hello.`,
       [{label:'Show me.',go:function(){ G.step='craft_email'; paintHUD(); craftEmail(); }}]);
   if(key==='mike'&&s==='craft_email') return craftEmail();
 
   if(key==='dan'&&s==='mandatories_email')
-    return say('dan',`Dan — studio, and everything else nobody wants to do. Nice to meet you. Before that sends: unsubscribe link, physical address, and the offer end date in the body, not just the subject. Miss any of the three and it stops being a creative problem and becomes a legal one.`,
-      [{label:'Adding them now.',go:function(){ advance('deliver_email','dan',`Good. Off you go.`); }}]);
+    return say('dan',`Hiya — I'm Dan. Studio, and everything else nobody else wants to do! Lovely to meet you. Quick check before that sends: unsubscribe link, physical address, and the offer end date in the body, not just the subject. Miss any of those three and it stops being a creative problem and becomes a legal one. Easy fix, though.`,
+      [{label:'Adding them now.',go:function(){ advance('deliver_email','dan',`Perfect. You're all set — off you go!`); }}]);
 
   if(key==='kate'&&s==='deliver_email')
-    return say('kate',`Open rate came back at four times their last send. Nicely done. Right — Northlight Film Festival. Nine days, forty films, mostly first-time directors. Six-sheet by a bus stop, so they're standing still for two minutes but reading from three metres.`,
+    return say('kate',`Open rate came back at four times their last send! Really nicely done. Next up: Northlight Film Festival. Nine days, forty films, mostly first-time directors. It's a six-sheet by a bus stop, so people are standing still for two minutes but reading from three metres away.`,
       [{label:'To Mike.',go:function(){ advance('brief_poster'); }}]);
 
   /* ---------- 3. poster ---------- */
   if(key==='mike'&&s==='brief_poster')
-    return say('mike',`A poster is a hierarchy, not a paragraph. One line to stop them, one to explain, one to tell them what to do. Everything else belongs on a website.`,
+    return say('mike',`Ooh, a poster. The trick is that a poster is a hierarchy, not a paragraph. One line to stop them, one to explain, one to tell them what to do. Everything else can live on the website.`,
       [{label:'Show me.',go:function(){ G.step='craft_poster'; paintHUD(); craftPoster(); }}]);
   if(key==='mike'&&s==='craft_poster') return craftPoster();
 
   if(key==='jenny'&&s==='production_poster')
-    return say('jenny',`Jenny, production — hello. Everything you write comes through me before a client sees it, so we'll be seeing plenty of each other. Right, that'll hold at six-sheet and still read on a phone. Dates and URL are there. This is the part people skip, by the way: copy that can't be set gets rewritten by someone who isn't you.`,
+    return say('jenny',`Hello! I'm Jenny, production. Everything you write comes through me before a client sees it, so we'll be seeing plenty of each other — which I'm glad about. Let's see... yes, that'll hold at six-sheet and still read on a phone. Dates and URL are there. You'd be amazed how many people skip this step, by the way: copy that can't be set gets rewritten by someone who isn't you. You've saved yourself that.`,
       [{label:'Thanks, Jenny.',go:function(){ advance('deliver_poster'); }}]);
 
   if(key==='kate'&&s==='deliver_poster')
-    return say('kate',`Festival's delighted. Next one's audio — Ambercroft Cider, thirty seconds, drivetime. No pictures, no second read, and the listener is driving.`,
+    return say('kate',`The festival's delighted — well done you! Next one's audio: Ambercroft Cider, thirty seconds, drivetime. No pictures, no second read, and the listener is driving.`,
       [{label:'To Mike.',go:function(){ advance('brief_radio'); }}]);
 
   /* ---------- 4. radio ---------- */
   if(key==='mike'&&s==='brief_radio')
-    return say('mike',`Radio carries one thing. Not three. Decide now whether that thing is the name, the offer or the feeling, because you only get one.`,
+    return say('mike',`Radio's my favourite. The thing to know is that it carries one thing, not three. So let's decide now whether that's the name, the offer or the feeling — you only get one, and that's what makes it fun.`,
       [{label:'Show me.',go:function(){ G.step='craft_radio'; paintHUD(); craftRadio(); }}]);
   if(key==='mike'&&s==='craft_radio') return craftRadio();
 
   if(key==='jenny'&&s==='timing_radio')
-    return say('jenny',`Let me read it against the clock... sixty-eight words. Thirty seconds holds about seventy-five at a natural pace, so you've left the voice artist room to breathe. Most writers hand me ninety and then wonder why it sounds rushed.`,
+    return say('jenny',`Let me read it against the clock... sixty-eight words. Lovely! Thirty seconds holds about seventy-five at a natural pace, so you've left the voice artist room to breathe. Most writers hand me ninety and wonder why it sounds rushed — you're ahead of the game.`,
       [{label:'Good to know.',go:function(){ advance('deliver_radio'); }}]);
 
   if(key==='kate'&&s==='deliver_radio')
-    return say('kate',`Booked for six weeks regional. Now something harder. Loomwork — invoicing tool for freelancers. Traffic's fine, sign-ups aren't. People reach the bottom of the page and leave. The client thinks the headline's wrong.`,
+    return say('kate',`Booked for six weeks regional — congratulations! Now, here's a trickier one. Loomwork, an invoicing tool for freelancers. Traffic's fine, but sign-ups aren't. People reach the bottom of the page and leave. The client thinks the headline's wrong.`,
       [{label:'Is it?',go:function(){
-        say('kate',`If they're reaching the bottom, it isn't. Ask Mike.`,
+        say('kate',`Well, if they're reaching the bottom, probably not! Mike will help you work it out.`,
           [{label:'Going.',go:function(){ advance('brief_landing'); }}]);
       }}]);
 
   /* ---------- 5. landing page ---------- */
   if(key==='mike'&&s==='brief_landing')
-    return say('mike',`They read the whole page and didn't click. That's not a headline problem, that's the last inch. A call to action is an instruction, not a full stop — and it has to kill whatever's stopping the hand.`,
+    return say('mike',`Good instinct coming to me. They read the whole page and didn't click, so it isn't a headline problem — it's the last inch. A call to action is an instruction, not a full stop, and it needs to clear away whatever's stopping the hand.`,
       [{label:'Show me.',go:function(){ G.step='craft_landing'; paintHUD(); craftLanding(); }}]);
   if(key==='mike'&&s==='craft_landing') return craftLanding();
 
   if(key==='kate'&&s==='deliver_landing')
-    return say('kate',`Sign-ups up sixty per cent in a week. But the client's come back — they want the price on the page, and sales think it'll scare people off.`,
+    return say('kate',`Sign-ups are up sixty per cent in a week — amazing! The client has come back with one thing, though: they want the price on the page, and their sales team worry it'll scare people off.`,
       [{label:'Ask Mike.',go:function(){ advance('revise_landing'); }}]);
 
   if(key==='mike'&&s==='revise_landing')
-    return say('mike',`Hide a price and people don't stop wondering, they just guess — and they guess high. An objection you refuse to name gets imagined as worse than it is. Put it up, next to what it replaces.`,
+    return say('mike',`Great question to bring me. Here's the thing: hide a price and people don't stop wondering, they just guess — and they usually guess high. An objection you don't name gets imagined as worse than it is. So let's put it up, right next to what it replaces.`,
       [{label:'"£9 a month. Less than one late invoice."',go:function(){
         /* the revision replaces the filed page; it is not a second piece of work */
         G.portfolio[G.portfolio.length-1]={title:'Landing page',client:'Loomwork',
-          line:'Start free \u2014 no card, cancel anytime. \u00a39 a month, less than one late invoice.'};
+          line:'Start free — no card, cancel anytime. £9 a month, less than one late invoice.'};
         paintHUD();
-        advance('deliver_landing_v2','mike',`That's it. You've answered the objection and reframed the number in the same breath. Take it back to them.`);
+        advance('deliver_landing_v2','mike',`Oh, that's lovely. You've answered the objection and reframed the number in the same breath. Take it back to them — they'll love it.`);
       }}]);
 
   if(key==='kate'&&s==='deliver_landing_v2')
-    return say('kate',`Conversion held. Told you. Last one, and it's the big one — Harbour & Wren, homeware, new range. Teaser and launch, three weeks apart. And you're presenting it, not emailing it.`,
+    return say('kate',`Conversion held, just like Mike said it would. Brilliant work. Right, last one, and it's the big one — Harbour & Wren, homeware, new range. A teaser and a launch, three weeks apart. And this time you get to present it, rather than emailing it over.`,
       [{label:'Presenting?',go:function(){
-        say('kate',`Meeting room, me and Mike. Work you can't defend out loud isn't finished. Build it with him first.`,
+        say('kate',`Don't worry, it's just me and Mike in the meeting room — friendly faces. Being able to talk through your work out loud is part of finishing it. Build it with Mike first and you'll be grand.`,
           [{label:'Right.',go:function(){ advance('brief_integrated'); }}]);
       }}]);
 
   /* ---------- 6. integrated + crisis ---------- */
   if(key==='mike'&&s==='brief_integrated')
-    return say('mike',`Teaser and launch. The teaser can't explain — it only has to make the launch land. Which means they have to sound like the same brand, or you've spent the client's money twice on two different companies.`,
+    return say('mike',`The big one — exciting! Teaser and launch. The teaser shouldn't explain; its only job is to make the launch land. Which means the two have to sound like the same brand, otherwise the client has paid twice for two different companies.`,
       [{label:'Show me.',go:function(){ G.step='craft_integrated'; paintHUD(); craftIntegrated(); }}]);
   if(key==='mike'&&s==='craft_integrated') return craftIntegrated();
 
   if(key==='kate'&&s==='present_integrated')
-    return say('kate',`Right — you're up. Off you go.`,
+    return say('kate',`Right, you're up! Take your time — we're all ears.`,
       [{label:'Present the campaign.',go:function(){
         say('kate',`Teaser and launch in the same voice, three weeks apart. That's exactly —`,
           [{label:'(her phone goes)',go:function(){
             G.step='crisis_call'; paintHUD();
-            say('kate',`That's the client. Their factory is partly automated, so legal won't let them say handmade. Every line you've just presented is dead. And they still want the range live on Thursday.`,
+            say('kate',`Sorry, that's the client. Their factory is partly automated, so legal won't let them say handmade. Which means every line you've just presented can't run — and they still want the range live on Thursday. Don't panic. We can fix this together.`,
               [{label:'How long have I got?',go:function(){
                 startClock(90);
-                say('kate',`Ninety seconds before I have to ring them back with something. Mike's gone up to Creative for the whiteboard. Go.`,
+                say('kate',`About ninety seconds before I need to ring them back with something. Mike's gone up to Creative for the whiteboard. You can do this — go!`,
                   [{label:'Going.',go:function(){ G.step='negotiate_time'; paintHUD(); closeDlg(); }},
                    {label:'Can you buy me longer?',go:function(){
                      G.bought=true; addClock(60);
-                     say('kate',`...Right, I can tell them we're pressure-testing the claim. Sixty more seconds, that's it. And asking was the right call — writers who don't ask hand me something thin and blame the clock. Now go.`,
+                     say('kate',`...Yes, I can tell them we're pressure-testing the claim. That gets you sixty more seconds. And asking was exactly the right thing to do — the best writers always ask, rather than handing over something thin. Off you go!`,
                        [{label:'Going.',go:function(){ G.step='negotiate_time'; paintHUD(); closeDlg(); }}]);
                    }}]);
               }}]);
@@ -1776,7 +1776,7 @@ function copywritingScript(key){
       }}]);
 
   if(key==='kate'&&s==='negotiate_time'&&!G.bought)
-    return say('kate',`Mike. Creative. Now.`,[{label:'Going.',go:closeDlg}]);
+    return say('kate',`Mike's up in Creative — quick, he's waiting for you!`,[{label:'Going.',go:closeDlg}]);
 
   if(key==='mike'&&(s==='negotiate_time'||s==='crisis_rewrite')){
     G.step='crisis_rewrite'; paintHUD();
@@ -1785,11 +1785,11 @@ function copywritingScript(key){
 
   if(key==='kate'&&s==='deliver_integrated'){
     stopClock();
-    return say('kate',`That's the true claim that was hiding under the false one — and it keeps the rhythm of the teaser, so nothing else has to change. Ringing them now.`,
+    return say('kate',`Oh, well done. That's the true claim that was hiding under the false one — and it keeps the rhythm of the teaser, so nothing else has to change. Ringing them now. Fingers crossed!`,
       [{label:'And?',go:function(){
-        say('kate',`Approved. On Thursday, as booked.`,
+        say('kate',`Approved! On Thursday, as booked.`,
           [{label:'...',go:function(){
-            say('kate',`That's the job, by the way. Not the tagline — that. A claim dies at four in the afternoon and you find the true thing underneath it before anyone panics. Six pieces in your portfolio and one crisis you didn't flinch at. You're a copywriter now.`,
+            say('kate',`And that's the job, really. Not the tagline — that. A claim falls over at four in the afternoon, and you calmly find the true thing underneath it. Six pieces in your portfolio and one crisis handled beautifully. I'm so proud of you. You're a copywriter now.`,
               [{label:'Thank you.',go:function(){ G.step='complete'; paintHUD(); closeDlg(); openCertificate(); }}]);
           }}]);
       }}]);
@@ -1798,39 +1798,39 @@ function copywritingScript(key){
   /* ---------- Alex: hints on request ---------- */
   if(key==='alex'){
     const h={
-      first_brief:`Kate's in Servicing — left out of here. That's where the work comes from.`,
-      brief_tagline:`Specific beats clever. If it could belong to any other swim school, it isn't a tagline.`,
-      craft_tagline:`They've told you the barrier is embarrassment. Answer that, not the timetable.`,
-      deliver_tagline:`Kate's in Servicing. She'll want to see it before it goes anywhere.`,
-      brief_email:`Subject line earns the open, first line earns the scroll. Don't waste either saying hello.`,
+      first_brief:`Hi! I'm Alex, the other writer. Kate's in Servicing — just left out of here. That's where the work comes from.`,
+      brief_tagline:`Little tip: specific beats clever. If it could belong to any other swim school, it isn't quite a tagline yet.`,
+      craft_tagline:`They've told you the barrier is embarrassment. Answer that, not the timetable. You've got this.`,
+      deliver_tagline:`Kate's in Servicing. She'll want to see it before it goes anywhere — she'll love it.`,
+      brief_email:`Subject line earns the open, first line earns the scroll. Don't spend either one saying hello.`,
       craft_email:`A problem the reader can check on the way to the window beats a discount, every time.`,
-      mandatories_email:`Dan first. He's saved me twice and I've only been here six months.`,
-      brief_poster:`Three seconds from across a room. Headline, one supporting line, the practical bits.`,
+      mandatories_email:`Pop over to Dan first. He's saved me twice, and I've only been here six months!`,
+      brief_poster:`Think three seconds from across a room. Headline, one supporting line, then the practical bits.`,
       craft_poster:`If it takes a paragraph, it's a website, not a poster.`,
-      production_poster:`Jenny in the studio. Better she kills it than the client does.`,
-      brief_radio:`Nobody writes down a URL at sixty miles an hour. Carry the name instead.`,
-      craft_radio:`Say it out loud. If you can't get it out in one breath, neither can the voice artist.`,
-      timing_radio:`Jenny times it. Seventy-five words is the ceiling for thirty seconds.`,
-      brief_landing:`They read the whole page and left. The problem's the last inch, not the first.`,
-      craft_landing:`Name the action, then kill the two things stopping the click.`,
+      production_poster:`Jenny's in the studio. She's lovely, and much better she catches things than the client does.`,
+      brief_radio:`Nobody can write down a URL at sixty miles an hour. Carry the name instead.`,
+      craft_radio:`Try saying it out loud. If you can't get it out in one breath, neither can the voice artist.`,
+      timing_radio:`Jenny will time it for you. Seventy-five words is about the ceiling for thirty seconds.`,
+      brief_landing:`They read the whole page and left, so the problem's the last inch, not the first.`,
+      craft_landing:`Name the action, then clear away the two things stopping the click.`,
       revise_landing:`Ask Mike about the price. Hiding it never works — people guess, and they guess high.`,
       brief_integrated:`Teaser and launch have to sound like the same brand. Different beats, one voice.`,
-      craft_integrated:`If you could swap the two lines between two different brands, you haven't got a campaign.`,
-      present_integrated:`Meeting room, down the stairs. And present it — don't just read the deck out.`,
-      negotiate_time:`Mike's at the whiteboard. And if you haven't asked Kate for more time, ask. It isn't weakness.`,
-      crisis_rewrite:`The true claim is underneath the false one. Find what's actually still true and say that.`,
-      deliver_integrated:`Back to the meeting room. She's waiting.`,
-      complete:`Six pieces and a crisis. Took me a year to get there. Drink?`
+      craft_integrated:`If you could swap the two lines between two different brands, it isn't a campaign yet.`,
+      present_integrated:`Meeting room's down the stairs. Talk them through it rather than reading the deck out — you'll be great.`,
+      negotiate_time:`Mike's at the whiteboard. And if you haven't asked Kate for more time, do! It's not a weakness, honestly.`,
+      crisis_rewrite:`The true claim is hiding underneath the false one. Find what's still true and say that.`,
+      deliver_integrated:`Back to the meeting room — she's waiting for you!`,
+      complete:`Six pieces and a crisis on your first day! Took me a year to get there. Fancy a drink to celebrate?`
     };
-    return say('alex', h[s] || `Working on something? Tell me what Kate asked for and I'll tell you what she actually wants.`);
+    return say('alex', h[s] || `Working on something? Tell me what Kate asked for and I'll help you work out what she really wants.`);
   }
 
   /* ---------- everyone else, off-script ---------- */
   const idle={
-    kate:`Nothing new from me yet. Finish what you've got.`,
-    mike:`Not now — come back when you've something to show me.`,
-    jenny:`Bring it down when it's ready and I'll tell you if it can be made.`,
-    dan:`Kettle's just boiled. Mugs are in the cupboard on the left, not the one you're looking at.`
+    kate:`Nothing new from me just yet — finish what you've got and come and find me. You're doing great.`,
+    mike:`Come back when you've got something to show me — I'm excited to see it!`,
+    jenny:`Bring it down whenever it's ready and I'll make sure it works in print.`,
+    dan:`Kettle's just boiled — help yourself! Mugs are in the cupboard on the left, not the one you're looking at.`
   };
   say(key, idle[key] || `...`);
 }
@@ -1838,94 +1838,94 @@ function copywritingScript(key){
 
 /* ---- the six choice sets ------------------------------------------------ */
 function craftTagline(){
-  choose('mike',`Three on the board. Which one does the job the brief asked for?`,[
+  choose('mike',`Here are three on the board. Which one does the job the brief asked for?`,[
     {label:`"Expert instruction, every stroke of the way."`,ok:false,
-     note:`No. Well built, and it means nothing. Those are the school's credentials, and every competitor is already saying it. Want to try another?`},
+     note:`Not quite. It's nicely built, but it doesn't say much — those are the school's credentials, and every competitor already says it. Fancy another look?`},
     {label:`"Nobody's watching. Everybody started here."`,ok:true},
     {label:`"Learn to swim at any age."`,ok:false,
-     note:`True, clear, and completely inert. The brief handed you an emotional barrier and you answered it with a fact. Try again?`}
+     note:`True and clear, but it won't move anyone. The brief gave you an emotional barrier, and this answers it with a fact. Want to try again?`}
   ],function(){
     filed('Tagline','Tidewater Swim School',`Nobody's watching. Everybody started here.`);
-    advance('deliver_tagline','mike',`That's the one. It names the thing they're frightened of and takes it away in the same breath, and the second sentence pays off the first. Take it to Kate.`);
+    advance('deliver_tagline','mike',`That's the one — lovely! It names the thing they're nervous about and takes it away in the same breath, and the second sentence pays off the first. Take it to Kate.`);
   });
 }
 
 function craftEmail(){
-  choose('mike',`Subject line and opening line together. Pick the pair.`,[
+  choose('mike',`Subject line and opening line together. Which pair would you pick?`,[
     {label:`"Ferngate Spring Newsletter" / "Welcome to our April newsletter!"`,ok:false,
      note:`That's the client's own. It describes the email instead of giving anyone a reason to open it, then spends the first line saying hello. Have another go?`},
     {label:`"Your garden is three weeks behind" / "Everything you plant this fortnight still catches up. After that, it doesn't."`,ok:true},
     {label:`"HUGE Spring Savings Inside!" / "Don't miss out on our biggest sale of the year!"`,ok:false,
-     note:`Earns an open from people who'd have bought anyway, and teaches everyone else to ignore you. Urgency you haven't earned is just volume. Try again?`}
+     note:`This gets opens from people who'd have bought anyway, and teaches everyone else to ignore them. Urgency you haven't earned is just noise. Try another?`}
   ],function(){
     filed('Email','Ferngate Garden Centre',`Subject: Your garden is three weeks behind`);
-    advance('mandatories_email','mike',`Yes. A specific problem they can check by looking out of the window, and the first line pays it off with a deadline the product happens to solve. Take it past Dan before it sends.`);
+    advance('mandatories_email','mike',`Yes, brilliant! A specific problem they can check by looking out of the window, and the first line pays it off with a deadline the product happens to solve. Just pop it past Dan before it sends.`);
   });
 }
 
 function craftPoster(){
-  choose('mike',`Six-sheet. Three metres. Which one survives?`,[
+  choose('mike',`Six-sheet, read from three metres. Which one works?`,[
     {label:`One sentence: "Northlight returns for its ninth year with forty films from emerging directors..."`,ok:false,
-     note:`Everything true, nothing readable. That's a paragraph pretending to be a poster. Want another go?`},
+     note:`All true, but too much to read from the pavement — it's a paragraph pretending to be a poster. Want another go?`},
     {label:`"Forty directors you haven't heard of yet." / "Northlight Film Festival, 3–11 October." / "northlight.co.uk"`,ok:true},
     {label:`"Cinema. Reimagined." / "Northlight Film Festival."`,ok:false,
-     note:`Two words of atmosphere, no reason to go, no dates, and a claim the festival hasn't earned. Try again?`}
+     note:`Nice atmosphere, but there's no reason to go, no dates, and a claim the festival hasn't earned yet. Try again?`}
   ],function(){
     filed('Poster','Northlight Film Festival',`Forty directors you haven't heard of yet.`);
-    advance('production_poster','mike',`Good. It turns unknown into early, which is the whole festival in four words — and the other two lines do the work nobody thanks you for. Jenny sees it before Kate does.`);
+    advance('production_poster','mike',`Lovely. It turns "unknown" into "early", which is the whole festival in four words — and the other two lines do the quiet work nobody thanks you for. Jenny sees it next, before Kate does.`);
   });
 }
 
 function craftRadio(){
-  choose('mike',`Thirty seconds, drivetime. Which script?`,[
+  choose('mike',`Thirty seconds, drivetime. Which script would you go with?`,[
     {label:`Open on the website address, then the stockist list.`,ok:false,
-     note:`Nobody writes down a URL at sixty miles an hour. You've spent your one thing on something they can't use. Have another go?`},
+     note:`Nobody can write down a URL at sixty miles an hour, so you've spent your one thing on something they can't use. Have another go?`},
     {label:`Build on one sound — the press, the pour — name said three times, one line on the orchard.`,ok:true},
     {label:`A long, writerly opening about Somerset summers.`,ok:false,
-     note:`Beautiful on the page, unintelligible at speed. Say it out loud before you hand it to anyone. Try again?`}
+     note:`Gorgeous on the page, but hard to follow at speed. Try reading it out loud — it helps. Want another go?`}
   ],function(){
     filed('Radio 30s','Ambercroft Cider',`The press, the pour, the name — three times.`);
-    advance('timing_radio','mike',`Right. Sound does the work a picture would, and repetition is how a name survives a medium nobody's looking at. Jenny times it.`);
+    advance('timing_radio','mike',`Yes, spot on! The sound does the work a picture would, and repetition is how a name sticks in a medium nobody's looking at. Jenny will time it for you.`);
   });
 }
 
 function craftLanding(){
   choose('mike',`Bottom of the page. What goes in the button, and what goes under it?`,[
     {label:`"Learn more"`,ok:false,
-     note:`A full stop pretending to be a door. They've already learned more — that's why they're at the bottom. Want to try another?`},
+     note:`Not quite — they've already learned more, that's why they're at the bottom. It's a full stop pretending to be a door. Want to try another?`},
     {label:`"Start free — no card, cancel anytime." / "Your first invoice takes four minutes."`,ok:true},
     {label:`"Sign up today and transform your freelance business!"`,ok:false,
-     note:`Asks for commitment, promises something it can't back up, and puts an exclamation mark where a reason should be. Try again?`}
+     note:`This asks for a lot of commitment, promises something big, and puts an exclamation mark where a reason should go. Try again?`}
   ],function(){
     filed('Landing page','Loomwork',`Start free — no card, cancel anytime.`);
-    advance('deliver_landing','mike',`That's it. Names the action, kills the two objections that stop the click, and sets an expectation small enough to act on. Kate's waiting.`);
+    advance('deliver_landing','mike',`That's it! It names the action, clears away the two worries that stop the click, and sets an expectation small enough to act on. Kate's waiting for you.`);
   });
 }
 
 function craftIntegrated(){
-  choose('mike',`Teaser three weeks out, launch on the day. Which pair?`,[
+  choose('mike',`Teaser three weeks out, launch on the day. Which pair feels right?`,[
     {label:`"Something is coming." → "The new Harbour & Wren range. Shop now."`,ok:false,
-     note:`The teaser could belong to a car brand, and the launch could belong to anyone. Two halves of nothing. Have another go?`},
+     note:`The teaser could belong to a car brand, and the launch could belong to anyone, so they don't add up to much together. Have another go?`},
     {label:`"Made slowly, on purpose." → "The slow ones last."`,ok:true},
     {label:`"Unveiling craftsmanship." → "Beautifully made pieces for the modern home."`,ok:false,
-     note:`Both perfectly decent — and they don't sound like the same company. Say them back to back: different writer, different brand. Try again?`}
+     note:`Both perfectly decent, but they don't sound like the same company. Say them back to back and you'll hear it. Try again?`}
   ],function(){
     filed('Integrated campaign','Harbour & Wren',`Made slowly, on purpose. → The slow ones last.`);
-    advance('present_integrated','mike',`Yes. Same vocabulary, same rhythm, and the launch finishes the sentence the teaser started. Meeting room — and present it, don't read it.`);
+    advance('present_integrated','mike',`Yes! Same vocabulary, same rhythm, and the launch finishes the sentence the teaser started. Off to the meeting room — and just talk us through it, you'll be great.`);
   });
 }
 
 function craftCrisis(){
-  choose('mike',`Handmade is gone. Ninety seconds. What's actually still true?`,[
+  choose('mike',`Right, handmade is gone, and we've got ninety seconds. Deep breath — what's still true?`,[
     {label:`Drop the claim, lead on the design instead.`,ok:false,
-     note:`Then the teaser doesn't lead anywhere, and we've lost the campaign to save the line. Try again — what's underneath it?`},
+     note:`Then the teaser doesn't lead anywhere, and we'd lose the campaign to save one line. Have another think — what's underneath it?`},
     {label:`"Made in small runs, by people who are named on the box."`,ok:true},
     {label:`"Crafted with care in Britain."`,ok:false,
-     note:`Care isn't a claim, it's a mood — and legal will ask you to prove that one too. Have another go?`}
+     note:`Lovely sentiment, but care is a mood rather than a claim — and legal will want proof of that one too. Have another go?`}
   ],function(){
     G.portfolio[G.portfolio.length-1]={title:'Integrated campaign (revised)',client:'Harbour & Wren',
       line:`Made in small runs, by people who are named on the box.`};
-    advance('deliver_integrated','mike',`That's the one. Small runs is verifiable, named on the box is verifiable, and it keeps the teaser's rhythm so nothing else has to move. RUN.`);
+    advance('deliver_integrated','mike',`That's the one, brilliant! Small runs is verifiable, named on the box is verifiable, and it keeps the teaser's rhythm so nothing else has to move. Now run it down to Kate!`);
   });
 }
 
@@ -1983,10 +1983,10 @@ TRACK_DEFS.copywriting={
   script:function(key){ return copywritingScript(key); },
     occupants:function(room){ return copywritingOccupants(room); },
     objectives:OBJ_COPYWRITING,
-    opening:{text:`Nine in the morning, and there's nobody on reception. The agency is through the doors: Servicing to your right, everything else beyond it. Kate runs the projects, and Kate has your first brief.`,
+    opening:{text:`Nine in the morning, and welcome to your first day! There's nobody on reception yet, but the agency is just through the doors: Servicing to your right, everything else beyond it. Kate runs the projects, and she's got your first brief ready.`,
              label:'Go and find her.'},
     certTitle:'COPYWRITER CHRONICLES',
-    timeUp:{who:'kate',line:`Time's gone. I've had to ring them and say we're still working on it — the one sentence a client never forgets. Go and finish it anyway. We don't stop because the clock did.`},
+    timeUp:{who:'kate',line:`That's the time, I'm afraid. I've told them we're still working on it — don't worry, it happens to all of us. Let's finish it anyway. We don't stop just because the clock did.`},
     certBody:['completed a full day at the agency — six briefs across tagline, email, poster,',
               'radio, landing page and integrated campaign, and one crisis rewrite',
               'delivered against the clock.'],
