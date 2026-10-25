@@ -1,0 +1,122 @@
+{
+  "_about": "Posting schedule for the lesson videos. Times are UTC (UK time is UTC from 25 October to 28 March). Edit captions or times freely; the workflow posts anything whose time has passed and is still pending, then records the result here.",
+  "posts": [
+    {
+      "id": "lesson-01-taglines",
+      "when": "2026-10-26T18:00:00Z",
+      "video": "media/lessons/lesson-01-taglines.mp4",
+      "instagram": {
+        "caption": "Every dentist promises \"quality care\". So nobody remembers any of them.\n\nA good tagline answers the real reason people hold back. For nervous patients that's the pain, not the quality. Then run the swap test: put your line under a competitor's logo. If it still works, it was never your line.\n\nThe rule: answer the real reason. If a rival could say it, it isn't yours.\n\nPractise it on a real brief: play Copywriter Chronicles free at workexp.org (link in bio).\n\n#copywriting #copywriter #taglines #marketingtips #advertising",
+        "status": "pending"
+      },
+      "tiktok": {
+        "caption": "Why every dentist's tagline sounds the same, and the swap test that fixes yours. Play Copywriter Chronicles free at workexp.org #copywriting #copywriter #marketingtips #advertising #learnontiktok",
+        "status": "pending"
+      }
+    },
+    {
+      "id": "lesson-02-emails",
+      "when": "2026-10-28T18:00:00Z",
+      "video": "media/lessons/lesson-02-emails.mp4",
+      "instagram": {
+        "caption": "\"October newsletter\" goes in the bin. \"Does your radiator have a cold patch at the top?\" gets read.\n\nAn email has two jobs before anything else. The subject line earns the open. The first line earns the next ten seconds. A question the reader can check for themselves beats any discount.\n\nThe rule: give them something to check, then keep the promise in line one.\n\nPlay Copywriter Chronicles free at workexp.org (link in bio).\n\n#copywriting #emailmarketing #subjectlines #marketingtips #copywriter",
+        "status": "pending"
+      },
+      "tiktok": {
+        "caption": "The subject line that gets people out of their chair. Give them something to check. Play Copywriter Chronicles free at workexp.org #copywriting #emailmarketing #marketingtips #copywriter #learnontiktok",
+        "status": "pending"
+      }
+    },
+    {
+      "id": "lesson-03-posters",
+      "when": "2026-10-30T18:00:00Z",
+      "video": "media/lessons/lesson-03-posters.mp4",
+      "instagram": {
+        "caption": "A poster gets a few seconds from someone who's already walking past.\n\nGive them a paragraph and they glance, find nothing to hold on to, and keep walking. Give the eye a path instead: one line grabs, one explains, one tells you what to do. Then squint at it. If line one survives, it works.\n\nThe rule: one grabs, one explains, one tells them what to do.\n\nPlay Copywriter Chronicles free at workexp.org (link in bio).\n\n#copywriting #posterdesign #graphicdesign #advertising #copywriter",
+        "status": "pending"
+      },
+      "tiktok": {
+        "caption": "Why nobody reads your poster, and the squint test that fixes it. Play Copywriter Chronicles free at workexp.org #copywriting #posterdesign #graphicdesign #advertising #learnontiktok",
+        "status": "pending"
+      }
+    },
+    {
+      "id": "lesson-04-writing-to-fit",
+      "when": "2026-11-02T18:00:00Z",
+      "video": "media/lessons/lesson-04-writing-to-fit.mp4",
+      "instagram": {
+        "caption": "Somebody wrote this notification. The phone finished it for them.\n\nEvery format has a space budget: a billboard, a lock screen, a button. Go over it and something gets cut, usually from the end, usually the part that mattered. So cut your own words first. Really, very, we think, also: the fillers go.\n\nThe rule: write to the space. If it doesn't fit, it isn't finished.\n\nPlay Copywriter Chronicles free at workexp.org (link in bio).\n\n#copywriting #uxwriting #microcopy #copywriter #marketingtips",
+        "status": "pending"
+      },
+      "tiktok": {
+        "caption": "If your copy doesn't fit, someone else will cut it for you. Play Copywriter Chronicles free at workexp.org #copywriting #uxwriting #microcopy #copywriter #learnontiktok",
+        "status": "pending"
+      }
+    },
+    {
+      "id": "lesson-05-radio",
+      "when": "2026-11-04T18:00:00Z",
+      "video": "media/lessons/lesson-05-radio.mp4",
+      "instagram": {
+        "caption": "Nobody can write down a web address at 60 miles an hour.\n\nOn a page, the eye can go back. On air, every word goes past once. So pick one idea, say the name more than once, and give every line one breath. One sound. One idea. \"Hartley's. Bread that crackles.\"\n\nThe rule: one idea, said more than once. Every line in one breath.\n\nPlay Copywriter Chronicles free at workexp.org (link in bio).\n\n#copywriting #radioadvertising #audioads #copywriter #advertising",
+        "status": "pending"
+      },
+      "tiktok": {
+        "caption": "How to write a radio ad people actually remember. Write for the ear. Play Copywriter Chronicles free at workexp.org #copywriting #radioadvertising #advertising #copywriter #learnontiktok",
+        "status": "pending"
+      }
+    },
+    {
+      "id": "lesson-06-calls-to-action",
+      "when": "2026-11-06T18:00:00Z",
+      "video": "media/lessons/lesson-06-calls-to-action.mp4",
+      "instagram": {
+        "caption": "\"Learn more\" is a dead end pretending to be a next step.\n\nBy the time someone reaches your button, they're interested. What stops them is a worry, usually two. A good call to action has three parts: a verb, what they get, and an answer to the worry. \"Book a free first climb. Beginners' session, no membership needed.\"\n\nThe rule: name the action, then answer the two worries.\n\nPlay Copywriter Chronicles free at workexp.org (link in bio).\n\n#copywriting #conversion #cta #marketingtips #copywriter",
+        "status": "pending"
+      },
+      "tiktok": {
+        "caption": "Your button isn't the problem. The two worries next to it are. Play Copywriter Chronicles free at workexp.org #copywriting #conversion #marketingtips #copywriter #learnontiktok",
+        "status": "pending"
+      }
+    },
+    {
+      "id": "lesson-07-customer-worries",
+      "when": "2026-11-09T18:00:00Z",
+      "video": "media/lessons/lesson-07-customer-worries.mp4",
+      "instagram": {
+        "caption": "\"Get in touch for pricing\" quietly loses customers every day.\n\nWhen you hide a number, people don't leave it blank. They fill it in themselves, and they guess high. Every product has a short list of things people are nervous to ask, and price is almost always first. Say it plainly, and say it first.\n\nThe rule: say the worrying thing first. A real answer beats an imagined one.\n\nPlay Copywriter Chronicles free at workexp.org (link in bio).\n\n#copywriting #pricing #smallbusiness #marketingtips #copywriter",
+        "status": "pending"
+      },
+      "tiktok": {
+        "caption": "Hide your price and customers will guess a worse one. Play Copywriter Chronicles free at workexp.org #copywriting #smallbusiness #pricing #marketingtips #learnontiktok",
+        "status": "pending"
+      }
+    },
+    {
+      "id": "lesson-08-integrated-campaigns",
+      "when": "2026-11-11T18:00:00Z",
+      "video": "media/lessons/lesson-08-integrated-campaigns.mp4",
+      "instagram": {
+        "caption": "These four ads come from the same company. You would never know.\n\nPeople meet ads one at a time, weeks apart. If they don't sound related, nothing adds up. A brand's voice is the set of choices that don't change: the words, the rhythm, the look. Then the message can change. A teaser that makes people curious, a launch that pays it off.\n\nThe rule: keep the voice, change the message.\n\nPlay Copywriter Chronicles free at workexp.org (link in bio).\n\n#copywriting #branding #brandvoice #advertising #copywriter",
+        "status": "pending"
+      },
+      "tiktok": {
+        "caption": "Why four ads from one brand can feel like four strangers. Keep the voice, change the message. Play Copywriter Chronicles free at workexp.org #copywriting #branding #advertising #copywriter #learnontiktok",
+        "status": "pending"
+      }
+    },
+    {
+      "id": "lesson-09-under-pressure",
+      "when": "2026-11-13T18:00:00Z",
+      "video": "media/lessons/lesson-09-under-pressure.mp4",
+      "instagram": {
+        "caption": "Two hours before launch, legal rejects your headline. Now what?\n\nMost claims that fall apart were sitting on top of a true one. So dig, until you hit something you can prove. \"100% natural\" becomes \"Just pressed apples. Nothing added.\" And ask for time: an extra hour is cheap, a weak line on a billboard for six weeks isn't.\n\nThe rule: dig for the true claim, and ask for the time to find it.\n\nPlay Copywriter Chronicles free at workexp.org (link in bio).\n\n#copywriting #advertising #marketingtips #copywriter #careeradvice",
+        "status": "pending"
+      },
+      "tiktok": {
+        "caption": "Legal just killed your headline. Here's how to find the true claim underneath. Play Copywriter Chronicles free at workexp.org #copywriting #advertising #copywriter #careeradvice #learnontiktok",
+        "status": "pending"
+      }
+    }
+  ]
+}

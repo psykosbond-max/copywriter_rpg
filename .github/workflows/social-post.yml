@@ -1,0 +1,71 @@
+name: Post lessons to Instagram and TikTok
+
+# Every hour, post any lesson in social/posts.json whose time has passed.
+# Run it by hand from the Actions tab to test (dry run) or to post one lesson now.
+on:
+  schedule:
+    - cron: "13 * * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run: show what would be posted, post nothing"
+        type: boolean
+        default: true
+      only:
+        description: "Post just this id now, e.g. lesson-01-taglines (leave empty for the schedule)"
+        required: false
+      platform:
+        description: "Limit to one platform"
+        type: choice
+        options: [both, instagram, tiktok]
+        default: both
+
+permissions:
+  contents: write
+
+concurrency:
+  group: social-post
+  cancel-in-progress: false
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Post due lessons
+        env:
+          SITE_BASE_URL: ${{ vars.SITE_BASE_URL }}
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          IG_GRAPH_HOST: ${{ vars.IG_GRAPH_HOST }}
+          TIKTOK_CLIENT_KEY: ${{ secrets.TIKTOK_CLIENT_KEY }}
+          TIKTOK_CLIENT_SECRET: ${{ secrets.TIKTOK_CLIENT_SECRET }}
+          TIKTOK_REFRESH_TOKEN: ${{ secrets.TIKTOK_REFRESH_TOKEN }}
+          TIKTOK_MODE: ${{ vars.TIKTOK_MODE }}
+          TIKTOK_PRIVACY: ${{ vars.TIKTOK_PRIVACY }}
+          GH_SECRETS_TOKEN: ${{ secrets.GH_SECRETS_TOKEN }}
+        run: |
+          args=()
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            [ "${{ inputs.dry_run }}" = "true" ] && args+=(--dry-run)
+            [ -n "${{ inputs.only }}" ] && args+=(--only "${{ inputs.only }}")
+            [ "${{ inputs.platform }}" != "both" ] && args+=(--platform "${{ inputs.platform }}")
+          fi
+          python3 social/post.py "${args[@]}"
+
+      - name: Record what was posted
+        if: always()
+        run: |
+          if ! git diff --quiet social/posts.json; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add social/posts.json
+            git commit -m "Record social posts"
+            git push
+          fi
