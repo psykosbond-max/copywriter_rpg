@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Posts due lesson videos to Instagram (Reels) and TikTok, with captions.
+"""Posts due lesson videos to Instagram (Reels), TikTok and LinkedIn, with captions.
 
 Reads social/posts.json, posts every entry whose time has passed and whose platform status is
 still "pending", and writes the result back into the file. Runs from the GitHub Actions workflow
@@ -20,9 +20,15 @@ Environment (set as GitHub Actions secrets; see social/README.md):
     TIKTOK_MODE            "inbox" (default: lands in your TikTok drafts, works before the app
                            audit) or "direct" (publishes with the caption; private until audited)
     TIKTOK_PRIVACY         privacy for direct mode, default PUBLIC_TO_EVERYONE
+    LINKEDIN_ACCESS_TOKEN  member token from social/linkedin_auth.py (lasts 60 days)
+    LINKEDIN_AUTHOR        urn:li:person:... for your profile, or urn:li:organization:... for a page
+    LINKEDIN_TOKEN_EXPIRES date the token expires (printed by linkedin_auth.py); the job warns before it
+    LINKEDIN_CLIENT_ID, LINKEDIN_CLIENT_SECRET, LINKEDIN_REFRESH_TOKEN
+                           optional; only apps LinkedIn has approved get refresh tokens
+    LINKEDIN_VERSION       API version as YYYYMM, default below
     GH_SECRETS_TOKEN       optional; lets the job save rotated tokens back into the repo secrets
 """
-import argparse, json, os, subprocess, sys, time, urllib.error, urllib.parse, urllib.request
+import argparse, json, os, re, subprocess, sys, time, urllib.error, urllib.parse, urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -30,6 +36,8 @@ ROOT = Path(__file__).resolve().parent.parent
 POSTS = ROOT / "social" / "posts.json"
 IG_VERSION = os.environ.get("IG_API_VERSION", "v23.0")
 TT = "https://open.tiktokapis.com"
+LI = "https://api.linkedin.com/rest"
+LI_VERSION = os.environ.get("LINKEDIN_VERSION") or "202609"  # LinkedIn retires each version after about a year
 SUMMARY = []
 
 
@@ -38,8 +46,9 @@ def log(msg):
     SUMMARY.append(msg)
 
 
-def http(method, url, data=None, headers=None, body=None, timeout=120):
-    """Small JSON-over-HTTP helper. `data` is form-encoded, `body` is sent as JSON or raw bytes."""
+def http(method, url, data=None, headers=None, body=None, timeout=120, with_headers=False):
+    """Small JSON-over-HTTP helper. `data` is form-encoded, `body` is sent as JSON or raw bytes.
+    With `with_headers`, returns (json, response headers)."""
     headers = dict(headers or {})
     payload = None
     if data is not None:
@@ -53,11 +62,12 @@ def http(method, url, data=None, headers=None, body=None, timeout=120):
     req = urllib.request.Request(url, data=payload, method=method, headers=headers)
     try:
         with urllib.request.urlopen(req, timeout=timeout) as r:
-            raw = r.read()
+            raw, got = r.read(), r.headers
     except urllib.error.HTTPError as e:
         raw = e.read()
         raise RuntimeError(f"{method} {url.split('?')[0]} -> HTTP {e.code}: {raw[:500].decode(errors='replace')}")
-    return json.loads(raw) if raw.strip() else {}
+    out = json.loads(raw) if raw.strip() else {}
+    return (out, got) if with_headers else out
 
 
 def save_secret(name, value):
@@ -150,12 +160,74 @@ class TikTok:
         raise RuntimeError("TikTok was still processing the video after 10 minutes")
 
 
+# ---------------------------------------------------------------- LinkedIn
+def little_text(caption):
+    """LinkedIn post text treats these characters as markup, so escape them; #words become hashtags."""
+    parts = re.split(r"(?<!\w)#(\w+)", caption)  # odd items are hashtag words
+    return "".join("{hashtag|\\#|" + s + "}" if i % 2 else re.sub(r"([\\|{}@\[\]()<>*_~#])", r"\\\1", s) for i, s in enumerate(parts))
+
+
+def linkedin_days_left():
+    """Days until the LinkedIn token expires, or None if unknown or it renews itself."""
+    expires = os.environ.get("LINKEDIN_TOKEN_EXPIRES")
+    if not expires or os.environ.get("LINKEDIN_REFRESH_TOKEN"):
+        return None
+    return (datetime.fromisoformat(expires).date() - datetime.now(timezone.utc).date()).days
+
+
+class LinkedIn:
+    def __init__(self):
+        self.author = os.environ["LINKEDIN_AUTHOR"]
+        self.token = os.environ["LINKEDIN_ACCESS_TOKEN"]
+        # Only partner-approved apps get refresh tokens; everyone else signs in again every 60 days.
+        if all(os.environ.get(v) for v in ("LINKEDIN_REFRESH_TOKEN", "LINKEDIN_CLIENT_ID", "LINKEDIN_CLIENT_SECRET")):
+            r = http("POST", "https://www.linkedin.com/oauth/v2/accessToken", data={"grant_type": "refresh_token", "refresh_token": os.environ["LINKEDIN_REFRESH_TOKEN"], "client_id": os.environ["LINKEDIN_CLIENT_ID"], "client_secret": os.environ["LINKEDIN_CLIENT_SECRET"]})
+            if r.get("access_token") and r["access_token"] != self.token:
+                self.token = r["access_token"]
+                save_secret("LINKEDIN_ACCESS_TOKEN", self.token)
+        days = linkedin_days_left()
+        if days is not None and days <= 10:
+            log(f"  note: the LinkedIn token expires in {days} days. Run social/linkedin_auth.py and update the secrets.")
+
+    def api(self, method, path, body=None, with_headers=False):
+        h = {"Authorization": f"Bearer {self.token}", "LinkedIn-Version": LI_VERSION, "X-Restli-Protocol-Version": "2.0.0"}
+        return http(method, f"{LI}{path}", headers=h, body=body, with_headers=with_headers)
+
+    def post(self, path, caption, title):
+        size = path.stat().st_size
+        init = self.api("POST", "/videos?action=initializeUpload", {"initializeUploadRequest": {"owner": self.author, "fileSizeBytes": size, "uploadCaptions": False, "uploadThumbnail": False}})["value"]
+        etags = []
+        with path.open("rb") as f:  # LinkedIn hands back one upload URL per 4 MB part
+            for part in init["uploadInstructions"]:
+                f.seek(part["firstByte"])
+                chunk = f.read(part["lastByte"] - part["firstByte"] + 1)
+                _, h = http("PUT", part["uploadUrl"], body=chunk, headers={"Content-Type": "application/octet-stream"}, timeout=600, with_headers=True)
+                etags.append(h["ETag"])
+        video = init["video"]
+        self.api("POST", "/videos?action=finalizeUpload", {"finalizeUploadRequest": {"video": video, "uploadToken": init.get("uploadToken", ""), "uploadedPartIds": etags}})
+        for _ in range(60):
+            st = self.api("GET", "/videos/" + urllib.parse.quote(video, safe="")).get("status")
+            if st == "AVAILABLE":
+                break
+            if st == "PROCESSING_FAILED":
+                raise RuntimeError("LinkedIn could not process the video")
+            time.sleep(10)
+        else:
+            raise RuntimeError("LinkedIn was still processing the video after 10 minutes")
+        _, h = self.api("POST", "/posts", {
+            "author": self.author, "commentary": little_text(caption), "visibility": "PUBLIC",
+            "distribution": {"feedDistribution": "MAIN_FEED", "targetEntities": [], "thirdPartyDistributionChannels": []},
+            "content": {"media": {"title": title, "id": video}},
+            "lifecycleState": "PUBLISHED", "isReshareDisabledByAuthor": False}, with_headers=True)
+        return h.get("x-restli-id")
+
+
 # ---------------------------------------------------------------- main
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--only", help="post id to handle, ignoring its scheduled time")
-    ap.add_argument("--platform", choices=["instagram", "tiktok"])
+    ap.add_argument("--platform", choices=["instagram", "tiktok", "linkedin"])
     a = ap.parse_args()
 
     doc = json.loads(POSTS.read_text())
@@ -164,7 +236,7 @@ def main():
         due = [p for p in doc["posts"] if p["id"] == a.only]
     else:
         due = [p for p in doc["posts"] if datetime.fromisoformat(p["when"].replace("Z", "+00:00")) <= now]
-    platforms = [a.platform] if a.platform else ["instagram", "tiktok"]
+    platforms = [a.platform] if a.platform else ["instagram", "tiktok", "linkedin"]
     retry = ("pending", "failed") if a.only else ("pending",)  # a named post can be retried after a failure
     work = [(p, k) for p in due for k in platforms if p.get(k, {}).get("status") in retry]
     if not work:
@@ -173,25 +245,34 @@ def main():
 
     base = os.environ.get("SITE_BASE_URL", "").rstrip("/")
     have = {"instagram": all(os.environ.get(v) for v in ("IG_USER_ID", "IG_ACCESS_TOKEN")) and base,
-            "tiktok": all(os.environ.get(v) for v in ("TIKTOK_CLIENT_KEY", "TIKTOK_CLIENT_SECRET", "TIKTOK_REFRESH_TOKEN"))}
+            "tiktok": all(os.environ.get(v) for v in ("TIKTOK_CLIENT_KEY", "TIKTOK_CLIENT_SECRET", "TIKTOK_REFRESH_TOKEN")),
+            "linkedin": all(os.environ.get(v) for v in ("LINKEDIN_ACCESS_TOKEN", "LINKEDIN_AUTHOR"))}
+    if have["linkedin"] and (linkedin_days_left() or 0) < 0:
+        # Leave LinkedIn posts pending: they go out on the first run after you sign in again.
+        log(f"LinkedIn token expired on {os.environ['LINKEDIN_TOKEN_EXPIRES']}. Run social/linkedin_auth.py and update the secrets.")
+        have["linkedin"] = False
     clients, changed, failed = {}, False, False
     for p, k in work:
         video = ROOT / p["video"]
         caption = p[k]["caption"]
         log(f"{p['id']} → {k}")
         if a.dry_run or not have[k]:
-            why = "dry run" if a.dry_run else "secrets not set"
+            why = "dry run" if a.dry_run else "token expired" if k == "linkedin" and os.environ.get("LINKEDIN_ACCESS_TOKEN") else "secrets not set"
             log(f"  would post {p['video']} ({video.stat().st_size / 1e6:.1f} MB) with a {len(caption)}-character caption [{why}]")
             continue
         try:
             if k not in clients:
-                clients[k] = Instagram() if k == "instagram" else TikTok()
+                clients[k] = {"instagram": Instagram, "tiktok": TikTok, "linkedin": LinkedIn}[k]()
                 if k == "instagram":
                     clients[k].refresh()
             if k == "instagram":
                 mid = clients[k].post(f"{base}/{p['video']}", caption)
                 p[k].update(status="posted", media_id=mid)
                 log(f"  posted to Instagram (media {mid})")
+            elif k == "linkedin":
+                urn = clients[k].post(video, caption, p[k].get("title", p["id"]))
+                p[k].update(status="posted", post_urn=urn)
+                log(f"  posted to LinkedIn ({urn})")
             else:
                 pid, st = clients[k].post(video, caption)
                 p[k].update(status="posted" if st == "PUBLISH_COMPLETE" else "in_drafts", publish_id=pid)

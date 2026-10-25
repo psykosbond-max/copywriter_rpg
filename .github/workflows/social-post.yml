@@ -1,4 +1,4 @@
-name: Post lessons to Instagram and TikTok
+name: Post lessons to Instagram, TikTok and LinkedIn
 
 # Every hour, post any lesson in social/posts.json whose time has passed.
 # Run it by hand from the Actions tab to test (dry run) or to post one lesson now.
@@ -17,8 +17,8 @@ on:
       platform:
         description: "Limit to one platform"
         type: choice
-        options: [both, instagram, tiktok]
-        default: both
+        options: [all, instagram, tiktok, linkedin]
+        default: all
 
 permissions:
   contents: write
@@ -49,13 +49,20 @@ jobs:
           TIKTOK_REFRESH_TOKEN: ${{ secrets.TIKTOK_REFRESH_TOKEN }}
           TIKTOK_MODE: ${{ vars.TIKTOK_MODE }}
           TIKTOK_PRIVACY: ${{ vars.TIKTOK_PRIVACY }}
+          LINKEDIN_ACCESS_TOKEN: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
+          LINKEDIN_AUTHOR: ${{ secrets.LINKEDIN_AUTHOR }}
+          LINKEDIN_TOKEN_EXPIRES: ${{ vars.LINKEDIN_TOKEN_EXPIRES }}
+          LINKEDIN_CLIENT_ID: ${{ secrets.LINKEDIN_CLIENT_ID }}
+          LINKEDIN_CLIENT_SECRET: ${{ secrets.LINKEDIN_CLIENT_SECRET }}
+          LINKEDIN_REFRESH_TOKEN: ${{ secrets.LINKEDIN_REFRESH_TOKEN }}
+          LINKEDIN_VERSION: ${{ vars.LINKEDIN_VERSION }}
           GH_SECRETS_TOKEN: ${{ secrets.GH_SECRETS_TOKEN }}
         run: |
           args=()
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             [ "${{ inputs.dry_run }}" = "true" ] && args+=(--dry-run)
             [ -n "${{ inputs.only }}" ] && args+=(--only "${{ inputs.only }}")
-            [ "${{ inputs.platform }}" != "both" ] && args+=(--platform "${{ inputs.platform }}")
+            [ "${{ inputs.platform }}" != "all" ] && args+=(--platform "${{ inputs.platform }}")
           fi
           python3 social/post.py "${args[@]}"
 
