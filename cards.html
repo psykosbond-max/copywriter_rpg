@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>The Chronicles deck: 13 jobs, 4 workplaces</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root{--bg:#f3f5f8;--ink:#151a22;--body:#3b4655;--mute:#5a6575;--line:#dce2ea}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans",system-ui,sans-serif}
+  .wrap{max-width:1180px;margin:0 auto;padding:56px 24px 64px}
+  h1,.title,.rank,.back-mark{font-family:"Bricolage Grotesque",sans-serif}
+  header h1{margin:0;font-size:clamp(34px,4.6vw,54px);font-weight:800;letter-spacing:-.02em;line-height:1.05}
+  header p{margin:12px 0 0;color:var(--body);font-size:17px;max-width:60ch}
+  .legend{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 0;padding:0;list-style:none}
+  .legend li{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:14px}
+  .legend .g{color:var(--tone);font-size:15px}
+
+  .suit{margin-top:44px}
+  .suit h2{display:flex;align-items:center;gap:10px;margin:0 0 16px 2px;font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:var(--body);font-weight:600;font-family:"IBM Plex Sans",sans-serif}
+  .suit h2 .g{color:var(--tone)}
+  .deck{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:22px}
+
+  /* ---------- card face: poker ratio 2.5 × 3.5 ---------- */
+  .card{position:relative;aspect-ratio:5/7;border-radius:16px;background:#fff;border:1px solid var(--line);
+        box-shadow:0 1px 2px rgba(21,26,34,.06),0 8px 24px rgba(21,26,34,.08);overflow:hidden;
+        display:flex;flex-direction:column;padding:14px 16px 14px;transition:transform .2s}
+  .card:hover{transform:translateY(-4px) rotate(-.6deg)}
+  .card::before{content:"";position:absolute;inset:7px;border:1.5px solid var(--tone);border-radius:11px;opacity:.28;pointer-events:none}
+  .idx{position:absolute;display:flex;flex-direction:column;align-items:center;line-height:1;color:var(--tone)}
+  .idx.tl{top:16px;left:17px}
+  .idx.br{bottom:16px;right:17px;transform:rotate(180deg)}
+  .rank{font-size:26px;font-weight:800}
+  .idx .g{font-size:15px;margin-top:3px}
+  .art{margin:34px 26px 0;height:27%;border-radius:12px;background:var(--wash);position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
+  .art::after{content:"";position:absolute;inset:0;background:
+      repeating-linear-gradient(135deg,transparent 0 10px,rgba(255,255,255,.35) 10px 11px)}
+  .art .big{font-size:48px;color:var(--tone);position:relative;z-index:1;line-height:1}
+  .art .clock{position:absolute;bottom:8px;left:10px;z-index:1;font-size:11px;font-weight:600;letter-spacing:.06em;color:var(--tone);background:#fff;border-radius:6px;padding:2px 7px}
+  .body{flex:1;display:flex;flex-direction:column;padding:12px 26px 0;min-height:0}
+  .field{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:var(--tone)}
+  .title{font-size:19px;font-weight:800;letter-spacing:-.01em;line-height:1.08;margin:3px 0 6px}
+  .blurb{font-size:12px;line-height:1.4;color:var(--body);margin:0}
+  .foot{margin:auto 26px 22px;padding-top:9px;border-top:1px dashed var(--line);display:flex;justify-content:space-between;font-size:11px;color:var(--mute)}
+  .foot b{font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}.foot span{flex:none;margin-left:8px}
+
+  /* ---------- card back ---------- */
+  .back{background:var(--ink);border-color:var(--ink);color:#fff;align-items:center;justify-content:center;
+        background-image:
+          radial-gradient(circle at 50% 50%,rgba(255,255,255,.06) 0 30%,transparent 31%),
+          repeating-linear-gradient(45deg,rgba(255,255,255,.05) 0 2px,transparent 2px 14px),
+          repeating-linear-gradient(-45deg,rgba(255,255,255,.05) 0 2px,transparent 2px 14px)}
+  .back::before{border-color:#fff;opacity:.35}
+  .back-suits{display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;font-size:22px;margin-bottom:14px}
+  .back-mark{font-size:30px;font-weight:800;letter-spacing:-.01em}
+  .back small{margin-top:6px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;opacity:.7}
+
+  footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);font-size:14px;color:var(--mute)}
+  @media print{body{background:#fff}.wrap{padding:0}header,footer,.suit h2{display:none}.deck{grid-template-columns:repeat(3,2.5in);gap:.15in}.card{width:2.5in;box-shadow:none;break-inside:avoid}.suit{margin:0}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>The Chronicles deck</h1>
+    <p>Thirteen jobs, one card each. The four workplaces are the four suits. Every card is a real day at work, from 9 a.m. to 5 p.m.</p>
+    <ul class="legend">
+      <li style="--tone:#3b82f6"><span class="g">◆</span>Meridian · 5</li>
+      <li style="--tone:#e8912d"><span class="g">●</span>The agency · 4</li>
+      <li style="--tone:#22a06b"><span class="g">▲</span>Hallam Works · 3</li>
+      <li style="--tone:#9b5de5"><span class="g">■</span>Calder &amp; Hale · 1</li>
+    </ul>
+  </header>
+  <div id="suits"></div>
+  <footer>Print this page to get playing-card-size cards (2.5 × 3.5 in), nine to a sheet.</footer>
+</div>
+
+<script>
+const SUITS = [
+  {name:"Meridian", sub:"Software company", glyph:"◆", tone:"#3b82f6", wash:"#e6efff", jobs:[
+    ["Software Engineering","Engineering Chronicles","A one-line ticket, a 2,000-line file, and a site-wide problem at 11:40 a.m.","Software engineer",10,"games/engineering-chronicles.html"],
+    ["Product Management","Product Chronicles","Forty-one feature requests, two teams, one quarter, and a $180,000 deal with a deadline attached.","Product manager",9,"games/product-chronicles.html"],
+    ["Security","Security Chronicles","Eleven security problems, a questionnaire nobody reads, and one stolen token making 40,000 requests.","Security engineer",11,"games/security-chronicles.html"],
+    ["UX Design","UX Chronicles","61% of people quit the booking flow, three coworkers have theories, and nobody has watched a real user try it.","UX designer",10,"games/ux-chronicles.html"],
+    ["Data Science","Data Chronicles","Customer churn is up four points, everyone thinks they already know why, and the board meets Thursday.","Data scientist",10,"games/data-chronicles.html"],
+  ]},
+  {name:"The agency", sub:"Advertising", glyph:"●", tone:"#e8912d", wash:"#fdf0e1", jobs:[
+    ["Copywriting","Copywriter Chronicles","Six briefs, one crisis, and a client who changes their mind at 4 p.m.","Copywriter",9,"games/copywriter-chronicles.html"],
+    ["Account Management","Account Chronicles","A client who asks for the wrong thing, an agency that has to build it, and you stuck in the middle.","Account manager",9,"games/account-chronicles.html"],
+    ["Brand Strategy","Brand Chronicles","Figure out what a brand stands for, decide how its brands fit together, and learn when to say no.","Brand strategist",9,"games/brand-chronicles.html"],
+    ["Design Fundamentals","Design Chronicles","Hierarchy, fonts, grids, and designs that still work once they're printed.","Designer",9,"games/design-chronicles.html"],
+  ]},
+  {name:"Hallam Works", sub:"Engineering company", glyph:"▲", tone:"#22a06b", wash:"#e3f5ec", jobs:[
+    ["Electrical Engineering","Electrical Chronicles","A cable nobody sized properly, a pump that trips when it starts, and a reset button that could burn out a motor.","Electrical engineer",10,"games/electrical-chronicles.html"],
+    ["Mechanical Engineering","Mechanical Chronicles","Three broken impellers in eight months, a frame that cracked at a sharp corner, and a truck waiting at the gate.","Mechanical engineer",10,"games/mechanical-chronicles.html"],
+    ["Chemical Engineering","Chemical Chronicles","Four percent of every tanker missing, two dangerous chemicals with the same hose fitting, and a client who wants more chlorine.","Chemical engineer",10,"games/chemical-chronicles.html"],
+  ]},
+  {name:"Calder & Hale", sub:"Consulting firm", glyph:"■", tone:"#9b5de5", wash:"#f1e9fc", jobs:[
+    ["Consulting","Consulting Chronicles","A benchmark nobody needs, three numbers that don't agree, and a sentence the client wants deleted.","Consultant",10,"games/consulting-chronicles.html"],
+  ]},
+];
+const RANKS = ["A","2","3","4","5"];
+const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;");
+const back = `<div class="card back" aria-label="Card back">
+  <div class="back-suits">${SUITS.map(s=>`<span style="color:${s.tone}">${s.glyph}</span>`).join("")}</div>
+  <div class="back-mark">Chronicles</div><small>9 a.m. – 5 p.m.</small></div>`;
+
+document.getElementById("suits").innerHTML = SUITS.map((s,si) => `
+  <section class="suit" style="--tone:${s.tone};--wash:${s.wash}">
+    <h2><span class="g">${s.glyph}</span>${esc(s.name)} · ${esc(s.sub)}</h2>
+    <div class="deck">
+      ${s.jobs.map(([field,title,blurb,role,lessons,href],i) => `
+        <a class="card" href="${href}" style="color:inherit;text-decoration:none">
+          <span class="idx tl"><span class="rank">${RANKS[i]}</span><span class="g">${s.glyph}</span></span>
+          <span class="idx br"><span class="rank">${RANKS[i]}</span><span class="g">${s.glyph}</span></span>
+          <div class="art"><span class="big">${s.glyph}</span><span class="clock">9:00 → 5:00</span></div>
+          <div class="body">
+            <span class="field">${esc(field)}</span>
+            <span class="title">${esc(title)}</span>
+            <p class="blurb">${esc(blurb)}</p>
+          </div>
+          <div class="foot"><b>${esc(role)}</b><span>${lessons} lessons</span></div>
+        </a>`).join("")}
+      ${si === SUITS.length-1 ? back : ""}
+    </div>
+  </section>`).join("");
+</script>
+</body>
+</html>
