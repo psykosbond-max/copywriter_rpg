@@ -1,5 +1,6 @@
 import React from 'react';
-import { AbsoluteFill, useCurrentFrame, useVideoConfig } from 'remotion';
+import { AbsoluteFill, Audio, Sequence, staticFile, useCurrentFrame, useVideoConfig } from 'remotion';
+import { HOOK_EXIT, HookBeats, HookIntro } from '../components/HookIntro';
 import { EditorialCharacter, POSES, Pose, blendPose } from '../components/EditorialCharacter';
 import { Rise } from '../components/Rise';
 import { TypewriterReveal } from '../components/TypewriterReveal';
@@ -29,7 +30,12 @@ import { COLOR, FONT } from '../theme/tokens';
         the three rungs above return as a breadcrumb
 */
 
-export const LESSON02_FRAMES = 2400;
+// The cold open: "Give me thirty seconds… and I'll teach you how to hook your audience." (ElevenLabs, voice "Sasha").
+// Beats are the frames each word lands, from the take's loudness envelope (voice starts at frame 6).
+const HOOK: HookBeats = { giveMe: 10, thirty: 35, seconds: 57, teach: 135, hook: 214, audience: 229, out: 292 };
+export const LESSON02_INTRO = HOOK.out + HOOK_EXIT;
+const LESSON02_BODY = 2400;
+export const LESSON02_FRAMES = LESSON02_INTRO + LESSON02_BODY;
 
 const T = {
   titleOut: 140,
@@ -202,7 +208,7 @@ const editorPose = (frame: number, fps: number): { pose: Pose; hand: 'relaxed' |
 
 // ---------- composition ----------
 
-export const Lesson02SoWhatLadder: React.FC = () => {
+const Lesson02Body: React.FC = () => {
   const ready = useFontsReady();
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
@@ -263,3 +269,17 @@ export const Lesson02SoWhatLadder: React.FC = () => {
     </AbsoluteFill>
   );
 };
+
+export const Lesson02SoWhatLadder: React.FC = () => (
+  <AbsoluteFill style={{ background: COLOR.paper }}>
+    <Sequence durationInFrames={LESSON02_INTRO} layout="none">
+      <HookIntro beats={HOOK} seconds={30} />
+      <Sequence from={6} layout="none">
+        <Audio src={staticFile('audio/lesson02/hook.mp3')} />
+      </Sequence>
+    </Sequence>
+    <Sequence from={LESSON02_INTRO} layout="none">
+      <Lesson02Body />
+    </Sequence>
+  </AbsoluteFill>
+);

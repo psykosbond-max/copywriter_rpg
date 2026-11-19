@@ -150,3 +150,11 @@ sets it on a desk or the floor. Moving parts are props for a lesson to drive:
 - `PaperBreath`: a faint paper-fibre layer that drifts a few pixels over many seconds, so no frame is ever frozen.
 - `lessons/Storyboard.tsx`: `makeStoryboard(Lesson, heading, panels)` freezes the real lesson at chosen frames for review.
   The storyboard composition must be as long as the lesson, or `<Freeze>` renders nothing past its end.
+
+## The intro hook
+
+`components/HookIntro.tsx` is a cold open before a lesson's title: "Give me thirty seconds… and I'll teach you how to hook
+your audience." It plays in hard beats (GIVE ME slams in; a vermilion 30 with a stopwatch ring; a hard cut; a fishing line
+drops in and its hook catches the word *hook*, then yanks it up out of frame into the title). The beats are frames tied to
+words in the narration (`HOOK` in the lesson). Lesson 02 opens with it; the voice is ElevenLabs "Sasha",
+`public/audio/lesson02/hook.mp3`. `Hook-Storyboard` freezes three of its frames.
