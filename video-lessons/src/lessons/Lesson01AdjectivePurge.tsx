@@ -1,8 +1,11 @@
 import React from 'react';
-import { AbsoluteFill, Audio, Easing, Sequence, interpolate, staticFile, useCurrentFrame, useVideoConfig } from 'remotion';
+import { AbsoluteFill, Audio, Sequence, interpolate, staticFile, useCurrentFrame, useVideoConfig } from 'remotion';
 import { HOOK_EXIT, HookBeats, HookIntro } from '../components/HookIntro';
 import { OUTRO, Outro } from '../components/Outro';
-import { EditorialCharacter, POSES, blendPose } from '../components/EditorialCharacter';
+import { EditorialCharacter, HandShape, POSES, Pose, blendPose } from '../components/EditorialCharacter';
+import { PaperSlapTransition, SLAP_DUR } from '../components/transitions/PaperSlapTransition';
+import { WipeTearTransition } from '../components/transitions/WipeTearTransition';
+import { stepped } from '../lib/stepped';
 import { CoffeeCup, CoffeeMachine, Desk, DeskLamp, Easel, Manuscript, Stopwatch, Strike } from '../components/EditorialObjects';
 import { CUT, KineticSentence, Token, countWords } from '../components/KineticSentence';
 import { TypewriterReveal } from '../components/TypewriterReveal';
@@ -245,15 +248,12 @@ const SHOT = {
 
 // Camera moves: from `at`, over `dur` frames, to `shot`. dur 0 is a cut.
 const MOVES: { at: number; dur: number; shot: Shot }[] = [
-  // settle: the scene arrives slightly close and eases back to wide
-  { at: 0, dur: 0, shot: { ...SHOT.wide, s: 1.12 } },
-  { at: T.sceneIn, dur: 70, shot: SHOT.wide },
+  { at: 0, dur: 0, shot: SHOT.wide },
   { at: T.pushEasel, dur: 150, shot: SHOT.easel },
-  // zoom-through: into the page, and on through it, as the type layer comes up out of it
+  // into the page: the push ends with the page filling the frame, and that sheet is torn away
   { at: T.pushPage, dur: 70, shot: SHOT.page },
-  { at: T.toType - 6, dur: 40, shot: { ...SHOT.page, s: 9 } },
-  // whip pan lands on the desk
-  { at: T.toDesk - 12, dur: 0, shot: SHOT.desk },
+  // the desk shot is slapped down already framed
+  { at: T.toDesk, dur: 0, shot: SHOT.desk },
   { at: T.toWatch, dur: 44, shot: SHOT.watch },
   // pull-back: from inside the page out to the whole scene
   { at: T.toWide, dur: 0, shot: SHOT.page },
@@ -279,19 +279,24 @@ const FLOOR = 980;
 const DESK_TOP = 727;
 const at = (left: number, floor: number, height: number): React.CSSProperties => ({ position: 'absolute', left, top: floor - height });
 
+// the editor: chin on hand while reading → leans in → (later) points with the pencil.
+// A function of the frame, so the figure can read it with follow-through delays.
+const FPS = 60;
+const editorPoseAt = (f: number): Pose => {
+  const lean = snap(f, FPS, T.lean, 40);
+  const nod = 4 * (snap(f, FPS, T.nod, 30) - snap(f, FPS, T.nod + 50, 40));
+  if (f >= T.toWide) return blendPose(POSES.leaningIn, POSES.pointing, snap(f, FPS, T.point, 42));
+  const p = blendPose(POSES.chinRest, POSES.leaningIn, lean);
+  return { ...p, head: p.head + nod };
+};
+const editorHandAt = (f: number): HandShape =>
+  f >= T.toWide ? (snap(f, FPS, T.point, 42) > 0.5 ? 'pencil' : 'relaxed') : snap(f, FPS, T.lean, 40) > 0.5 ? 'relaxed' : 'chin';
+
 const Scene: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const cam = cameraAt(frame, fps);
 
-  // the editor: chin on hand while reading → leans in → (later) points with the pencil
-  const lean = snap(frame, fps, T.lean, 40);
-  const point = snap(frame, fps, T.point, 42);
-  const nod = 4 * (snap(frame, fps, T.nod, 30) - snap(frame, fps, T.nod + 50, 40));
-  let pose = blendPose(POSES.chinRest, POSES.leaningIn, lean);
-  pose = { ...pose, head: pose.head + nod };
-  if (frame >= T.toWide) pose = blendPose(POSES.leaningIn, POSES.pointing, point);
-  const hand = frame >= T.toWide ? (point > 0.5 ? 'pencil' : 'relaxed') : lean > 0.5 ? 'relaxed' : 'chin';
 
   const reveal = Math.max(0, (frame - T.draftType - 30) / 12);
   const edits = frame < T.marks ? 0 : Math.min(PAGE_STRIKES.length + 1, (frame - T.marks) / 35);
@@ -304,11 +309,11 @@ const Scene: React.FC = () => {
         <div style={{ position: 'absolute', left: GRID.marginX, right: GRID.marginX, top: FLOOR, height: 2, background: COLOR.inkFaint }} />
         <Easel height={640} style={at(640, FLOOR, 640)} />
         <Manuscript height={380} strikes={PAGE_STRIKES} progress={edits} reveal={reveal} style={at(690, 736, 380)} />
-        <EditorialCharacter pose={pose} frontHand={hand} height={640} style={at(150, FLOOR + 640 * (32 / 780), 640)} />
+        <EditorialCharacter poseAt={editorPoseAt} handAt={editorHandAt} seed={3} height={640} style={at(150, FLOOR + 640 * (32 / 780), 640)} />
         <Desk height={253} style={at(1150, FLOOR, 253)} />
         <DeskLamp height={330} flip style={at(1463, DESK_TOP, 330)} />
         <CoffeeMachine height={230} pour={pour} pressure={30 + 50 * pour} style={at(1180, DESK_TOP, 230)} />
-        <CoffeeCup height={86} t={frame / fps} style={at(1395, DESK_TOP, 86)} />
+        <CoffeeCup height={86} t={stepped(frame, 2) / fps} style={at(1395, DESK_TOP, 86)} />
         <Stopwatch height={104} seconds={seconds} style={at(1505, DESK_TOP, 104)} />
       </div>
     </PrintZoom>
@@ -317,84 +322,86 @@ const Scene: React.FC = () => {
 
 // ---------- composition ----------
 
-/** Opacity of a layer that is on during the given windows, with short dissolves. */
-const windows = (frame: number, list: [number, number][], fade = 14) =>
-  Math.max(
-    0,
-    ...list.map(([a, b]) => Math.min(interpolate(frame, [a, a + fade], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }), interpolate(frame, [b - fade, b], [1, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }))),
-  );
-
-const ease = Easing.inOut(Easing.cubic);
-const between = (frame: number, a: number, b: number) => interpolate(frame, [a, b], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: ease });
-
 /*
-  Transitions, each one different and each one motivated:
-  title → scene   the title lifts away; the scene settles back from 112% (camera)
-  scene → type    ZOOM-THROUGH: the camera pushes into the page and through it; the type rises out of it, 130% → 100%
-  type → desk     WHIP PAN: the sentence whips off left with motion blur, the desk whips in from the right
-  watch → type    IRIS: the sentence opens out of the stopwatch face in a widening circle
-  type → wide     PULL-BACK: the sentence sinks back into the page, and the camera pulls out of the page to the room
-  → end card      REDLINE WIPE (in Outro)
+  Transitions: physical, never a cross-fade.
+  title → scene         PAPER SLAP: the scene is tossed onto the desk and lands a hair off true
+  scene → sentence      TEAR: the camera is inside the page; that sheet is torn away to the sentence
+  sentence → desk       PAPER SLAP: the desk shot lands on top of the sentence
+  stopwatch → sentence  SCRIBBLE: a grease pencil scrawls the frame open onto the sentence
+  sentence → room       PAPER SLAP: the room lands, and the camera pulls back out of the page
+  → end card            TEAR (in Outro)
+
+  Pacing (hold, snap, breathe): before every edit the frame is still for at least 15 frames; the slash
+  takes 6; the camera only moves after an edit lands, never into it.
 */
+const TEAR = 30;
+const SCRIBBLE = 32;
+
 const Body: React.FC = () => {
   const ready = useFontsReady();
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   if (!ready) return <AbsoluteFill style={{ background: COLOR.paper }} />;
 
-  // whip pan between the sentence and the desk
-  const whip = between(frame, T.toDesk - 12, T.toDesk + 10);
-  const whipping = frame >= T.toDesk - 12 && frame < T.toDesk + 10;
-  // iris out of the stopwatch
-  const iris = snap(frame, fps, T.toType2, 36);
-  // the type sinks back into the page
-  const sink = between(frame, T.toWide, T.toWide + 14);
-
-  const sceneVisible =
-    (frame >= T.sceneIn && frame < T.toType + 30) || (frame >= T.toDesk - 12 && frame < T.toType2 + 40) || frame >= T.toWide;
-  const sceneO = frame < T.toType + 30 ? windows(frame, [[T.sceneIn, T.toType + 30]], 16) * (1 - between(frame, T.toType, T.toType + 28)) : frame >= T.toWide ? between(frame, T.toWide + 4, T.toWide + 18) : whipping ? whip : 1;
-
-  const typeAct1 = frame >= T.toType && frame < T.toDesk + 10;
-  const typeAct2 = frame >= T.toType2 && frame < T.toWide + 24;
-  // zoom-through arrival, then a slow push, a lean-in on the marks and on the swap
-  const rise = snap(frame, fps, T.toType, 34);
+  const after = (at: number, dur: number) => snap(frame, fps, at, dur);
+  // the type camera: small pushes that start after each edit lands, and finish ≥15 frames before the next
   const typeScale =
-    (typeAct1 ? 1.3 - 0.3 * rise : 1) * (1 + 0.022 * between(frame, T.typeIn, T.toDesk) + 0.035 * snap(frame, fps, T.noun - 24, 70) + 0.035 * snap(frame, fps, T.swap - 16, 60)) * (1 - 0.2 * sink);
-  const typeO = typeAct1 ? Math.min(1, rise * 1.6) * (1 - whip) : typeAct2 ? 1 - sink : 0;
-  const counter = typeAct1 ? rise * (1 - whip) : typeAct2 ? 1 - sink : 0;
+    1 +
+    0.01 * (after(T.cut0 + 20, 24) + after(T.cut1 + 20, 24) + after(T.cut2 + 20, 24)) +
+    0.015 * after(T.reflow + 40, 60) +
+    0.02 * after(T.noun + 10, 26) +
+    0.02 * after(T.verb + 10, 30) +
+    0.03 * after(T.swap + 44, 50);
+
+  const inType1 = frame >= T.toType && frame < T.toDesk + SLAP_DUR;
+  const inType2 = frame >= T.toType2 && frame < T.toWide + SLAP_DUR;
+  const counter = Math.max(
+    frame >= T.toType + 12 && frame < T.toDesk ? after(T.toType + 12, 16) : 0,
+    frame >= T.toType2 + 16 && frame < T.toWide ? after(T.toType2 + 16, 16) : 0,
+  );
 
   const words = countWords(SENTENCE, frame, T.typeIn, REVEAL_EVERY);
-  const changes = [...SENTENCE.flatMap((t) => (t.cutAt !== undefined ? [t.cutAt + CUT.collapseAfter + CUT.collapse / 2] : [])), T.swap + 20];
+  const changes = [...SENTENCE.flatMap((t) => (t.cutAt !== undefined ? [t.cutAt + CUT.collapseAfter + 6] : [])), T.swap + 20];
   const last = changes.filter((c) => frame >= c && frame < c + 50).pop();
   const delta = last === undefined ? 0 : last === T.swap + 20 ? 3 : -1;
+
+  const sentence = (
+    <div style={{ position: 'absolute', inset: 0, transformOrigin: `${GRID.marginX}px 470px`, transform: `scale(${typeScale})` }}>
+      <div style={{ position: 'absolute', left: GRID.marginX, top: 400 }}>
+        <KineticSentence tokens={SENTENCE} revealAt={T.typeIn} revealEvery={REVEAL_EVERY} maxWidth={GRID.contentWidth} reflowAt={T.reflow} />
+      </div>
+    </div>
+  );
 
   return (
     <AbsoluteFill style={{ background: COLOR.paper, overflow: 'hidden' }}>
       <Soundtrack />
-      {frame < T.titleOut + 30 ? <TitleCard /> : null}
+      {frame < T.sceneIn + SLAP_DUR + 2 ? <TitleCard /> : null}
 
-      {sceneVisible && sceneO > 0 ? (
-        <AbsoluteFill style={{ opacity: sceneO, transform: whipping ? `translateX(${(1 - whip) * 1100}px)` : undefined, filter: whipping ? `blur(${Math.sin(whip * Math.PI) * 14}px)` : undefined }}>
+      {frame < T.toType + TEAR + 2 ? (
+        <PaperSlapTransition at={T.sceneIn} seed="scene-a" rest={-0.4}>
           <Scene />
-        </AbsoluteFill>
+        </PaperSlapTransition>
       ) : null}
-
-      {typeO > 0.001 ? (
-        <AbsoluteFill
-          style={{
-            background: COLOR.paper,
-            opacity: typeO,
-            clipPath: typeAct2 && iris < 0.999 ? `circle(${iris * 2300}px at 960px 700px)` : undefined,
-            transform: whipping && typeAct1 ? `translateX(${-whip * 1100}px)` : undefined,
-            filter: whipping && typeAct1 ? `blur(${Math.sin(whip * Math.PI) * 14}px)` : undefined,
-          }}
-        >
-          <div style={{ position: 'absolute', inset: 0, transformOrigin: `${GRID.marginX}px 470px`, transform: `scale(${typeScale})` }}>
-            <div style={{ position: 'absolute', left: GRID.marginX, top: 400 }}>
-              <KineticSentence tokens={SENTENCE} revealAt={T.typeIn} revealEvery={REVEAL_EVERY} maxWidth={GRID.contentWidth} reflowAt={T.reflow} />
-            </div>
-          </div>
-        </AbsoluteFill>
+      {inType1 ? (
+        <WipeTearTransition at={T.toType} dur={TEAR} variant="tear" seed="page">
+          {sentence}
+        </WipeTearTransition>
+      ) : null}
+      {frame >= T.toDesk && frame < T.toType2 + SCRIBBLE + 2 ? (
+        <PaperSlapTransition at={T.toDesk} seed="desk" rest={0.35}>
+          <Scene />
+        </PaperSlapTransition>
+      ) : null}
+      {inType2 ? (
+        <WipeTearTransition at={T.toType2} dur={SCRIBBLE} variant="scribble" seed="watch">
+          {sentence}
+        </WipeTearTransition>
+      ) : null}
+      {frame >= T.toWide ? (
+        <PaperSlapTransition at={T.toWide} seed="room" rest={-0.3}>
+          <Scene />
+        </PaperSlapTransition>
       ) : null}
 
       {frame >= T.sceneIn - 2 ? <Header words={words} delta={delta} counter={counter} /> : null}

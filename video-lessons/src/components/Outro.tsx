@@ -1,9 +1,10 @@
 import React from 'react';
-import { AbsoluteFill, Audio, Sequence, interpolate, staticFile, useCurrentFrame, useVideoConfig } from 'remotion';
+import { AbsoluteFill, Audio, Sequence, staticFile, useCurrentFrame, useVideoConfig } from 'remotion';
 import { snap } from '../lib/motion';
 import { useFontsReady } from '../theme/fonts';
 import { COLOR, FONT, TYPE } from '../theme/tokens';
 import { EditorialCharacter, POSES, blendPose } from './EditorialCharacter';
+import { WipeTearTransition } from './transitions/WipeTearTransition';
 import { Rise } from './Rise';
 import { TypewriterReveal } from './TypewriterReveal';
 import { InkUnderline } from './stage/InkUnderline';
@@ -12,8 +13,7 @@ import { PaperBreath } from './stage/PaperBreath';
 /*
   Outro: the series end card. "For more lessons like this… head to workexp.org."
 
-  It arrives with a REDLINE WIPE: a vermilion edge sweeps left to right across the last frame of the
-  lesson, and the end card is revealed behind it, the way an editor's rule clears a page.
+  It arrives with a TEAR: the lesson's last sheet is torn away to reveal the end card underneath.
   The editor stands at the right and points to the address as it is spoken; the address is underlined by hand.
   Voice: ElevenLabs "Sasha", public/audio/shared/outro.mp3 (starts at OUTRO.voice).
 */
@@ -30,16 +30,13 @@ export const Outro: React.FC<{ lesson: string }> = ({ lesson }) => {
   const { fps } = useVideoConfig();
   if (!ready) return null;
 
-  // the wipe: eased, so the edge leaves fast and settles at the right
-  const w = interpolate(frame, [0, OUTRO.wipe], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: (t) => 1 - Math.pow(1 - t, 3) });
-  const edgeX = w * 1940;
-  const point = snap(frame, fps, OUTRO.point, 40);
-  const pose = blendPose(POSES.standing, POSES.pointing, point);
+  const poseAt = (f: number) => blendPose(POSES.standing, POSES.pointing, snap(f, fps, OUTRO.point, 40));
+  const handAt = (f: number) => (snap(f, fps, OUTRO.point, 40) > 0.5 ? 'point' : 'relaxed') as 'point' | 'relaxed';
   const fade = snap(frame, fps, OUTRO.frames - 40, 30);
 
   return (
     <>
-      <AbsoluteFill style={{ clipPath: `inset(0 ${100 - w * 100}% 0 0)`, background: COLOR.paper }}>
+      <WipeTearTransition at={0} dur={OUTRO.wipe} variant="tear" seed="outro">
         <AbsoluteFill style={{ opacity: 1 - fade }}>
           <div style={{ position: 'absolute', left: 160, top: 300, ...mono, color: COLOR.red }}>
             <TypewriterReveal text="For more lessons like this" startFrame={OUTRO.line} framesPerChar={2} caretHold={24} />
@@ -53,13 +50,11 @@ export const Outro: React.FC<{ lesson: string }> = ({ lesson }) => {
             <span style={{ width: 13, height: 13, background: COLOR.red, display: 'inline-block' }} />
             {lesson} · Copywriting fundamentals
           </div>
-          <EditorialCharacter pose={pose} frontHand={point > 0.5 ? 'point' : 'relaxed'} flip height={520} style={{ position: 'absolute', left: 1430, top: 980 - 520 * (748 / 780) }} />
+          <EditorialCharacter poseAt={poseAt} handAt={handAt} seed={7} flip height={520} style={{ position: 'absolute', left: 1430, top: 980 - 520 * (748 / 780) }} />
           <div style={{ position: 'absolute', left: 160, right: 160, top: 980, height: 2, background: COLOR.inkFaint }} />
         </AbsoluteFill>
         <PaperBreath />
-      </AbsoluteFill>
-      {/* the vermilion edge of the wipe */}
-      {w < 1 ? <div style={{ position: 'absolute', top: 0, bottom: 0, left: edgeX - 10, width: 10, background: COLOR.red }} /> : null}
+      </WipeTearTransition>
       <Sequence from={OUTRO.voice} layout="none">
         <Audio src={staticFile('audio/shared/outro.mp3')} />
       </Sequence>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame, useVideoConfig } from 'remotion';
+import { stepped } from '../../lib/stepped';
 
 /*
   The paper itself, never quite still: a very faint fibre texture that drifts a few pixels over many
@@ -9,7 +10,7 @@ import { AbsoluteFill, useCurrentFrame, useVideoConfig } from 'remotion';
 export const PaperBreath: React.FC<{ strength?: number }> = ({ strength = 1 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const t = frame / fps;
+  const t = stepped(frame, 3) / fps; // the paper moves on threes: 20 drawings a second
   const x = 7 * Math.sin(t * 0.13);
   const y = 5 * Math.cos(t * 0.09);
   return (

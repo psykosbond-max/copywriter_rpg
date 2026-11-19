@@ -171,7 +171,7 @@ Lesson 01's cuts are each a different, motivated move:
 | From → to | Transition |
 |---|---|
 | hook → title | the hook's line yanks the word *hook* up out of frame |
-| title → scene | the title lifts away; the scene settles back from 112% |
+| title → scene | paper slap |
 | scene → sentence | zoom-through: the camera pushes into the page and through it; the sentence rises out of it (130% → 100%) |
 | sentence → desk | whip pan: the sentence whips off left with motion blur as the desk whips in |
 | stopwatch → sentence | iris: the sentence opens out of the stopwatch face |
@@ -180,3 +180,27 @@ Lesson 01's cuts are each a different, motivated move:
 
 The sentence layer has its own camera: a slow push through the cuts and a lean-in on the noun/verb marks and on the swap.
 It scales from the left margin, so the text stays on the 160 px grid line with the header.
+
+## Motion language: analog, not computed
+
+Rules every lesson follows (shared code in `lib/` and `components/transitions/`):
+
+- **On twos.** `useSteppedFrame(step)` / `stepped()` quantise secondary motion to drawings, not frames:
+  the figure's idle and follow-through and the underlines' breathing on twos (30/s), the paper drift on threes (20/s).
+  Reading text keeps all 60 frames.
+- **Hand-drawn ink.** `lib/ink.ts` builds every redline and underline as a filled, tapered, slightly bowed stroke with its own
+  seeded angle, revealed at hand speed (`penEase`: fast off the mark, dragging at the tip). No straight rules.
+- **Hold, snap, breathe.** The frame is still for at least 15 frames before an edit; the slash takes 6 frames;
+  the words close the gap on a physical spring (damping 24, stiffness 220); camera moves start only after an edit lands.
+- **A living figure.** `<EditorialCharacter poseAt={f => pose}>` reads its pose with delays so movement ripples outward
+  (forearm +3 frames, head +4, hand +5). It breathes (1.5 px), its head drifts on an offset rhythm, and it blinks for
+  4 frames roughly every 110, on a seeded schedule.
+- **Physical transitions, no cross-fades.**
+  - `PaperSlapTransition`: the next scene is tossed onto the desk: it starts at 1.06× and a random −1.8°…+1.5°, falls with
+    accelerating speed, stops dead and rests a hair off true (−0.4°), with a shadow that vanishes on contact.
+  - `WipeTearTransition variant="tear"`: a jagged, seeded torn edge runs across the frame, a sliver of fibre ahead of it.
+  - `WipeTearTransition variant="scribble"`: a fat grease-pencil scrawl, drawn with `strokeDashoffset`, is the mask that
+    opens the next scene, with a vermilion trace on its leading edge.
+
+Lesson 01 now cuts: hook → title (yank), title → scene (slap), scene → sentence (tear, from inside the page),
+sentence → desk (slap), stopwatch → sentence (scribble), sentence → room (slap), → end card (tear).

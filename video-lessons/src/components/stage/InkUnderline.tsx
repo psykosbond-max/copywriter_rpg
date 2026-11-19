@@ -1,28 +1,26 @@
 import React from 'react';
-import { useCurrentFrame, useVideoConfig } from 'remotion';
-import { snap } from '../../lib/motion';
+import { useCurrentFrame } from 'remotion';
+import { inkStroke, penEase } from '../../lib/ink';
+import { stepped } from '../../lib/stepped';
 import { COLOR } from '../../theme/tokens';
 
 /*
-  A hand-drawn underline for a key takeaway. It is drawn left to right with strokeDashoffset, swelling
-  slightly as a marker does, and once drawn it never quite freezes: its control points breathe by
-  under a pixel on slow, unrelated sine waves.
+  A hand-drawn underline for a key takeaway: a bowed, tapered wax-pencil stroke revealed at hand speed
+  (fast off the mark, dragging at the tip). Once drawn it keeps breathing: its bow shifts by under a
+  pixel, on twos, so it reads as drawn rather than computed.
 */
-export const InkUnderline: React.FC<{ width: number; at: number; dur?: number; thickness?: number; color?: string; style?: React.CSSProperties }> = ({
-  width, at, dur = 34, thickness = 8, color = COLOR.red, style,
+export const InkUnderline: React.FC<{ width: number; at: number; dur?: number; thickness?: number; color?: string; seed?: string | number; style?: React.CSSProperties }> = ({
+  width, at, dur = 16, thickness = 10, color = COLOR.red, seed = width, style,
 }) => {
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
-  const p = snap(frame, fps, at, dur);
-  const t = frame / fps;
-  const w1 = 0.8 * Math.sin(t * 0.7);
-  const w2 = 0.8 * Math.sin(t * 0.53 + 1.3);
-  const h = 24;
-  const d = `M 2 ${14 + w1} C ${width * 0.25} ${9 + w2}, ${width * 0.6} ${16 - w1}, ${width - 2} ${10 + w2}`;
-  const len = width * 1.04;
+  const f = stepped(frame, 2);
+  const p = penEase((frame - at) / dur);
+  const wobble = 0.8 * Math.sin((f / 60) * 0.9) + 0.5 * Math.sin((f / 60) * 1.7 + 1);
+  const s = inkStroke({ length: width, thickness, seed: `ul-${seed}`, angle: -0.8, spread: 0.9, bow: 0.025, wobble });
+  if (p <= 0.001) return null;
   return (
-    <svg width={width} height={h} style={{ overflow: 'visible', ...style }}>
-      <path d={d} fill="none" stroke={color} strokeWidth={thickness} strokeLinecap="round" strokeDasharray={len} strokeDashoffset={len * (1 - p)} />
+    <svg width={s.width} height={s.height} style={{ overflow: 'visible', clipPath: `inset(-20px ${(1 - p) * 100}% -20px -20px)`, marginTop: -s.height / 2 + 12, ...style }}>
+      <path d={s.d} fill={color} />
     </svg>
   );
 };

@@ -1,5 +1,6 @@
 import React from 'react';
-import { interpolate } from 'remotion';
+import { interpolate, useCurrentFrame, useVideoConfig } from 'remotion';
+import { hash01, stepped } from '../lib/stepped';
 import { INK, PrintSvg } from './print/Print';
 
 /*
@@ -126,7 +127,7 @@ const Arm: React.FC<{ upper: number; fore: number; hand: number; shape: HandShap
   );
 };
 
-const Head: React.FC<{ tilt: number }> = ({ tilt }) => (
+const Head: React.FC<{ tilt: number; blink?: boolean }> = ({ tilt, blink = false }) => (
   <g data-part="Head" style={rot(tilt, PIVOT.neck)}>
     {/* face and neck in one flat terracotta shape: forehead, a straight nose, small lips, a defined jaw */}
     <path
@@ -144,7 +145,12 @@ const Head: React.FC<{ tilt: number }> = ({ tilt }) => (
     {/* one cream highlight cut through the hair: the screen-print gap */}
     <path fill={INK.cream} d="M268,40 C276,22 292,13 310,12 C294,18 280,30 272,46 Z" />
     {/* features: a narrow lidded eye, a thin brow, a short mouth — no more */}
-    <path fill={INK.charcoal} d="M330,54 Q337,50 343,54 Q337,56.5 330,54 Z" />
+    {blink ? (
+      // the lid closed: a single soft line where the eye was
+      <path fill={INK.charcoal} d="M330,54.6 Q337,56.4 343,54.6 L343,55.8 Q337,57.6 330,55.8 Z" />
+    ) : (
+      <path fill={INK.charcoal} d="M330,54 Q337,50 343,54 Q337,56.5 330,54 Z" />
+    )}
     <path fill={INK.charcoal} d="M328,46 Q337,42 346,46 L346,47.5 Q337,44.5 328,48 Z" />
     <path fill={INK.charcoal} d="M345,91 L353,90.5 L353,92 L345,92.5 Z" />
     {/* earring: a cream dot against the hair */}
@@ -176,9 +182,27 @@ const Legs: React.FC = () => (
 
 // ---------- the component ----------
 
+/*
+  Micro-life. The character is never a puppet snapped between keyframes:
+
+  - Follow-through: pass `poseAt(frame)` instead of a fixed pose, and the body reads it with delays,
+    so a move ripples outward: the torso and upper arms lead, the forearms follow 3 frames later,
+    the head 4, the hands 5. A change of pose arrives like a real body's.
+  - Breathing: the upper body rises and falls about 1.5 px on a slow cycle; the head drifts on its own,
+    offset rhythm, so the two never move as one block.
+  - Blinking: a 4-frame blink roughly every 110 frames, on a deterministic, slightly irregular schedule.
+  - All of it runs on twos (30 drawings a second), like hand-made animation.
+*/
+
+export const LAG = { forearm: 3, head: 4, hand: 5 } as const;
+
 type Props = {
   pose?: Pose;
+  /** A pose for any frame. Enables follow-through; overrides `pose`. */
+  poseAt?: (frame: number) => Pose;
   frontHand?: HandShape;
+  /** A hand shape for any frame (read with the hand's delay). Overrides `frontHand`. */
+  handAt?: (frame: number) => HandShape;
   backHand?: HandShape;
   /** Rendered height of the figure in px. */
   height?: number;
@@ -186,26 +210,64 @@ type Props = {
   flip?: boolean;
   /** Paper-grain strength 0 → 1 (0 turns the print texture off). */
   grain?: number;
+  /** Breathing, drift and blinks. */
+  alive?: boolean;
+  /** Per-figure phase, so two figures never breathe or blink together. */
+  seed?: number;
+  /** Frames per drawing for the figure's motion (2 = on twos). */
+  step?: number;
   style?: React.CSSProperties;
 };
 
+const blinking = (f: number, seed: number) => {
+  const period = 110;
+  const k = Math.floor((f + seed * 37) / period);
+  const start = k * period + Math.floor(hash01(`blink-${seed}-${k}`) * 40);
+  const local = f + seed * 37 - start;
+  return local >= 0 && local < 4;
+};
+
 export const EditorialCharacter: React.FC<Props> = ({
-  pose = POSES.standing, frontHand = 'relaxed', backHand = 'relaxed', height = 760, flip = false, grain = 1, style,
-}) => (
-  <PrintSvg w={600} h={780} height={height} flip={flip} grain={grain} style={style}>
-    {({ gap }) => (
-      <>
-        <Legs />
-        <g data-part="UpperBody" style={rot(pose.lean, PIVOT.hips)}>
-          <Arm front={false} upper={pose.backUpper} fore={pose.backFore} hand={pose.backHand} shape={backHand} />
-          <Torso />
-          <Head tilt={pose.head} />
-          {/* the near arm carries the paper trap gap, so it reads against the torso and the face */}
-          <g filter={gap}>
-            <Arm front upper={pose.frontUpper} fore={pose.frontFore} hand={pose.frontHand} shape={frontHand} />
+  pose = POSES.standing, poseAt, frontHand = 'relaxed', handAt, backHand = 'relaxed', height = 760, flip = false, grain = 1, alive = true, seed = 0, step = 2, style,
+}) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const f = stepped(frame, step);
+  const at = (d: number) => (poseAt ? poseAt(f - d) : pose);
+  const core = at(0);
+  const fore = at(LAG.forearm);
+  const head = at(LAG.head);
+  const hands = at(LAG.hand);
+  const shape = handAt ? handAt(f - LAG.hand) : frontHand;
+
+  // breathing, in drawing units: 1.5 px on screen whatever the figure's size
+  const unit = 780 / height;
+  const t = f / fps;
+  const breathe = alive ? 1.5 * unit * Math.sin(2 * Math.PI * (t / 3.7) + seed) : 0;
+  const headDrift = alive ? 0.9 * unit * Math.sin(2 * Math.PI * (t / 5.3) + seed + 1.9) : 0;
+  const headSway = alive ? 0.45 * Math.sin(2 * Math.PI * (t / 6.1) + seed * 2) : 0;
+  const blink = alive && blinking(f, seed);
+
+  return (
+    <PrintSvg w={600} h={780} height={height} flip={flip} grain={grain} style={style}>
+      {({ gap }) => (
+        <>
+          <Legs />
+          <g transform={`translate(0 ${breathe.toFixed(2)})`}>
+            <g data-part="UpperBody" style={rot(core.lean, PIVOT.hips)}>
+              <Arm front={false} upper={core.backUpper} fore={fore.backFore} hand={hands.backHand} shape={backHand} />
+              <Torso />
+              <g transform={`translate(0 ${(headDrift - breathe * 0.35).toFixed(2)})`}>
+                <Head tilt={head.head + headSway} blink={blink} />
+              </g>
+              {/* the near arm carries the paper trap gap, so it reads against the torso and the face */}
+              <g filter={gap}>
+                <Arm front upper={core.frontUpper} fore={fore.frontFore} hand={hands.frontHand} shape={shape} />
+              </g>
+            </g>
           </g>
-        </g>
-      </>
-    )}
-  </PrintSvg>
-);
+        </>
+      )}
+    </PrintSvg>
+  );
+};

@@ -1,5 +1,7 @@
 import React, { useMemo } from 'react';
 import { useCurrentFrame, useVideoConfig } from 'remotion';
+import { spring } from 'remotion';
+import { inkStroke, penEase } from '../lib/ink';
 import { lerp, snap } from '../lib/motion';
 import { Box, layoutLine, sentenceStyle, textWidth } from '../lib/sentenceLayout';
 import { COLOR, FONT, TYPE } from '../theme/tokens';
@@ -32,7 +34,11 @@ type Props = {
 };
 
 // Timing of a cut, in frames: the line slices, the word drains, then the gap closes.
-export const CUT = { strike: 16, dimAfter: 10, dim: 24, collapseAfter: 30, collapse: 34 } as const;
+// Hold, snap, breathe: the slash takes 6 frames (fast off the mark, dragging at the tip); the word drains;
+// then the sentence closes the gap on a physical spring (damping 24, stiffness 220: one firm settle, a hair
+// of overshoot), and holds.
+export const CUT = { strike: 6, dimAfter: 3, dim: 14, collapseAfter: 16, collapse: 30 } as const;
+const CLOSE = { damping: 24, stiffness: 220, mass: 1 } as const;
 const SWAP_DUR = 40;
 const REFLOW_DUR = 54;
 
@@ -90,7 +96,8 @@ export const KineticSentence: React.FC<Props> = ({ tokens, revealAt, revealEvery
   let k = 0;
   while (k < m.evs.length && frame >= m.evs[k].start) k++;
   const active = k > 0 ? m.evs[k - 1] : null;
-  const p = active ? snap(frame, fps, active.start, active.dur) : 1;
+  // a collapse closes up on a physical spring; swaps and the reflow use the house spring
+  const p = !active ? 1 : active.kind === 'collapse' ? spring({ frame: frame - active.start, fps, config: CLOSE }) : snap(frame, fps, active.start, active.dur);
   const from = active ? m.layouts[k - 1] : m.layouts[0];
   const to = active ? m.layouts[k] : m.layouts[0];
 
@@ -117,7 +124,7 @@ export const KineticSentence: React.FC<Props> = ({ tokens, revealAt, revealEvery
         const appear = snap(frame, fps, revealAt + i * revealEvery, 18);
         if (appear <= 0) return null;
 
-        const strike = t.cutAt !== undefined ? snap(frame, fps, t.cutAt, CUT.strike) : 0;
+        const strike = t.cutAt !== undefined ? penEase((frame - t.cutAt) / CUT.strike) : 0;
         const dim = t.cutAt !== undefined ? snap(frame, fps, t.cutAt + CUT.dimAfter, CUT.dim) : 0;
         const collapse = t.cutAt !== undefined ? snap(frame, fps, t.cutAt + CUT.collapseAfter, CUT.collapse) : 0;
         if (collapse >= 0.999) return null;
@@ -125,20 +132,25 @@ export const KineticSentence: React.FC<Props> = ({ tokens, revealAt, revealEvery
         const swapP = t.swap ? snap(frame, fps, t.swap.at, SWAP_DUR) : 0;
         const w = t.swap ? lerp(m.full[i], m.swapped[i], swapP) : m.full[i];
 
-        const markP = t.mark ? snap(frame, fps, t.mark.at, 22) : 0;
+        const markP = t.mark ? penEase((frame - t.mark.at) / 12) : 0;
+        const mk = t.mark ? inkStroke({ length: w * 1.04, thickness: 9, seed: `mark-${t.text}`, angle: -0.6, spread: 0.8, bow: 0.03 }) : null;
 
         return places.map((pl, j) => (
           <div key={`${i}-${j}`} style={{ position: 'absolute', left: pl.x, top: pl.y, height: lineH, opacity: appear * pl.o, transform: `translate(${pl.dx}px, ${(1 - appear) * 0.22 * TYPE.sentence.size}px)` }}>
             {t.swap ? (
               <WordSwap from={t.text} to={t.swap.to} progress={swapP} lineHeight={lineH} style={{ width: w }} />
             ) : t.cutAt !== undefined ? (
-              <RedlineStrike text={t.text} width={m.full[i]} strike={strike} dim={dim} collapse={collapse} />
+              <RedlineStrike text={t.text} width={m.full[i]} strike={strike} dim={dim} collapse={collapse} size={TYPE.sentence.size} />
             ) : (
               <span style={{ whiteSpace: 'nowrap' }}>{t.text}</span>
             )}
             {t.mark ? (
               <>
-                <div style={{ position: 'absolute', left: 0, top: lineH * 0.9, height: 7, width: w * markP, background: COLOR.red }} />
+                {mk && markP > 0.001 ? (
+                  <svg width={mk.width} height={mk.height} style={{ position: 'absolute', left: -w * 0.02, top: lineH * 0.92 - mk.height / 2, overflow: 'visible', clipPath: `inset(-20px ${(1 - markP) * 100}% -20px -20px)` }}>
+                    <path d={mk.d} fill={COLOR.red} />
+                  </svg>
+                ) : null}
                 <div
                   style={{
                     position: 'absolute', left: 0, top: -12, fontFamily: FONT.mono, fontSize: 18, fontWeight: 500,

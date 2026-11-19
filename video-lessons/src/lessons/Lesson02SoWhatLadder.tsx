@@ -2,7 +2,7 @@ import React from 'react';
 import { AbsoluteFill, Audio, Sequence, staticFile, useCurrentFrame, useVideoConfig } from 'remotion';
 import { HOOK_EXIT, HookBeats, HookIntro } from '../components/HookIntro';
 import { OUTRO, Outro } from '../components/Outro';
-import { EditorialCharacter, POSES, Pose, blendPose } from '../components/EditorialCharacter';
+import { EditorialCharacter, HandShape, POSES, Pose, blendPose } from '../components/EditorialCharacter';
 import { Rise } from '../components/Rise';
 import { TypewriterReveal } from '../components/TypewriterReveal';
 import { Defocus, EditorialStage, STAGE, stageMono } from '../components/stage/EditorialStage';
@@ -81,7 +81,8 @@ const MOVES: Move[] = [
   { at: T.push, dur: 110, shot: { cx: STAGE.width / 2, cy: Y[3] + 138, s: 1.12 } },
 ];
 
-const PULSES: Pulse[] = STAMPS.map((s) => ({ at: s - 14, until: s + 84 }));
+// hold, snap, breathe: the frame is still before the stamp; the rack lands with it, never ahead of it
+const PULSES: Pulse[] = STAMPS.map((s) => ({ at: s, until: s + 84, rise: 14 }));
 
 /** Foley cue markers (rendered to audio in the sound pass). */
 export const LESSON02_CUES = [
@@ -195,7 +196,7 @@ const TitleCard: React.FC = () => {
 
 // ---------- the editor ----------
 
-const editorPose = (frame: number, fps: number): { pose: Pose; hand: 'relaxed' | 'chin' } => {
+const editorPose = (frame: number, fps: number): { pose: Pose; hand: HandShape } => {
   // looks up at rung 1, then her gaze follows the camera down
   const head = -8 + 6 * snap(frame, fps, T.pan1, 90) + 5 * snap(frame, fps, T.pan2, 90) + 3 * snap(frame, fps, T.push, 90);
   // a small flinch back at each stamp
@@ -220,7 +221,6 @@ const Lesson02Body: React.FC = () => {
   const cam = cameraAt(MOVES, frame, fps);
   const active = frame < T.pan1 + 45 ? 0 : frame < T.pan2 + 45 ? 1 : frame < T.push + 45 ? 2 : 3;
   const markerY = cam.cy - 260 + 8 + (cam.s > 1.01 ? (Y[3] + 8 - (cam.cy - 260 + 8)) * Math.min(1, (cam.s - 1) / 0.12) : 0);
-  const { pose, hand } = editorPose(frame, fps);
   const close = snap(frame, fps, T.close, 30);
 
   const world = (
@@ -235,7 +235,7 @@ const Lesson02Body: React.FC = () => {
 
   const foreground = (
     <>
-      <EditorialCharacter pose={pose} frontHand={hand} flip height={540} style={{ position: 'absolute', left: 1010, top: 1030 - 540 * (748 / 780), opacity: open }} />
+      <EditorialCharacter poseAt={(f) => editorPose(f, fps).pose} handAt={(f) => editorPose(f, fps).hand} seed={5} flip height={540} style={{ position: 'absolute', left: 1010, top: 1030 - 540 * (748 / 780), opacity: open }} />
       <Breadcrumb />
       <div style={{ position: 'absolute', left: 120, top: 930, ...stageMono, fontSize: 18, color: COLOR.inkSoft, opacity: close, display: 'flex', gap: 16, alignItems: 'center' }}>
         <span style={{ width: 28, height: 2, background: COLOR.red, display: 'inline-block' }} />
