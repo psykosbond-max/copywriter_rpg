@@ -32,7 +32,7 @@ import { COLOR, FONT, GRID, TYPE } from '../theme/tokens';
   Sound: ElevenLabs sound effects (grease pencil, espresso pour, stopwatch).
 */
 
-const BODY_CUT = 2130; // the end card's redline wipe starts here, once the metrics have landed
+const BODY_CUT = 2075; // the end card's redline wipe starts here, once the metrics have landed
 
 // Cold open (shared with lesson 02): "Give me thirty seconds… and I'll teach you how to hook your audience."
 const HOOK: HookBeats = { giveMe: 10, thirty: 35, seconds: 57, teach: 135, hook: 214, audience: 229, out: 292 };

@@ -6,7 +6,7 @@ and Jost, a geometric display sans in the mid-century poster tradition, for titl
 
 | Composition | Length | Status |
 |---|---|---|
-| `Lesson01-AdjectivePurge` | 47 s, 1920×1080, 60 fps, narrated | done: hook, illustrated scene, camera, voice and sound, end card |
+| `Lesson01-AdjectivePurge` | 46 s, 1920×1080, 60 fps, narrated | done: hook, illustrated scene, camera, voice and sound, end card |
 | `Lesson01-AdjectivePurge-TypeOnly` | 41 s, silent | the earlier type-only cut |
 | `Lesson02-SoWhatLadder` | 40 s, 1920×1080, 60 fps | built; storyboard in review |
 | `Lesson02-Storyboard` | 1 still | three frozen frames of lesson 02 |
