@@ -1,6 +1,7 @@
 import React from 'react';
 import { Composition } from 'remotion';
 import { CharacterPreview } from './lessons/CharacterPreview';
+import { EditDeskScene, ObjectSheet } from './lessons/EditDeskScene';
 import { LESSON01_FRAMES, Lesson01AdjectivePurge } from './lessons/Lesson01AdjectivePurge';
 import { VIDEO } from './theme/tokens';
 
@@ -18,5 +19,7 @@ export const RemotionRoot: React.FC = () => (
     />
     {/* style check for the illustrated characters: a single still */}
     <Composition id="CharacterPreview" component={CharacterPreview} durationInFrames={1} fps={VIDEO.fps} width={VIDEO.width} height={VIDEO.height} />
+    <Composition id="EditDeskScene" component={EditDeskScene} durationInFrames={1} fps={VIDEO.fps} width={VIDEO.width} height={VIDEO.height} />
+    <Composition id="ObjectSheet" component={ObjectSheet} durationInFrames={1} fps={VIDEO.fps} width={VIDEO.width} height={VIDEO.height} />
   </>
 );

@@ -1,5 +1,6 @@
-import React, { useId } from 'react';
+import React from 'react';
 import { interpolate } from 'remotion';
+import { INK, PrintSvg } from './print/Print';
 
 /*
   EditorialCharacter — a mid-century editorial figure built as an articulated paper cut-out.
@@ -14,14 +15,9 @@ import { interpolate } from 'remotion';
   Units: the figure is drawn facing right in a 600 × 780 box; feet rest on y = 748.
 */
 
-export const INK = {
-  charcoal: '#141413',
-  terracotta: '#C85A32',
-  slate: '#4A5D6E',
-  cream: '#F7F5F0',
-} as const;
+export { INK };
 
-export type HandShape = 'relaxed' | 'point' | 'chin';
+export type HandShape = 'relaxed' | 'point' | 'chin' | 'pencil';
 
 /** Joint angles in degrees. 0 = hanging straight down. Negative swings a limb forward (towards where the figure faces). */
 export type Pose = {
@@ -79,6 +75,17 @@ const Hand: React.FC<{ shape: HandShape; dx?: number }> = ({ shape, dx = 0 }) =>
         <path d="M317,444 L322,486 L327,444 Z" />
         {/* thumb */}
         <path d="M326,424 L334,436 L326,438 Z" />
+      </g>
+    );
+  }
+  if (shape === 'pencil') {
+    return (
+      <g transform={t}>
+        {/* the editor's grease pencil (charcoal barrel, red point) in a loose fist */}
+        <path fill={INK.charcoal} d="M316.5,440 L323.5,440 L323.5,498 L321.6,508 L318.4,508 L316.5,498 Z" />
+        <path fill={INK.terracotta} d="M318.4,507.5 L321.6,507.5 L320,518 Z" />
+        <path fill={INK.terracotta} d="M313,417 C310,430 312,444 320,448 C328,446 331,432 327,417 Z" />
+        <path fill={INK.terracotta} d="M326,422 L333,433 L325,437 Z" />
       </g>
     );
   }
@@ -184,54 +191,21 @@ type Props = {
 
 export const EditorialCharacter: React.FC<Props> = ({
   pose = POSES.standing, frontHand = 'relaxed', backHand = 'relaxed', height = 760, flip = false, grain = 1, style,
-}) => {
-  const id = useId().replace(/:/g, '');
-  const filter = `grain-${id}`;
-  const gap = `gap-${id}`;
-  const W = 600;
-  const H = 780;
-  return (
-    <svg width={(height * W) / H} height={height} viewBox={`0 0 ${W} ${H}`} style={{ overflow: 'visible', transform: flip ? 'scaleX(-1)' : undefined, ...style }}>
-      <defs>
-        {/*
-          Screen-print paper grain: fractal noise becomes a speckle mask that knocks tiny holes out of
-          the ink (the paper shows through), and a faint displacement roughens edges like a pulled print.
-          Fixed seed: identical on every frame, so the texture never boils.
-        */}
-        <filter id={filter} x="-5%" y="-5%" width="110%" height="110%" colorInterpolationFilters="sRGB">
-          <feTurbulence type="fractalNoise" baseFrequency="1.3" numOctaves={1} seed={11} result="noise" />
-          {/* only the top of the noise range lifts ink, and never fully: a sparse, soft speckle */}
-          <feColorMatrix in="noise" type="matrix" values={`0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 ${-3 * grain} ${1 + 3 * 0.64 * grain}`} result="speckle" />
-          <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves={1} seed={3} result="warp" />
-          <feDisplacementMap in="SourceGraphic" in2="warp" scale={1.2 * grain} xChannelSelector="R" yChannelSelector="G" result="rough" />
-          <feComposite in="rough" in2="speckle" operator="in" />
-        </filter>
-        {/*
-          Trap gap: the near arm carries a thin band of bare paper around its silhouette (a dilated copy
-          of its own shape filled cream, not a stroke), so a slate sleeve over the slate torso, or a
-          terracotta hand against the terracotta face, still reads as a separate cut piece.
-        */}
-        <filter id={gap} x="-20%" y="-20%" width="140%" height="140%" colorInterpolationFilters="sRGB">
-          <feMorphology in="SourceAlpha" operator="dilate" radius={2.2} result="fat" />
-          <feFlood floodColor={INK.cream} result="paper" />
-          <feComposite in="paper" in2="fat" operator="in" result="halo" />
-          <feMerge>
-            <feMergeNode in="halo" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-      </defs>
-      <g filter={grain > 0 ? `url(#${filter})` : undefined} stroke="none">
+}) => (
+  <PrintSvg w={600} h={780} height={height} flip={flip} grain={grain} style={style}>
+    {({ gap }) => (
+      <>
         <Legs />
         <g data-part="UpperBody" style={rot(pose.lean, PIVOT.hips)}>
           <Arm front={false} upper={pose.backUpper} fore={pose.backFore} hand={pose.backHand} shape={backHand} />
           <Torso />
           <Head tilt={pose.head} />
-          <g filter={`url(#${gap})`}>
+          {/* the near arm carries the paper trap gap, so it reads against the torso and the face */}
+          <g filter={gap}>
             <Arm front upper={pose.frontUpper} fore={pose.frontFore} hand={pose.frontHand} shape={frontHand} />
           </g>
         </g>
-      </g>
-    </svg>
-  );
-};
+      </>
+    )}
+  </PrintSvg>
+);

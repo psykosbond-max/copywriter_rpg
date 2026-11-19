@@ -11,6 +11,8 @@ export const COLOR = {
 export const FONT = {
   serif: 'Newsreader',
   mono: 'JetBrains Mono',
+  // Geometric display sans in the mid-century poster tradition: titles, numbers, object labels.
+  display: 'Jost',
 } as const;
 
 export const VIDEO = {

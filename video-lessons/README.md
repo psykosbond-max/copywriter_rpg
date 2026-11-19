@@ -1,7 +1,8 @@
 # workexp video lessons
 
 Editorial kinetic-typography lessons on copywriting, built with [Remotion](https://www.remotion.dev) (React → MP4).
-Warm paper, charcoal ink and one vermilion accent; Newsreader for the words, JetBrains Mono for the rules and the numbers.
+Warm paper, charcoal ink and one vermilion accent; Newsreader for the words, JetBrains Mono for the rules and the numbers,
+and Jost, a geometric display sans in the mid-century poster tradition, for titles, big numbers and object names.
 
 | Composition | Length | Status |
 |---|---|---|
@@ -9,6 +10,8 @@ Warm paper, charcoal ink and one vermilion accent; Newsreader for the words, Jet
 | `Lesson02-SoWhatLadder` | 30–45 s | next |
 | `Lesson03-SentenceRhythm` | 30–45 s | next |
 | `CharacterPreview` | 1 still | style check for the illustrated figure |
+| `EditDeskScene` | 1 still | the figure and the objects together in one scene |
+| `ObjectSheet` | 1 still | every illustrated object on its own, named in Jost |
 
 ## Run it
 
@@ -21,6 +24,8 @@ npm run render:lesson01   # → out/Lesson01-AdjectivePurge.mp4
 npm run render:all        # every finished lesson
 npm run still:lesson01    # one frame → out/Lesson01-AdjectivePurge.png
 npm run still:character   # the character rig in three poses → out/CharacterPreview.png
+npm run still:scene       # the editor at the easel, the desk and its objects → out/EditDeskScene.png
+npm run still:objects     # the object specimen sheet → out/ObjectSheet.png
 npm run typecheck
 ```
 
@@ -43,11 +48,14 @@ src/
     RedlineStrike.tsx      a vermilion line slices a word, the word drains and fades
     WordSwap.tsx           rolls one phrase out and another in, inside a clipped window
     KineticSentence.tsx    sets a sentence word by word and animates cuts, swaps and marks
+    print/Print.tsx        the shared print layer: four inks, paper grain, the paper trap gap
     EditorialCharacter.tsx a mid-century paper-cut figure: four inks, print grain, a jointed rig with poses
+    EditorialObjects.tsx   the lesson's props in the same print: espresso machine, cup, stopwatch, page, pencil, desk, lamp, easel
   lessons/
     Lesson01AdjectivePurge.tsx
     CharacterPreview.tsx   one still of the character in three poses
-public/fonts/              Newsreader + JetBrains Mono (SIL Open Font License, licences alongside)
+    EditDeskScene.tsx      the scene still and the object sheet
+public/fonts/              Newsreader, JetBrains Mono and Jost (SIL Open Font License, licences alongside)
 ```
 
 ## How the motion works
@@ -99,3 +107,18 @@ To animate a posture shift, blend two poses with a spring:
 const t = snap(frame, fps, 600, 40);
 <EditorialCharacter pose={blendPose(POSES.standing, POSES.pointing, t)} frontHand={t > 0.5 ? 'point' : 'relaxed'} />
 ```
+
+## The objects
+
+`EditorialObjects.tsx` draws the lesson's world in the same print as the character (`<PrintSvg>` gives every piece
+the same inks, grain and paper gap). Each object stands on the bottom edge of its box, so `top = surfaceY - height`
+sets it on a desk or the floor. Moving parts are props for a lesson to drive:
+
+| Object | Moving parts |
+|---|---|
+| `CoffeeMachine` | `pour` 0 → 1 runs the stream into the cup; `pressure` turns the gauge needle |
+| `CoffeeCup` | `t` (seconds) lets the steam drift slowly; `steam` fades it |
+| `Stopwatch` | `seconds` sweeps the hand and the terracotta sector; the readout is set in Jost |
+| `Manuscript` | `strikes` and `progress` draw the red edits one after another, then the insertion caret |
+| `DeskLamp` | `lower`, `upper`, `head`: a jointed rig, like the figure's arm |
+| `EditorsPencil`, `Desk`, `Easel` | static; the figure can also hold the pencil (`frontHand="pencil"`) |

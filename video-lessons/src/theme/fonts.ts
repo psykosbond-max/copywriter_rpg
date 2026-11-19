@@ -11,6 +11,7 @@ export const loadLessonFonts = () => {
     loading = Promise.all([
       loadFont({ family: FONT.serif, url: staticFile('fonts/Newsreader-Variable.woff2'), weight: '200 800', style: 'normal' }),
       loadFont({ family: FONT.serif, url: staticFile('fonts/Newsreader-Variable-Italic.woff2'), weight: '200 800', style: 'italic' }),
+      loadFont({ family: FONT.display, url: staticFile('fonts/Jost-Variable.woff2'), weight: '100 900', style: 'normal' }),
       loadFont({ family: FONT.mono, url: staticFile('fonts/JetBrainsMono-Variable.woff2'), weight: '100 800', style: 'normal' }),
     ]);
   }
