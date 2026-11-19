@@ -8,7 +8,8 @@ and Jost, a geometric display sans in the mid-century poster tradition, for titl
 |---|---|---|
 | `Lesson01-AdjectivePurge` | 37 s, 1920×1080, 60 fps, narrated | done: illustrated scene, camera, voice and sound |
 | `Lesson01-AdjectivePurge-TypeOnly` | 41 s, silent | the earlier type-only cut |
-| `Lesson02-SoWhatLadder` | 30–45 s | next |
+| `Lesson02-SoWhatLadder` | 40 s, 1920×1080, 60 fps | built; storyboard in review |
+| `Lesson02-Storyboard` | 1 still | three frozen frames of lesson 02 |
 | `Lesson03-SentenceRhythm` | 30–45 s | next |
 | `CharacterPreview` | 1 still | style check for the illustrated figure |
 | `EditDeskScene` | 1 still | the figure and the objects together in one scene |
@@ -135,3 +136,17 @@ sets it on a desk or the floor. Moving parts are props for a lesson to drive:
 | `Manuscript` | `strikes` and `progress` draw the red edits one after another, then the insertion caret |
 | `DeskLamp` | `lower`, `upper`, `head`: a jointed rig, like the figure's arm |
 | `EditorsPencil`, `Desk`, `Easel` | static; the figure can also hold the pencil (`frontHand="pencil"`) |
+
+## The editorial stage (lessons 02 on)
+
+`components/stage/` holds the frame later lessons are built in:
+
+- `EditorialStage`: a 70% stage seen through a 2D camera (`moves`, from `lib/camera.ts`) and a fixed 30% **Editor's Margin**,
+  split by a vertical hairline. `rack` (0 → 1, from `rackAt`) pushes the camera in a further 8% and blurs (2 px) and dims
+  (to 35%) every `<Defocus>` layer not marked `active`, so the eye goes to the edit.
+- `MarginMetric` / `MarginNote`: readouts that count to new values on the house spring and flash a vermilion delta.
+- `EditorialStamp`: a vermilion rubber stamp thrown on in 5 frames, landing with a damped horizontal shake (`shake`).
+- `InkUnderline`: a hand-drawn underline drawn with `strokeDashoffset`, which keeps breathing by under a pixel once drawn.
+- `PaperBreath`: a faint paper-fibre layer that drifts a few pixels over many seconds, so no frame is ever frozen.
+- `lessons/Storyboard.tsx`: `makeStoryboard(Lesson, heading, panels)` freezes the real lesson at chosen frames for review.
+  The storyboard composition must be as long as the lesson, or `<Freeze>` renders nothing past its end.
