@@ -1,0 +1,19 @@
+import React from 'react';
+import { Composition } from 'remotion';
+import { LESSON01_FRAMES, Lesson01AdjectivePurge } from './lessons/Lesson01AdjectivePurge';
+import { VIDEO } from './theme/tokens';
+
+// Composition ids match the output file names, so `remotion render <id>` → <id>.mp4.
+// Lessons 02 (SoWhatLadder) and 03 (SentenceRhythm) register here as they are built.
+export const RemotionRoot: React.FC = () => (
+  <>
+    <Composition
+      id="Lesson01-AdjectivePurge"
+      component={Lesson01AdjectivePurge}
+      durationInFrames={LESSON01_FRAMES}
+      fps={VIDEO.fps}
+      width={VIDEO.width}
+      height={VIDEO.height}
+    />
+  </>
+);
