@@ -18,7 +18,7 @@ import { INK, PrintSvg } from './print/Print';
 
 export { INK };
 
-export type HandShape = 'relaxed' | 'point' | 'chin' | 'pencil';
+export type HandShape = 'relaxed' | 'point' | 'chin' | 'pencil' | 'open';
 
 /** Joint angles in degrees. 0 = hanging straight down. Negative swings a limb forward (towards where the figure faces). */
 export type Pose = {
@@ -37,9 +37,34 @@ export const POSES = {
   pointing: { lean: 3, head: 3, frontUpper: -80, frontFore: -8, frontHand: -6, backUpper: 6, backFore: 6, backHand: 0 },
   chinRest: { lean: 0, head: 13, frontUpper: -52, frontFore: -166, frontHand: 0, backUpper: -5, backFore: -96, backHand: -60 },
   leaningIn: { lean: 7, head: 6, frontUpper: -24, frontFore: -40, frontHand: -10, backUpper: 4, backFore: 10, backHand: 0 },
+  // the host's gestures
+  /** Hand raised beside the head, palm out; add waveAt() for the two-beat wave. */
+  waveGreeting: { lean: -1, head: -3, frontUpper: -150, frontFore: -28, frontHand: -10, backUpper: 4, backFore: 4, backHand: 0 },
+  /** An open palm offered toward the thing beside her. */
+  presentOpen: { lean: 2, head: 2, frontUpper: -58, frontFore: -30, frontHand: -24, backUpper: 6, backFore: 8, backHand: 0 },
+  /** Leaning close to study a line; hand drawn up toward the chest. */
+  inspectLean: { lean: 11, head: 12, frontUpper: -26, frontFore: -128, frontHand: -14, backUpper: 2, backFore: 6, backHand: 0 },
+  /** Reaching out, fingertip extended, to touch a specific element. */
+  tapCallout: { lean: 7, head: 6, frontUpper: -84, frontFore: -2, frontHand: -4, backUpper: 8, backFore: 6, backHand: 0 },
+  /** Satisfied: chin on hand (nod it with nodAt()). */
+  nodApprove: { lean: 0, head: 11, frontUpper: -52, frontFore: -166, frontHand: 0, backUpper: -5, backFore: -96, backHand: -60 },
 } satisfies Record<string, Pose>;
 
 /** Blend two poses (t 0 → 1). Drive t with interpolate()/snap() for a posture shift. */
+/** The two-beat wave: added to a wave pose, swinging the forearm from the elbow. */
+export const waveAt = (frame: number, at: number, fps = 60, beats = 2) => {
+  const t = (frame - at) / fps;
+  if (t < 0 || t > beats * 0.42) return 0;
+  return 20 * Math.sin((t / 0.42) * Math.PI * 2);
+};
+
+/** A nod: head dips and returns. */
+export const nodAt = (frame: number, at: number, amount = 4) => {
+  const t = frame - at;
+  if (t < 0 || t > 34) return 0;
+  return amount * Math.sin((t / 34) * Math.PI);
+};
+
 export const blendPose = (a: Pose, b: Pose, t: number): Pose => {
   const out = { ...a };
   (Object.keys(a) as (keyof Pose)[]).forEach((k) => {
@@ -76,6 +101,15 @@ const Hand: React.FC<{ shape: HandShape; dx?: number }> = ({ shape, dx = 0 }) =>
         <path d="M317,444 L322,486 L327,444 Z" />
         {/* thumb */}
         <path d="M326,424 L334,436 L326,438 Z" />
+      </g>
+    );
+  }
+  if (shape === 'open') {
+    return (
+      <g transform={t} fill={INK.terracotta}>
+        {/* an open palm, fingers together, thumb out: a presenting hand */}
+        <path d="M312,417 C307,436 307,458 313,476 C318,488 330,488 333,474 C337,456 334,432 328,417 Z" />
+        <path d="M327,428 L346,446 L341,452 L325,442 Z" />
       </g>
     );
   }
@@ -127,7 +161,7 @@ const Arm: React.FC<{ upper: number; fore: number; hand: number; shape: HandShap
   );
 };
 
-const Head: React.FC<{ tilt: number; blink?: boolean }> = ({ tilt, blink = false }) => (
+const Head: React.FC<{ tilt: number; blink?: boolean; mouth?: number }> = ({ tilt, blink = false, mouth = 0 }) => (
   <g data-part="Head" style={rot(tilt, PIVOT.neck)}>
     {/* face and neck in one flat terracotta shape: forehead, a straight nose, small lips, a defined jaw */}
     <path
@@ -152,7 +186,12 @@ const Head: React.FC<{ tilt: number; blink?: boolean }> = ({ tilt, blink = false
       <path fill={INK.charcoal} d="M330,54 Q337,50 343,54 Q337,56.5 330,54 Z" />
     )}
     <path fill={INK.charcoal} d="M328,46 Q337,42 346,46 L346,47.5 Q337,44.5 328,48 Z" />
-    <path fill={INK.charcoal} d="M345,91 L353,90.5 L353,92 L345,92.5 Z" />
+    {mouth > 0.15 ? (
+      // speaking: the lips part into a small dark shape, never a cartoon mouth
+      <path fill={INK.charcoal} d={`M344.5,90.6 Q349,${(89.6).toFixed(1)} 353.5,90.2 Q350,${(91.6 + 3.2 * mouth).toFixed(1)} 344.5,${(91.6 + 1.2 * mouth).toFixed(1)} Z`} />
+    ) : (
+      <path fill={INK.charcoal} d="M345,91 L353,90.5 L353,92 L345,92.5 Z" />
+    )}
     {/* earring: a cream dot against the hair */}
     <circle fill={INK.cream} cx={283} cy={118} r={4.5} />
   </g>
@@ -216,6 +255,15 @@ type Props = {
   seed?: number;
   /** Frames per drawing for the figure's motion (2 = on twos). */
   step?: number;
+  /**
+   * Which way she faces, for turning on screen: 1 = right, −1 = left. Values between are mid-turn:
+   * the cut-out pivots on its centre line like a paper figure being turned over.
+   */
+  facingAt?: (frame: number) => number;
+  /** Walking intensity 0 → 1 for a frame: adds the step-bob and a slight forward lean. */
+  walkAt?: (frame: number) => number;
+  /** Whether she is speaking at a frame: drives mouth shapes and small rhythmic head tilts. */
+  speakingAt?: (frame: number) => boolean;
   style?: React.CSSProperties;
 };
 
@@ -228,7 +276,7 @@ const blinking = (f: number, seed: number) => {
 };
 
 export const EditorialCharacter: React.FC<Props> = ({
-  pose = POSES.standing, poseAt, frontHand = 'relaxed', handAt, backHand = 'relaxed', height = 760, flip = false, grain = 1, alive = true, seed = 0, step = 2, style,
+  pose = POSES.standing, poseAt, frontHand = 'relaxed', handAt, backHand = 'relaxed', height = 760, flip = false, grain = 1, alive = true, seed = 0, step = 2, facingAt, walkAt, speakingAt, style,
 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
@@ -248,17 +296,28 @@ export const EditorialCharacter: React.FC<Props> = ({
   const headSway = alive ? 0.45 * Math.sin(2 * Math.PI * (t / 6.1) + seed * 2) : 0;
   const blink = alive && blinking(f, seed);
 
+  // walking: a step every 18 frames; the body rises over each step and drops onto the next
+  const walk = walkAt ? walkAt(f) : 0;
+  const stepBob = walk * 7 * unit * Math.abs(Math.sin((f / 18) * Math.PI));
+  // speaking: mouth shapes change every 4 frames (on fours: lips move in drawings, not in a blur);
+  // the head keeps a small conversational rhythm
+  const talking = speakingAt ? speakingAt(f) : false;
+  const mouth = talking ? [0, 0.6, 1, 0.35, 0.8, 0.2][Math.floor(hash01(`m-${seed}-${Math.floor(f / 4)}`) * 6)] : 0;
+  const talkTilt = talking ? 1.4 * Math.sin((f / fps) * Math.PI * 2 * 1.3) : 0;
+  const facing = facingAt ? facingAt(f) : 1;
+
   return (
     <PrintSvg w={600} h={780} height={height} flip={flip} grain={grain} style={style}>
       {({ gap }) => (
-        <>
+        <g transform={`translate(${306 * (1 - facing)} 0) scale(${facing} 1)`}>
+          <g transform={`translate(0 ${(-stepBob).toFixed(2)})`}>
           <Legs />
           <g transform={`translate(0 ${breathe.toFixed(2)})`}>
-            <g data-part="UpperBody" style={rot(core.lean, PIVOT.hips)}>
+            <g data-part="UpperBody" style={rot(core.lean + 3 * walk, PIVOT.hips)}>
               <Arm front={false} upper={core.backUpper} fore={fore.backFore} hand={hands.backHand} shape={backHand} />
               <Torso />
               <g transform={`translate(0 ${(headDrift - breathe * 0.35).toFixed(2)})`}>
-                <Head tilt={head.head + headSway} blink={blink} />
+                <Head tilt={head.head + headSway + talkTilt} blink={blink} mouth={mouth} />
               </g>
               {/* the near arm carries the paper trap gap, so it reads against the torso and the face */}
               <g filter={gap}>
@@ -266,7 +325,8 @@ export const EditorialCharacter: React.FC<Props> = ({
               </g>
             </g>
           </g>
-        </>
+          </g>
+        </g>
       )}
     </PrintSvg>
   );
