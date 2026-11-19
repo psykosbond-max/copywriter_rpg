@@ -6,7 +6,8 @@ and Jost, a geometric display sans in the mid-century poster tradition, for titl
 
 | Composition | Length | Status |
 |---|---|---|
-| `Lesson01-AdjectivePurge` | 41 s, 1920×1080, 60 fps | done |
+| `Lesson01-AdjectivePurge` | 37 s, 1920×1080, 60 fps, narrated | done: illustrated scene, camera, voice and sound |
+| `Lesson01-AdjectivePurge-TypeOnly` | 41 s, silent | the earlier type-only cut |
 | `Lesson02-SoWhatLadder` | 30–45 s | next |
 | `Lesson03-SentenceRhythm` | 30–45 s | next |
 | `CharacterPreview` | 1 still | style check for the illustrated figure |
@@ -71,19 +72,31 @@ public/fonts/              Newsreader, JetBrains Mono and Jost (SIL Open Font Li
 
 ## Lesson 01 timeline (frames at 60 fps)
 
-| Frame | Beat |
-|---|---|
-| 0 | Title card: *The Adjective Purge.* |
-| 190 | Header, hairline rule and word counter |
-| 260 | The first draft types in, word by word (14 words) |
-| 660–1332 | Pass 1: eight redlines, one every 96 frames; the counter ticks down to 6 |
-| 1404 | The survivors re-set into one line: *Our coffee machine brews a cup.* |
-| 1500 / 1566 | The noun and the verb are underlined |
-| 1800 | Pass 2: *cup.* → *cup in 40 seconds.* (praise swapped for proof) |
-| 2040–2460 | The sentence lifts, the rule types in, the before/after metrics land |
+The scene (the editor at her easel, the desk with the product) is drawn once; a camera moves between shots of it:
+`wide`, `easel`, `page`, `desk` and `watch` in `SHOT`, with the moves listed in `MOVES`. The sentence is its own layer,
+reached by pushing into the page so the cream page becomes the paper the type is set on.
 
-To change the copy, edit `SENTENCE` in `src/lessons/Lesson01AdjectivePurge.tsx`: give a token `cutAt` to strike it,
-`swap` to replace it, `mark` to underline it. Timings live in the `T` table at the top of the same file.
+| Frame | Picture | Voice |
+|---|---|---|
+| 0 | Title card, Jost and Newsreader italic | "Lesson one. The adjective purge." |
+| 204 | Wide, then a slow push: the editor reads, chin on hand, as the page types in | "Here's a first draft. Fourteen words… and most of them are praise." |
+| 520 | She leans in; the camera pushes into the page and dissolves to the sentence | |
+| 640–1110 | Eight redlines: three on the spoken words, five in a run (a pencil scratch on each) | "So cut every adjective. Innovative. Award-winning. Next-generation. If a rival could say it… it goes." |
+| 1145 | The survivors re-set; noun and verb underlined on the words | "What's left does the work. A machine… that brews." |
+| 1370 | Cut to the desk: the machine pours (espresso sound) | "Now swap the praise for proof." |
+| 1490 | Pan to the stopwatch; it sweeps to forty (ticking) | "How fast is it? Forty seconds." |
+| 1656 | The sentence: *cup.* → *cup in 40 seconds.* | |
+| 1786 | Wide: she points with the pencil and marks the page; the rule and the metrics land | "If a rival could say it… cut it." |
+
+## Sound
+
+Narration and sound effects were made with ElevenLabs and live in `public/audio/lesson01/`:
+
+- `narration.mp3`: one take (model `eleven_v4`, voice "Sasha"), loudness-normalised to −16 LUFS. The `VO` table in the lesson
+  lists each phrase's start and end in this file (found with ffmpeg silence detection) and the frame it plays at, so every
+  phrase lands on its picture. To re-voice, replace the file and update those times.
+- `sfx-pencil-1…4.mp3` (one per redline, rotated), `sfx-espresso.mp3`, `sfx-stopwatch.mp3`: ElevenLabs sound effects
+  (`eleven_text_to_sound_v3`), normalised to sit under the voice.
 
 ## Adding a lesson
 

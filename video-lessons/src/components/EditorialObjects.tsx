@@ -132,9 +132,13 @@ export const EditorsPencil: React.FC<Base & { angle?: number }> = ({ angle = 0, 
 export type Strike = { line: number; from: number; to: number };
 const LINES = [230, 270, 248, 280, 204, 262, 240, 150];
 
-export const Manuscript: React.FC<Base & { strikes?: Strike[]; /** 0 → strikes.length: how many have been drawn */ progress?: number }> = ({
-  strikes = [], progress = strikes.length, ...b
-}) => (
+export const Manuscript: React.FC<Base & {
+  strikes?: Strike[];
+  /** 0 → strikes.length (+1 for the caret): how many edits have been drawn */
+  progress?: number;
+  /** 0 → 9: the headline and the lines of copy type in one after another */
+  reveal?: number;
+}> = ({ strikes = [], progress = strikes.length, reveal = 9, ...b }) => (
   <PrintSvg w={380} h={480} {...b}>
     {() => (
       <>
@@ -145,9 +149,9 @@ export const Manuscript: React.FC<Base & { strikes?: Strike[]; /** 0 → strikes
         <path fill={INK.charcoal} d="M138,-14 L218,-14 L212,18 L144,18 Z" />
         <path fill={INK.charcoal} fillRule="evenodd" d="M156,-14 C156,-40 200,-40 200,-14 L192,-14 C192,-30 164,-30 164,-14 Z" />
         {/* headline bar and body lines */}
-        <rect fill={INK.charcoal} x={36} y={52} width={168} height={14} />
+        <rect fill={INK.charcoal} x={36} y={52} width={168 * clamp01(reveal)} height={14} />
         {LINES.map((w, i) => (
-          <rect key={i} fill={INK.charcoal} x={36} y={100 + i * 36} width={w} height={8} />
+          <rect key={i} fill={INK.charcoal} x={36} y={100 + i * 36} width={w * clamp01(reveal - 1 - i)} height={8} />
         ))}
         {/* red edits, drawn one after another */}
         {strikes.map((s, i) => {

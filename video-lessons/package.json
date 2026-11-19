@@ -10,10 +10,11 @@
     "render": "remotion render src/index.ts",
     "render:lesson01": "remotion render src/index.ts Lesson01-AdjectivePurge out/Lesson01-AdjectivePurge.mp4",
     "render:all": "npm run render:lesson01",
-    "still:lesson01": "remotion still src/index.ts Lesson01-AdjectivePurge out/Lesson01-AdjectivePurge.png --frame=1500",
+    "still:lesson01": "remotion still src/index.ts Lesson01-AdjectivePurge out/Lesson01-AdjectivePurge.png --frame=1900",
     "still:character": "remotion still src/index.ts CharacterPreview out/CharacterPreview.png --frame=0 --scale=2",
     "still:scene": "remotion still src/index.ts EditDeskScene out/EditDeskScene.png --frame=0 --scale=2",
-    "still:objects": "remotion still src/index.ts ObjectSheet out/ObjectSheet.png --frame=0 --scale=2"
+    "still:objects": "remotion still src/index.ts ObjectSheet out/ObjectSheet.png --frame=0 --scale=2",
+    "render:lesson01-type": "remotion render src/index.ts Lesson01-AdjectivePurge-TypeOnly out/Lesson01-AdjectivePurge-TypeOnly.mp4"
   },
   "dependencies": {
     "@remotion/cli": "4.0.545",

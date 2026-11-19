@@ -1,4 +1,4 @@
-import React, { useId } from 'react';
+import React, { createContext, useContext, useId } from 'react';
 
 /*
   The shared print layer for every illustration: the four inks, the screen-print paper grain and the
@@ -15,6 +15,16 @@ export const INK = {
 
 export type PrintIds = { gap: string; id: string };
 
+/*
+  The camera's zoom, for illustrations inside a moving shot. The grain is drawn in the illustration's own
+  units, so a 5× push would blow each speckle up into a blotch; instead the texture eases back as the
+  camera moves in, the way a close-up of a print shows flat ink.
+*/
+const ZoomContext = createContext(1);
+export const PrintZoom: React.FC<{ value: number; children: React.ReactNode }> = ({ value, children }) => (
+  <ZoomContext.Provider value={value}>{children}</ZoomContext.Provider>
+);
+
 type Props = {
   /** Drawing units of the illustration; the bottom edge (y = h) is where it stands. */
   w: number;
@@ -28,7 +38,9 @@ type Props = {
   children: (ids: PrintIds) => React.ReactNode;
 };
 
-export const PrintSvg: React.FC<Props> = ({ w, h, height, flip = false, grain = 1, style, children }) => {
+export const PrintSvg: React.FC<Props> = ({ w, h, height, flip = false, grain: grainProp = 1, style, children }) => {
+  const zoom = useContext(ZoomContext);
+  const grain = grainProp * Math.min(1, 1.6 / zoom);
   const id = useId().replace(/:/g, '');
   const grainId = `grain-${id}`;
   const gap = `gap-${id}`;

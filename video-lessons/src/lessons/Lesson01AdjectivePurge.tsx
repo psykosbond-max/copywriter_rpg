@@ -1,139 +1,207 @@
 import React from 'react';
-import { AbsoluteFill, Sequence, useCurrentFrame, useVideoConfig } from 'remotion';
+import { AbsoluteFill, Audio, Sequence, interpolate, staticFile, useCurrentFrame, useVideoConfig } from 'remotion';
+import { EditorialCharacter, POSES, blendPose } from '../components/EditorialCharacter';
+import { CoffeeCup, CoffeeMachine, Desk, DeskLamp, Easel, Manuscript, Stopwatch, Strike } from '../components/EditorialObjects';
 import { CUT, KineticSentence, Token, countWords } from '../components/KineticSentence';
 import { TypewriterReveal } from '../components/TypewriterReveal';
+import { PrintZoom } from '../components/print/Print';
 import { snap } from '../lib/motion';
 import { useFontsReady } from '../theme/fonts';
 import { COLOR, FONT, GRID, TYPE } from '../theme/tokens';
 
 /*
-  LESSON 01 · THE ADJECTIVE PURGE (41 s at 60 fps)
-  0.0  Title card
-  3.2  Header + the first draft types in, word by word; the counter climbs to 14
-  11   Pass 1: eight redlines slice the adjectives and adverbs, one every 1.6 s; the sentence closes up
-  23.7 What's left: the noun and the verb are underlined
-  29   Pass 2: praise is swapped for proof ("cup." → "cup in 40 seconds.")
-  34   The sentence lifts; the rule types in; the before/after metrics land
+  LESSON 01 · THE ADJECTIVE PURGE (37 s at 60 fps), narrated.
+
+  An illustrated editor at an easel, a desk with the product on it, and the sentence itself.
+  The camera moves between them: wide on the scene, into the page for the redlines, back out to the
+  desk for the proof, and wide again for the rule.
+
+  0.0   Title card                                 "Lesson one. The adjective purge."
+  3.4   Wide: the editor reads the draft          "Here's a first draft. Fourteen words… and most of them are praise."
+  8.7   Push into the page → the sentence          "So cut every adjective. Innovative. Award-winning. Next-generation."
+  15.5  The rest are struck in a run               "If a rival could say it… it goes."
+  19.1  The survivors re-set; noun and verb marked "What's left does the work. A machine… that brews."
+  22.8  Desk: the machine pours                    "Now swap the praise for proof."
+  25    Stopwatch sweeps to forty                  "How fast is it? Forty seconds."
+  27.6  The sentence: cup. → cup in 40 seconds.
+  29.8  Wide: the editor marks the page; the rule  "If a rival could say it… cut it."
+
+  Narration: ElevenLabs (eleven_v4, voice "Sasha"), one take, split into phrases placed on their beats.
+  Sound: ElevenLabs sound effects (grease pencil, espresso pour, stopwatch).
 */
 
-export const LESSON01_FRAMES = 2460;
+export const LESSON01_FRAMES = 2220;
 
 const T = {
-  titleOut: 170,
-  header: 190,
-  draft: 260,
-  pass1: 600,
-  cut0: 660,
-  cutEvery: 96,
-  reflow: 1404,
-  left: 1420,
-  noun: 1500,
-  verb: 1566,
-  pass2: 1740,
-  swap: 1800,
-  proof: 1870,
-  lift: 2040,
-  rule: 2090,
-  metrics: 2230,
+  titleOut: 190,
+  sceneIn: 204,
+  pushEasel: 330,
+  draftType: 250,
+  nod: 470,
+  lean: 520,
+  pushPage: 520,
+  toType: 576,
+  typeIn: 600,
+  cut0: 750,
+  cut1: 810,
+  cut2: 870,
+  run: 940, // cuts 3–7, one every 34 frames
+  runEvery: 34,
+  reflow: 1145,
+  noun: 1252,
+  verb: 1304,
+  toDesk: 1370,
+  pour: 1395,
+  toWatch: 1490,
+  sweep: 1520,
+  forty: 1610,
+  toType2: 1656,
+  swap: 1690,
+  toWide: 1786,
+  point: 1795,
+  rule: 1830,
+  marks: 1850,
+  metrics: 2010,
 } as const;
 
-const cut = (n: number) => T.cut0 + n * T.cutEvery;
+const runCut = (i: number) => T.run + i * T.runEvery;
 
 const SENTENCE: Token[] = [
   { text: 'Our' },
-  { text: 'innovative,', cutAt: cut(0) },
-  { text: 'award-winning,', cutAt: cut(1) },
-  { text: 'next-generation', cutAt: cut(2) },
+  { text: 'innovative,', cutAt: T.cut0 },
+  { text: 'award-winning,', cutAt: T.cut1 },
+  { text: 'next-generation', cutAt: T.cut2 },
   { text: 'coffee' },
   { text: 'machine', mark: { label: 'NOUN', at: T.noun } },
-  { text: 'effortlessly', cutAt: cut(3) },
+  { text: 'effortlessly', cutAt: runCut(0) },
   { text: 'brews', mark: { label: 'VERB', at: T.verb } },
   { text: 'a' },
-  { text: 'truly', cutAt: cut(4) },
-  { text: 'delicious,', cutAt: cut(5) },
-  { text: 'perfectly', cutAt: cut(6) },
-  { text: 'balanced', cutAt: cut(7) },
+  { text: 'truly', cutAt: runCut(1) },
+  { text: 'delicious,', cutAt: runCut(2) },
+  { text: 'perfectly', cutAt: runCut(3) },
+  { text: 'balanced', cutAt: runCut(4) },
   { text: 'cup.', swap: { to: 'cup in 40 seconds.', at: T.swap } },
 ];
-const REVEAL_EVERY = 10;
+const REVEAL_EVERY = 5;
+
+const PAGE_STRIKES: Strike[] = [
+  { line: 1, from: 64, to: 196 },
+  { line: 3, from: 0, to: 150 },
+  { line: 5, from: 92, to: 214 },
+];
+
+// ---------- sound ----------
+
+// Phrases of the narration take (seconds in narration.mp3, found by silence detection) and the frame each one starts.
+const VO: { from: number; to: number; at: number }[] = [
+  { from: 0.0, to: 2.95, at: 15 }, // Lesson one. The adjective purge.
+  { from: 3.5, to: 7.85, at: T.draftType }, // Here's a first draft. Fourteen words… and most of them are praise.
+  { from: 8.33, to: 10.05, at: 640 }, // So cut every adjective.
+  { from: 10.45, to: 11.05, at: T.cut0 - 4 }, // Innovative.
+  { from: 11.4, to: 12.2, at: T.cut1 - 4 }, // Award-winning.
+  { from: 12.55, to: 13.62, at: T.cut2 - 4 }, // Next-generation.
+  { from: 14.1, to: 16.4, at: T.run - 10 }, // If a rival could say it… it goes.
+  { from: 16.94, to: 18.42, at: 1150 }, // What's left does the work.
+  { from: 18.77, to: 19.42, at: T.noun - 4 }, // A machine…
+  { from: 19.8, to: 20.62, at: T.verb - 4 }, // that brews.
+  { from: 21.14, to: 22.85, at: 1384 }, // Now swap the praise for proof.
+  { from: 23.18, to: 24.02, at: 1500 }, // How fast is it?
+  { from: 24.42, to: 25.34, at: T.forty - 6 }, // Forty seconds.
+  { from: 25.8, to: 28.37, at: T.rule }, // If a rival could say it… cut it.
+];
+
+const PENCIL_LEAD = 20; // the pencil take has ~0.35 s of air before the scratch
+const strikesAt = [
+  T.cut0, T.cut1, T.cut2, ...[0, 1, 2, 3, 4].map(runCut), // the sentence
+  T.marks, T.marks + 35, T.marks + 70, // the page, at the end
+];
+
+const Soundtrack: React.FC = () => {
+  const { fps } = useVideoConfig();
+  return (
+    <>
+      {VO.map((v, i) => (
+        <Sequence key={`vo${i}`} from={v.at} durationInFrames={Math.round((v.to - v.from) * fps)} layout="none">
+          <Audio src={staticFile('audio/lesson01/narration.mp3')} trimBefore={Math.round(v.from * fps)} />
+        </Sequence>
+      ))}
+      {strikesAt.map((at, i) => (
+        <Sequence key={`p${i}`} from={at - PENCIL_LEAD} durationInFrames={60} layout="none">
+          <Audio src={staticFile(`audio/lesson01/sfx-pencil-${(i % 4) + 1}.mp3`)} volume={0.85} />
+        </Sequence>
+      ))}
+      <Sequence from={T.pour - 28} durationInFrames={250} layout="none">
+        <Audio src={staticFile('audio/lesson01/sfx-espresso.mp3')} volume={(f) => interpolate(f, [0, 12, 190, 250], [0, 0.9, 0.9, 0], { extrapolateRight: 'clamp' })} />
+      </Sequence>
+      <Sequence from={T.sweep - 6} durationInFrames={T.forty - T.sweep + 30} layout="none">
+        <Audio src={staticFile('audio/lesson01/sfx-stopwatch.mp3')} playbackRate={2} volume={(f) => interpolate(f, [0, 6, T.forty - T.sweep + 10, T.forty - T.sweep + 30], [0, 0.9, 0.9, 0], { extrapolateRight: 'clamp' })} />
+      </Sequence>
+    </>
+  );
+};
+
+// ---------- type ----------
 
 const mono: React.CSSProperties = {
   fontFamily: FONT.mono, fontSize: TYPE.mono.size, fontWeight: 500, letterSpacing: TYPE.mono.tracking,
   textTransform: 'uppercase', color: COLOR.ink, lineHeight: 1,
 };
 
-// ---------- pieces ----------
+/** Words that rise into place out of a clipped line, one after another. */
+const Rise: React.FC<{ words: string[]; at: number; every: number; style: React.CSSProperties; gap?: string }> = ({ words, at, every, style, gap = '0.26em' }) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  return (
+    <span style={{ display: 'inline-flex', gap, fontSize: style.fontSize }}>
+      {words.map((w, i) => {
+        const p = snap(frame, fps, at + i * every, 26);
+        return (
+          <span key={i} style={{ display: 'inline-block', overflow: 'hidden', paddingBottom: '0.1em' }}>
+            <span style={{ display: 'inline-block', transform: `translateY(${(1 - p) * 110}%)`, ...style }}>{w}</span>
+          </span>
+        );
+      })}
+    </span>
+  );
+};
 
 const TitleCard: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const out = snap(frame, fps, T.titleOut, 28);
-  const words = ['The', 'Adjective', 'Purge.'];
+  const out = snap(frame, fps, T.titleOut, 24);
   return (
-    <AbsoluteFill style={{ padding: `0 ${GRID.marginX}px`, justifyContent: 'center', opacity: 1 - out, transform: `translateY(${-60 * out}px)` }}>
-      <div style={{ ...mono, color: COLOR.red, marginBottom: 36 }}>
-        <TypewriterReveal text="Lesson 01 — Copywriting fundamentals" startFrame={8} framesPerChar={2} caretHold={20} />
+    <AbsoluteFill style={{ padding: `0 ${GRID.marginX}px`, justifyContent: 'center', opacity: 1 - out, transform: `translateY(${-50 * out}px)` }}>
+      <div style={{ ...mono, color: COLOR.red, marginBottom: 40 }}>
+        <TypewriterReveal text="Lesson 01 — Copywriting fundamentals" startFrame={6} framesPerChar={2} caretHold={20} />
       </div>
-      <div style={{ fontFamily: FONT.serif, fontSize: 168, fontWeight: 380, letterSpacing: '-0.025em', lineHeight: 1, color: COLOR.ink, display: 'flex', gap: '0.24em' }}>
-        {words.map((w, i) => {
-          const p = snap(frame, fps, 30 + i * 9, 26);
-          return (
-            <span key={w} style={{ display: 'inline-block', overflow: 'hidden', paddingBottom: '0.08em' }}>
-              <span style={{ display: 'inline-block', transform: `translateY(${(1 - p) * 105}%)`, fontStyle: i === 2 ? 'italic' : 'normal', color: i === 2 ? COLOR.red : COLOR.ink }}>{w}</span>
-            </span>
-          );
-        })}
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 40 }}>
+        <Rise words={['The', 'adjective']} at={22} every={8} style={{ fontFamily: FONT.display, fontSize: 150, fontWeight: 560, letterSpacing: '0.02em', textTransform: 'uppercase', color: COLOR.ink, lineHeight: 1 }} />
+        <Rise words={['purge.']} at={52} every={8} style={{ fontFamily: FONT.serif, fontStyle: 'italic', fontSize: 172, fontWeight: 400, color: COLOR.red, lineHeight: 1 }} />
       </div>
     </AbsoluteFill>
   );
 };
 
-const Header: React.FC<{ words: number; delta: number }> = ({ words, delta }) => {
+const Header: React.FC<{ words: number; delta: number; counter: number }> = ({ words, delta, counter }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const rule = snap(frame, fps, T.header + 10, 40);
-  const show = snap(frame, fps, T.header, 20);
+  const show = snap(frame, fps, T.sceneIn, 20);
+  const rule = snap(frame, fps, T.sceneIn + 6, 40);
   return (
-    <div style={{ position: 'absolute', left: GRID.marginX, right: GRID.marginX, top: GRID.headerY, opacity: show }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+    <div style={{ position: 'absolute', left: GRID.marginX, right: GRID.marginX, top: 72, opacity: show }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', height: 30 }}>
         <div style={{ ...mono, display: 'flex', alignItems: 'center', gap: 18 }}>
           <span style={{ width: 14, height: 14, background: COLOR.red, display: 'inline-block' }} />
-          <TypewriterReveal text="Lesson 01 / The adjective purge" startFrame={T.header} framesPerChar={2} caret={false} />
+          <TypewriterReveal text="Lesson 01 / The adjective purge" startFrame={T.sceneIn} framesPerChar={2} caret={false} />
         </div>
-        <div style={{ ...mono, display: 'flex', gap: 16, alignItems: 'baseline' }}>
+        <div style={{ ...mono, display: 'flex', gap: 16, alignItems: 'baseline', opacity: counter }}>
           <span style={{ color: COLOR.inkSoft }}>Words</span>
-          <span style={{ fontVariantNumeric: 'tabular-nums', minWidth: '2ch', textAlign: 'right', fontSize: 30, fontWeight: 600 }}>{String(words).padStart(2, '0')}</span>
+          <span style={{ fontFamily: FONT.display, fontVariantNumeric: 'tabular-nums', minWidth: '2ch', textAlign: 'right', fontSize: 34, fontWeight: 600, letterSpacing: 0 }}>{String(words).padStart(2, '0')}</span>
           <span style={{ color: COLOR.red, minWidth: '3ch', fontVariantNumeric: 'tabular-nums', opacity: delta ? 1 : 0 }}>{delta > 0 ? `+${delta}` : `${delta}`}</span>
         </div>
       </div>
-      <div style={{ marginTop: 26, height: 2, background: COLOR.ink, transformOrigin: '0 50%', transform: `scaleX(${rule})` }} />
+      <div style={{ marginTop: 20, height: 2, background: COLOR.ink, transformOrigin: '0 50%', transform: `scaleX(${rule})` }} />
     </div>
-  );
-};
-
-const CAPTIONS: { at: number; until: number; text: string }[] = [
-  { at: T.draft - 20, until: T.pass1, text: 'The first draft' },
-  { at: T.pass1, until: T.left, text: 'Pass 1 — cut every adjective and adverb' },
-  { at: T.left, until: T.pass2, text: "What's left does the work" },
-  { at: T.pass2, until: T.lift, text: 'Pass 2 — swap praise for proof' },
-];
-
-const Caption: React.FC = () => {
-  const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
-  return (
-    <>
-      {CAPTIONS.map((c) => {
-        if (frame < c.at || frame > c.until + 20) return null;
-        const out = snap(frame, fps, c.until, 16);
-        return (
-          <div key={c.text} style={{ position: 'absolute', left: GRID.marginX, top: GRID.captionY, ...mono, color: COLOR.inkSoft, opacity: 1 - out, display: 'flex', gap: 18, alignItems: 'center' }}>
-            <span style={{ width: 28, height: 2, background: COLOR.red, display: 'inline-block' }} />
-            <TypewriterReveal text={c.text} startFrame={c.at} framesPerChar={2} caretHold={30} />
-          </div>
-        );
-      })}
-    </>
   );
 };
 
@@ -141,12 +209,14 @@ const Rule: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const m = snap(frame, fps, T.metrics, 26);
+  // "If a rival could say it…" lands word by word with the voice; "cut it." on its own beat
   return (
-    <div style={{ position: 'absolute', left: GRID.marginX, top: 640, width: GRID.contentWidth }}>
-      <div style={{ fontFamily: FONT.serif, fontStyle: 'italic', fontSize: 72, fontWeight: 400, lineHeight: 1.1, color: COLOR.ink, letterSpacing: '-0.01em' }}>
-        <TypewriterReveal text="If a rival could say it, cut it." startFrame={T.rule} byWord framesPerWord={9} caretHold={50} />
+    <div style={{ position: 'absolute', left: GRID.marginX, top: 160 }}>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 26 }}>
+        <Rise words={['If', 'a', 'rival', 'could', 'say', 'it,']} at={T.rule + 2} every={9} style={{ fontFamily: FONT.display, fontSize: 66, fontWeight: 560, letterSpacing: '0.04em', textTransform: 'uppercase', color: COLOR.ink, lineHeight: 1 }} />
+        <Rise words={['cut', 'it.']} at={T.rule + 112} every={10} gap="0.22em" style={{ fontFamily: FONT.serif, fontStyle: 'italic', fontSize: 78, fontWeight: 400, color: COLOR.red, lineHeight: 1 }} />
       </div>
-      <div style={{ ...mono, marginTop: 56, display: 'flex', gap: 48, opacity: m, transform: `translateY(${(1 - m) * 16}px)` }}>
+      <div style={{ ...mono, fontSize: 19, marginTop: 30, display: 'flex', gap: 44, opacity: m, transform: `translateY(${(1 - m) * 14}px)` }}>
         <span>14 words <span style={{ color: COLOR.red }}>→</span> 9 words</span>
         <span style={{ color: COLOR.inkSoft }}>8 adjectives cut</span>
         <span style={{ color: COLOR.inkSoft }}>1 fact added</span>
@@ -155,34 +225,126 @@ const Rule: React.FC = () => {
   );
 };
 
+// ---------- the scene and its camera ----------
+
+type Shot = { cx: number; cy: number; s: number };
+const SHOT = {
+  wide: { cx: 960, cy: 540, s: 1 },
+  easel: { cx: 620, cy: 610, s: 1.45 },
+  page: { cx: 840, cy: 548, s: 5.2 },
+  desk: { cx: 1350, cy: 610, s: 4 },
+  watch: { cx: 1550, cy: 650, s: 6.5 },
+} satisfies Record<string, Shot>;
+
+// Camera moves: from `at`, over `dur` frames, to `shot`. dur 0 is a cut.
+const MOVES: { at: number; dur: number; shot: Shot }[] = [
+  { at: 0, dur: 0, shot: SHOT.wide },
+  { at: T.pushEasel, dur: 150, shot: SHOT.easel },
+  { at: T.pushPage, dur: 70, shot: SHOT.page },
+  { at: T.toDesk, dur: 0, shot: SHOT.desk },
+  { at: T.toWatch, dur: 44, shot: SHOT.watch },
+  { at: T.toWide, dur: 0, shot: SHOT.easel },
+  { at: T.toWide + 4, dur: 90, shot: SHOT.wide },
+];
+
+const cameraAt = (frame: number, fps: number): Shot => {
+  let cur: Shot = MOVES[0].shot;
+  for (const m of MOVES) {
+    if (frame < m.at) break;
+    const p = m.dur === 0 ? 1 : snap(frame, fps, m.at, m.dur);
+    // centre moves linearly, zoom moves in log space so a push feels even
+    cur = {
+      cx: cur.cx + (m.shot.cx - cur.cx) * p,
+      cy: cur.cy + (m.shot.cy - cur.cy) * p,
+      s: Math.exp(Math.log(cur.s) + (Math.log(m.shot.s) - Math.log(cur.s)) * p),
+    };
+  }
+  return cur;
+};
+
+const FLOOR = 980;
+const DESK_TOP = 727;
+const at = (left: number, floor: number, height: number): React.CSSProperties => ({ position: 'absolute', left, top: floor - height });
+
+const Scene: React.FC = () => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const cam = cameraAt(frame, fps);
+
+  // the editor: chin on hand while reading → leans in → (later) points with the pencil
+  const lean = snap(frame, fps, T.lean, 40);
+  const point = snap(frame, fps, T.point, 42);
+  const nod = 4 * (snap(frame, fps, T.nod, 30) - snap(frame, fps, T.nod + 50, 40));
+  let pose = blendPose(POSES.chinRest, POSES.leaningIn, lean);
+  pose = { ...pose, head: pose.head + nod };
+  if (frame >= T.toWide) pose = blendPose(POSES.leaningIn, POSES.pointing, point);
+  const hand = frame >= T.toWide ? (point > 0.5 ? 'pencil' : 'relaxed') : lean > 0.5 ? 'relaxed' : 'chin';
+
+  const reveal = Math.max(0, (frame - T.draftType - 30) / 12);
+  const edits = frame < T.marks ? 0 : Math.min(PAGE_STRIKES.length + 1, (frame - T.marks) / 35);
+  const pour = snap(frame, fps, T.pour, 50);
+  const seconds = 40 * snap(frame, fps, T.sweep, T.forty - T.sweep);
+
+  return (
+    <PrintZoom value={cam.s}>
+      <div style={{ position: 'absolute', left: 0, top: 0, width: 1920, height: 1080, transformOrigin: '0 0', transform: `translate(${960 - cam.cx * cam.s}px, ${540 - cam.cy * cam.s}px) scale(${cam.s})` }}>
+        <div style={{ position: 'absolute', left: GRID.marginX, right: GRID.marginX, top: FLOOR, height: 2, background: COLOR.inkFaint }} />
+        <Easel height={640} style={at(640, FLOOR, 640)} />
+        <Manuscript height={380} strikes={PAGE_STRIKES} progress={edits} reveal={reveal} style={at(690, 736, 380)} />
+        <EditorialCharacter pose={pose} frontHand={hand} height={640} style={at(150, FLOOR + 640 * (32 / 780), 640)} />
+        <Desk height={253} style={at(1150, FLOOR, 253)} />
+        <DeskLamp height={330} flip style={at(1463, DESK_TOP, 330)} />
+        <CoffeeMachine height={230} pour={pour} pressure={30 + 50 * pour} style={at(1180, DESK_TOP, 230)} />
+        <CoffeeCup height={86} t={frame / fps} style={at(1395, DESK_TOP, 86)} />
+        <Stopwatch height={104} seconds={seconds} style={at(1505, DESK_TOP, 104)} />
+      </div>
+    </PrintZoom>
+  );
+};
+
 // ---------- composition ----------
+
+/** Opacity of a layer that is on during the given windows, with short dissolves. */
+const windows = (frame: number, list: [number, number][], fade = 14) =>
+  Math.max(
+    0,
+    ...list.map(([a, b]) => Math.min(interpolate(frame, [a, a + fade], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }), interpolate(frame, [b - fade, b], [1, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }))),
+  );
 
 export const Lesson01AdjectivePurge: React.FC = () => {
   const ready = useFontsReady();
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
   if (!ready) return <AbsoluteFill style={{ background: COLOR.paper }} />;
 
-  const words = countWords(SENTENCE, frame, T.draft, REVEAL_EVERY);
-  // the red delta beside the counter flashes for a moment after each change
+  const sceneO = windows(frame, [[T.sceneIn, T.toType + 24], [T.toDesk, T.toType2 + 10], [T.toWide, LESSON01_FRAMES + 20]], 16);
+  const typeO = windows(frame, [[T.toType, T.toDesk + 2], [T.toType2, T.toWide + 2]], 22);
+
+  const words = countWords(SENTENCE, frame, T.typeIn, REVEAL_EVERY);
   const changes = [...SENTENCE.flatMap((t) => (t.cutAt !== undefined ? [t.cutAt + CUT.collapseAfter + CUT.collapse / 2] : [])), T.swap + 20];
   const last = changes.filter((c) => frame >= c && frame < c + 50).pop();
   const delta = last === undefined ? 0 : last === T.swap + 20 ? 3 : -1;
-  const lift = snap(frame, fps, T.lift, 44);
 
   return (
-    <AbsoluteFill style={{ background: COLOR.paper }}>
-      <Sequence durationInFrames={T.titleOut + 40} layout="none">
-        <TitleCard />
-      </Sequence>
-      <Sequence from={0} layout="none">
-        {frame >= T.header - 2 ? <Header words={words} delta={delta} /> : null}
-        <Caption />
-        <div style={{ position: 'absolute', left: GRID.marginX, top: 372 }}>
-          <KineticSentence tokens={SENTENCE} revealAt={T.draft} revealEvery={REVEAL_EVERY} maxWidth={GRID.contentWidth} offsetY={-118 * lift} reflowAt={T.reflow} />
-        </div>
-        {frame >= T.rule - 5 ? <Rule /> : null}
-      </Sequence>
+    <AbsoluteFill style={{ background: COLOR.paper, overflow: 'hidden' }}>
+      <Soundtrack />
+      {frame < T.titleOut + 30 ? <TitleCard /> : null}
+
+      {sceneO > 0 ? (
+        <AbsoluteFill style={{ opacity: sceneO }}>
+          <Scene />
+        </AbsoluteFill>
+      ) : null}
+
+      {typeO > 0 ? (
+        <AbsoluteFill style={{ background: COLOR.paper, opacity: typeO }}>
+          <div style={{ position: 'absolute', left: GRID.marginX, top: 400 }}>
+            <KineticSentence tokens={SENTENCE} revealAt={T.typeIn} revealEvery={REVEAL_EVERY} maxWidth={GRID.contentWidth} reflowAt={T.reflow} />
+          </div>
+        </AbsoluteFill>
+      ) : null}
+
+      {frame >= T.sceneIn - 2 ? <Header words={words} delta={delta} counter={typeO} /> : null}
+      {frame >= T.rule - 4 ? <Rule /> : null}
     </AbsoluteFill>
   );
 };
