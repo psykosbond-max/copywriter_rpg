@@ -6,7 +6,7 @@ and Jost, a geometric display sans in the mid-century poster tradition, for titl
 
 | Composition | Length | Status |
 |---|---|---|
-| `Lesson01-AdjectivePurge` | 37 s, 1920×1080, 60 fps, narrated | done: illustrated scene, camera, voice and sound |
+| `Lesson01-AdjectivePurge` | 47 s, 1920×1080, 60 fps, narrated | done: hook, illustrated scene, camera, voice and sound, end card |
 | `Lesson01-AdjectivePurge-TypeOnly` | 41 s, silent | the earlier type-only cut |
 | `Lesson02-SoWhatLadder` | 40 s, 1920×1080, 60 fps | built; storyboard in review |
 | `Lesson02-Storyboard` | 1 still | three frozen frames of lesson 02 |
@@ -158,3 +158,25 @@ your audience." It plays in hard beats (GIVE ME slams in; a vermilion 30 with a 
 drops in and its hook catches the word *hook*, then yanks it up out of frame into the title). The beats are frames tied to
 words in the narration (`HOOK` in the lesson). Lesson 02 opens with it; the voice is ElevenLabs "Sasha",
 `public/audio/lesson02/hook.mp3`. `Hook-Storyboard` freezes three of its frames.
+
+## The end card and the transitions
+
+`components/Outro.tsx` closes every lesson: a **redline wipe** (a vermilion edge sweeps across the last frame) reveals
+"For more lessons like this · workexp.org", spoken, with the editor pointing at the address and a hand-drawn underline.
+Voice: `public/audio/shared/outro.mp3`. Lessons are assembled as `<Sequence>`s: hook → body → end card, so a lesson's
+own timings never change when the bookends do.
+
+Lesson 01's cuts are each a different, motivated move:
+
+| From → to | Transition |
+|---|---|
+| hook → title | the hook's line yanks the word *hook* up out of frame |
+| title → scene | the title lifts away; the scene settles back from 112% |
+| scene → sentence | zoom-through: the camera pushes into the page and through it; the sentence rises out of it (130% → 100%) |
+| sentence → desk | whip pan: the sentence whips off left with motion blur as the desk whips in |
+| stopwatch → sentence | iris: the sentence opens out of the stopwatch face |
+| sentence → room | pull-back: the sentence sinks into the page and the camera pulls out of it |
+| → end card | redline wipe |
+
+The sentence layer has its own camera: a slow push through the cuts and a lean-in on the noun/verb marks and on the swap.
+It scales from the left margin, so the text stays on the 160 px grid line with the header.

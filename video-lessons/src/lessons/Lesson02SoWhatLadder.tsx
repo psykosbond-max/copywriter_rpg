@@ -1,6 +1,7 @@
 import React from 'react';
 import { AbsoluteFill, Audio, Sequence, staticFile, useCurrentFrame, useVideoConfig } from 'remotion';
 import { HOOK_EXIT, HookBeats, HookIntro } from '../components/HookIntro';
+import { OUTRO, Outro } from '../components/Outro';
 import { EditorialCharacter, POSES, Pose, blendPose } from '../components/EditorialCharacter';
 import { Rise } from '../components/Rise';
 import { TypewriterReveal } from '../components/TypewriterReveal';
@@ -34,8 +35,8 @@ import { COLOR, FONT } from '../theme/tokens';
 // Beats are the frames each word lands, from the take's loudness envelope (voice starts at frame 6).
 const HOOK: HookBeats = { giveMe: 10, thirty: 35, seconds: 57, teach: 135, hook: 214, audience: 229, out: 292 };
 export const LESSON02_INTRO = HOOK.out + HOOK_EXIT;
-const LESSON02_BODY = 2400;
-export const LESSON02_FRAMES = LESSON02_INTRO + LESSON02_BODY;
+const LESSON02_CUT = 2330; // the end card's wipe starts once the closing line has landed
+export const LESSON02_FRAMES = LESSON02_INTRO + LESSON02_CUT + OUTRO.frames;
 
 const T = {
   titleOut: 140,
@@ -275,11 +276,14 @@ export const Lesson02SoWhatLadder: React.FC = () => (
     <Sequence durationInFrames={LESSON02_INTRO} layout="none">
       <HookIntro beats={HOOK} seconds={30} />
       <Sequence from={6} layout="none">
-        <Audio src={staticFile('audio/lesson02/hook.mp3')} />
+        <Audio src={staticFile('audio/shared/hook.mp3')} />
       </Sequence>
     </Sequence>
-    <Sequence from={LESSON02_INTRO} layout="none">
+    <Sequence from={LESSON02_INTRO} durationInFrames={LESSON02_CUT + OUTRO.wipe} layout="none">
       <Lesson02Body />
+    </Sequence>
+    <Sequence from={LESSON02_INTRO + LESSON02_CUT} durationInFrames={OUTRO.frames} layout="none">
+      <Outro lesson="Lesson 02 · The so-what ladder" />
     </Sequence>
   </AbsoluteFill>
 );
