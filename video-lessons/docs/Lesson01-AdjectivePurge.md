@@ -166,6 +166,94 @@ No cross-fades and no uniform slide-ins anywhere.
 
 ---
 
+## How it was built
+
+### 1. The engine: Remotion (React → MP4)
+
+The video is a React program. [Remotion](https://www.remotion.dev) renders each of the 2,783 frames in a headless
+Chrome and encodes them with ffmpeg. Every animation is a **pure function of the frame number**
+(`useCurrentFrame()`), so the Studio preview and the final render always match, and any frame can be rendered alone
+for checking. Nothing is keyframed by hand: motion comes from springs and curves evaluated at each frame.
+
+```
+src/
+  Root.tsx                      registers every composition (id = output file name)
+  theme/tokens.ts, fonts.ts     colours, type scale, the house spring; fonts bundled locally
+  lib/                          motion helpers (snap spring, camera, stepped frames, ink strokes)
+  components/                   reusable pieces (below)
+  lessons/Lesson01AdjectivePurge.tsx   this video: its timeline (T), script timings (VO) and shots
+public/fonts, public/audio      Jost, Newsreader, JetBrains Mono; narration and sound effects
+```
+
+### 2. The lesson is assembled from three sequences
+
+```tsx
+<Sequence durationInFrames={318}>   <HookIntro /> + hook voice     </Sequence>
+<Sequence from={318}>               <Body />  (the lesson)         </Sequence>
+<Sequence from={318 + 2075}>        <Outro /> (workexp.org card)   </Sequence>
+```
+
+Each sequence counts its own frames from zero, so the hook and the end card can change length without retiming the
+lesson. The lesson's beats are a single table of frame numbers (`T`), and everything else is derived from it.
+
+### 3. The pieces it is made of
+
+| Component | What it does |
+|---|---|
+| `KineticSentence` | Measures every word in the real font (`@remotion/layout-utils`), lays the sentence out itself, and animates cuts, swaps and marks. While words are being cut, each line closes up sideways; at the reflow the survivors re-set into tight lines, each original line travelling as one phrase on an L-shaped path so no word crosses another. |
+| `RedlineStrike` | The struck word: a tapered, bowed wax-pencil stroke (from `lib/ink.ts`) slashes through it in 6 frames, the word drains to grey and the gap closes on a spring. |
+| `WordSwap` | Rolls *cup.* out and *cup in 40 seconds.* in, inside a clipped window. |
+| `TypewriterReveal` | Types text by character or by word; the unrevealed remainder is laid out invisibly so lines never jump. |
+| `EditorialCharacter` | The editor: an SVG paper-cut figure built as nested groups (upper body › torso, head, upper arm › forearm › hand), each rotating about an explicit pivot. A pose is a set of joint angles; `poseAt(frame)` lets the body read it with delays for follow-through. Breathing, head drift and blinks are added on top. |
+| `EditorialObjects` | Easel, manuscript page, desk, lamp, espresso machine, cup, stopwatch: the same four inks, with moving parts as props (pour, steam, the stopwatch's seconds, the page's strikes). |
+| `PrintSvg` | The shared print layer: a fixed-seed `feTurbulence` speckle (paper showing through the ink) and a "trap gap" of bare paper around overlapping pieces, so shapes of the same colour stay separate without outlines. |
+| `PaperSlapTransition`, `WipeTearTransition` | The physical transitions (slap; torn edge as a CSS `clip-path` polygon; grease-pencil scrawl as an SVG mask drawn with `strokeDashoffset`). |
+| `HookIntro`, `Outro` | The cold open and the end card. |
+
+### 4. Camera
+
+The illustrated scene is drawn once at 1920 × 1080. A camera is a list of shots (`{ centre x, centre y, zoom }`) and moves
+between them; each frame the whole scene is translated and scaled so the shot's centre sits mid-frame. Moves ease on the
+house spring, and zoom interpolates in log space so a 1× → 2× push feels as even as 2× → 4×. When the camera pushes in,
+the print grain is eased back so it doesn't blow up into blotches.
+
+### 5. Motion principles in code
+
+- **One spring.** `snap(frame, fps, at, dur)` is an overdamped spring (damping 200, stiffness 180) used for almost everything.
+  The close-up after a cut uses a livelier one (damping 24, stiffness 220).
+- **Pen speed.** `penEase` (fast start, slow tip) drives every stroke.
+- **On twos.** `stepped(frame, 2)` holds secondary motion for two frames, like hand-made animation.
+- **Seeded imperfection.** Angles, bows, tear edges and blink timing come from a deterministic hash of a seed, so they vary
+  between elements but are identical on every render.
+
+### 6. Voice and sound
+
+1. Wrote the script as one take with delivery tags (`[curious]`, `[dry]`, `[firm, slower]`) and generated it with ElevenLabs
+   (`eleven_v4`, voice "Sasha"). The hook and the end card are separate takes.
+2. Found where each phrase starts and ends with ffmpeg silence detection (and a loudness envelope for single words in the hook).
+3. Normalised the voice to −16 LUFS and the sound effects lower, so they sit underneath.
+4. In the lesson, a table (`VO`) lists each phrase's start and end in the take and the frame it plays at. Each phrase is an
+   `<Audio>` trimmed from the same file inside its own `<Sequence>`, so every word lands on its picture.
+5. Sound effects (pencil scratches, espresso pour, stopwatch) are ElevenLabs sound-effect generations, placed on the frames
+   of the redlines, the pour and the sweep.
+
+### 7. How it was checked
+
+- `tsc --noEmit` type-checks every change.
+- Key frames are rendered as stills and tiled into contact sheets to review composition, alignment and every
+  transition mid-motion. Problems found this way and fixed included: a redline sitting too low, a scribble wipe leaving
+  gaps, an underline that read as a strike-through, text drifting off the 160 px margin during a camera push, and fonts
+  missing in the cold open.
+- After the full render: `ffprobe` for duration, frame count and streams; ffmpeg `ebur128` for loudness and
+  `silencedetect` to confirm the only silences are the intended beats; frames pulled back out of the MP4 to confirm the
+  transitions survived encoding.
+
+### 8. How it evolved
+
+Type-only kinetic lesson → illustrated character and objects in a mid-century print style → narrated scene with a
+camera → cold-open hook and workexp.org end card → the analog pass (physical transitions, follow-through,
+hand-drawn ink, on-twos motion, hold-snap-breathe pacing).
+
 ## Rebuild
 
 ```sh
